@@ -44,7 +44,7 @@ func (f *fileWriter) Write(level string, data interface{}) error {
 
 // 实现LogWriter的Write()方法
 func (f *consoleWriter) Write(level string, data interface{}) error {
-	str := fmt.Sprintf("[%s][%s]: %v\n", GetTimeString(), level, data)
+	str := fmt.Sprintf("[%s][%s]: %v", GetTimeString(), level, data)
 	_, err := os.Stdout.Write([]byte(str))
 	return err
 }
