@@ -53,6 +53,13 @@ func (l *Logger) ERROR(data interface{}) {
 	}
 }
 
+// LOG 记录 自定义级别的日志
+func (l *Logger) LOG(level string, data interface{}) {
+	for _, writer := range l.writerList {
+		writer.Write(level, data)
+	}
+}
+
 // CreateLogger 创建日志器的实例
 func CreateLogger() *Logger {
 	l := NewLogger()

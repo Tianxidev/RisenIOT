@@ -37,14 +37,14 @@ func (f *fileWriter) Write(level string, data interface{}) error {
 	if f.file == nil {
 		return errors.New("写入日志时发现日志文件不存在")
 	}
-	str := fmt.Sprintf("[%s][%s]: %v\n", GetTimeString(), level, data)
+	str := fmt.Sprintf("[%s][%s]: %v\r\n", GetTimeString(), level, data)
 	_, err := f.file.Write([]byte(str))
 	return err
 }
 
 // 实现LogWriter的Write()方法
 func (f *consoleWriter) Write(level string, data interface{}) error {
-	str := fmt.Sprintf("[%s][%s]: %v", GetTimeString(), level, data)
+	str := fmt.Sprintf("[%s][%s]: %v\r\n", GetTimeString(), level, data)
 	_, err := os.Stdout.Write([]byte(str))
 	return err
 }
