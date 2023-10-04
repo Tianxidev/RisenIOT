@@ -1,5 +1,7 @@
 package main
 
-func main() {
+import "RisenIOT/backend/core"
 
+func main() {
+	core.Start()
 }
