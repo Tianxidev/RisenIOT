@@ -1,0 +1,16 @@
+## IDE
+.idea
+.vscode
+
+## golang
+vendor
+go.sum
+
+## binary
+RisenIOT
+*.exe
+*.exe~
+
+## log
+*.log
+*.log~
