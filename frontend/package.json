@@ -9,11 +9,18 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "ant-design-vue": "^4.0.3",
-    "vue": "^3.3.4"
+    "@ant-design/icons-vue": "^7.0.0",
+    "axios": "^1.3.5",
+    "makeit-admin-pro": "^2.1.364",
+    "pinia": "^2.0.32",
+    "vue": "^3.3.4",
+    "vue-router": "^4.1.6",
+    "vuex": "^4.1.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.2.3",
-    "vite": "^4.4.5"
+    "@vitejs/plugin-vue-jsx": "^3.0.0",
+    "vite": "^4.4.5",
+    "sass": "^1.62.0"
   }
 }

@@ -2,9 +2,9 @@
 </script>
 
 <template>
-  <div>
-    <h1>RisenIOT</h1>
-  </div>
+  <a-config-provider :locale="locale">
+    <RouterView/>
+  </a-config-provider>
 </template>
 
 <style scoped>
