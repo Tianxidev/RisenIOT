@@ -8,6 +8,14 @@
 
 ## 运行
 
+前端
+```bash
+cd frontend
+npm i
+npm run dev
+```
+
+后端
 ```bash
 // Windows 平台
 go mod tidy
@@ -21,6 +29,15 @@ go run ./cmd/app
 
 ## 编译
 
+
+前端
+```bash
+cd frontend
+npm i
+npm run build
+```
+
+后端
 ```bash
 // Windows 平台
 go mod tidy
