@@ -1,6 +1,13 @@
 # RisenIOT
 物联网云平台
 
+
+<div align="center">
+<img src="https://img.shields.io/badge/RisenIOT-Beta-brightgreen?style=flat-square&logo=github" />
+<img src="https://img.shields.io/badge/license-Mit-yellowgreen?style=flat-square&logo=github" />
+<img src="https://img.shields.io/github/languages/top/Ritusan/color-library?color=blue" />
+</div>
+
 ## 注意事项
 
 1. 开发环境在 Windows 下，使用 GoLand 开发，go 版本需要 1.21.0 或以上, 如您在 Linux 下开发，需要自行修正编译脚本;
