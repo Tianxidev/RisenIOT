@@ -1,7 +1,7 @@
 package core
 
 import (
-	"RisenIOT/backend/logger"
+	"RisenIOT/backend/internal/logger"
 	"RisenIOT/backend/router"
 	"fmt"
 	"github.com/gin-gonic/gin"
