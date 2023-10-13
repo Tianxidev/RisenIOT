@@ -5,7 +5,6 @@
 <div align="center">
 <img src="https://img.shields.io/badge/RisenIOT-Beta-brightgreen?style=flat-square&logo=github" />
 <img src="https://img.shields.io/badge/license-Mit-yellowgreen?style=flat-square&logo=github" />
-<img src="https://img.shields.io/github/languages/top/Ritusan/color-library?color=blue" />
 </div>
 
 ## 注意事项
