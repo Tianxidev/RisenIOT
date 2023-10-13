@@ -1,18 +1,19 @@
 import { createApp } from 'vue'
 import './style.css'
 import router from './router';
+import ElementPlus from 'element-plus'
+import 'element-plus/dist/index.css'
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import App from './App.vue'
-import MakeitAdminPro from 'makeit-admin-pro'
-import 'makeit-admin-pro/dist/miitvip.min.css'
 
-const app = createApp(App);
+const app = createApp(App)
+
+for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+    app.component(key, component)
+}
+
+app.use(router)
+app.use(ElementPlus)
 
 
-// 使用路由
-app.use(router);
-
-// 使用组件库
-app.use(MakeitAdminPro);
-
-// 挂载应用
-app.mount('#app');
+app.mount('#app')
