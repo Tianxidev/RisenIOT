@@ -11,4 +11,5 @@ type BaseRouter struct{}
 func (s *BaseRouter) InitBaseRouter(Router *gin.RouterGroup) {
 	r := Router.Group("base")
 	r.GET("/version", controller.GetVersion)
+	r.GET("/consoleLogWS", controller.ConsoleLogWS)
 }

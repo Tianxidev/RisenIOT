@@ -3,6 +3,7 @@ package core
 import (
 	"RisenIOT/backend/config"
 	"RisenIOT/backend/global"
+	"RisenIOT/backend/internal/casbin"
 	"RisenIOT/backend/internal/emqx"
 	"RisenIOT/backend/internal/env"
 	"RisenIOT/backend/internal/logger"
@@ -15,17 +16,25 @@ import (
 )
 
 func Init() {
+
+	// 初始化日志模块
 	global.Logger = logger.CreateLogger()
-	global.Logger.INFO("初始化日志模块完成")
 
+	// 读取配置文件
 	config.SysName, _ = env.GetEnv("APP_NAME")
-	global.Logger.INFO("系统名称: " + config.SysName)
-
+	global.Logger.INFO("欢迎使用" + config.SysName + "系统")
 	global.Logger.INFO("加载系统配置完成")
 
+	// Emqx 初始化
 	global.Emqx = emqx.CreateEmqx()
 	if config.EmqxEnable == "true" {
 		global.Logger.INFO("EMQX 服务器已启用")
+	}
+
+	// casbin 初始化
+	err := casbin.SetupCasbinEnforcer()
+	if err != nil {
+		global.Logger.ERROR(fmt.Sprintf("初始化权限管理模块异常: %v", err))
 	}
 
 }
@@ -53,6 +62,7 @@ func Enable() {
 
 	engine.Use(gin.LoggerWithConfig(conf))
 	engine.Use(middleware.Cors())
+	engine.Use(middleware.Auth(global.CasbinEnforcer))
 
 	PrivateGroup := engine.Group("/api/v1")
 
