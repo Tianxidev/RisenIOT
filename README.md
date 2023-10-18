@@ -10,7 +10,6 @@
 ## 注意事项
 
 1. 开发环境在 Windows 下，使用 GoLand 开发，go 版本需要 1.21.0 或以上, 如您在 Linux 下开发，需要自行修正编译脚本;
-2. 本项目启用了 CGO，需要安装 gcc 环境，如您在 Windows 下开发，需要自行安装 gcc 环境;
 
 ## 运行
 
@@ -26,10 +25,9 @@ npm run dev
 // Windows 平台
 go mod tidy
 go mod vendor
-SET CGO_ENABLED=1
-SET GOOS=windows
-SET GOARCH=amd64
-SET GO111MODULE=on
+go env -w CGO_ENABLED=0
+go env -w GOOS=linux
+go env -w GOARCH=amd64
 go run ./
 ```
 
@@ -48,19 +46,17 @@ npm run build
 // Windows 平台
 go mod tidy
 go mod vendor
-SET CGO_ENABLED=1
-SET GOOS=windows
-SET GOARCH=amd64
-SET GO111MODULE=on
-go build -o RisenIOT.exe ./cmd/app
+go env -w CGO_ENABLED=0
+go env -w GOOS=linux
+go env -w GOARCH=amd64
+go build -o RisenIOT.exe ./
 
 // 交叉编译 Linux 平台
 go mod tidy
 go mod vendor
-SET CGO_ENABLED=1 
-SET GOOS=linux
-SET GOARCH=amd64
-SET GO111MODULE=on
+go env -w CGO_ENABLED=0
+go env -w GOOS=linux
+go env -w GOARCH=amd64
 go build -o RisenIOT ./
 ```
 
