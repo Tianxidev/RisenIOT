@@ -30,7 +30,7 @@ SET CGO_ENABLED=1
 SET GOOS=windows
 SET GOARCH=amd64
 SET GO111MODULE=on
-go run ./cmd/app
+go run ./
 ```
 
 ## 编译
@@ -61,7 +61,7 @@ SET CGO_ENABLED=1
 SET GOOS=linux
 SET GOARCH=amd64
 SET GO111MODULE=on
-go build -o RisenIOT ./cmd/app
+go build -o RisenIOT ./
 ```
 
 ## 功能支持
