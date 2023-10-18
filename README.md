@@ -67,6 +67,6 @@ go build -o RisenIOT ./cmd/app
 ## 功能支持
 
 - [ ] HTTP API 接入协议支持
-- [ ] 标准 MQTT 协议支持
+- [X] 标准 MQTT 协议支持
 
 
