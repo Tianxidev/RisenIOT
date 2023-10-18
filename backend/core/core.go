@@ -30,8 +30,8 @@ func Init() {
 
 }
 
-// Start 核心启动函数
-func Start() {
+// Enable 核心启动函数
+func Enable() {
 
 	gin.SetMode(gin.ReleaseMode)
 	engine := gin.New()
