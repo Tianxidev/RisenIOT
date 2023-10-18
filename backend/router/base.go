@@ -7,6 +7,7 @@ import (
 
 type BaseRouter struct{}
 
+// InitBaseRouter 初始化基础路由
 func (s *BaseRouter) InitBaseRouter(Router *gin.RouterGroup) {
 	r := Router.Group("base")
 	r.GET("/version", controller.GetVersion)

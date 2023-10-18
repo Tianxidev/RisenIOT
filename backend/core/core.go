@@ -1,26 +1,41 @@
 package core
 
 import (
+	"RisenIOT/backend/config"
+	"RisenIOT/backend/global"
+	"RisenIOT/backend/internal/emqx"
+	"RisenIOT/backend/internal/env"
 	"RisenIOT/backend/internal/logger"
+	"RisenIOT/backend/middleware"
 	"RisenIOT/backend/router"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
+	"os"
 )
+
+func Init() {
+	global.Logger = logger.CreateLogger()
+	global.Logger.INFO("初始化日志模块完成")
+
+	config.SysName, _ = env.GetEnv("APP_NAME")
+	global.Logger.INFO("系统名称: " + config.SysName)
+
+	global.Logger.INFO("加载系统配置完成")
+
+	global.Emqx = emqx.CreateEmqx()
+	if config.EmqxEnable == "true" {
+		global.Logger.INFO("EMQX 服务器已启用")
+	}
+
+}
 
 // Start 核心启动函数
 func Start() {
 
-	// 初始化日志器
-	log := logger.CreateLogger()
-
-	// 设置 Gin 的运行模式
 	gin.SetMode(gin.ReleaseMode)
-
-	// 创建 Gin 引擎
 	engine := gin.New()
 
-	// 日志中间件配置
 	conf := gin.LoggerConfig{
 		SkipPaths: []string{},
 		Output:    ioutil.Discard,
@@ -31,23 +46,27 @@ func Start() {
 				p.Path,
 				p.ClientIP,
 			)
-			log.LOG("[GIN]", data)
+			global.Logger.LOG("GIN", data)
 			return data
 		},
 	}
 
 	engine.Use(gin.LoggerWithConfig(conf))
+	engine.Use(middleware.Cors())
 
 	PrivateGroup := engine.Group("/api/v1")
 
 	systemRouter := router.GroupApp
 	systemRouter.InitBaseRouter(PrivateGroup)
+	systemRouter.InitDeviceRouter(PrivateGroup)
 
-	log.INFO("服务器启动成功")
-
-	// 开启服务器监听
-	err := engine.Run(":8080")
+	PORT, err := env.GetEnv("APP_WEB_PORT")
 	if err != nil {
-		return
+		global.Logger.ERROR("无法读取环境变量中的端口号")
+		os.Exit(0)
 	}
+
+	global.Logger.INFO("Web 服务启动中, 工作端口:" + PORT)
+
+	engine.Run(":" + PORT)
 }
