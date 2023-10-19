@@ -74,7 +74,7 @@ func CreateLogger() *Logger {
 
 	// 创建文件写入器
 	fw := newFileWriter()
-	if err := fw.SetFile(fmt.Sprintf("%s-%s-%s.log", Y, M, D)); err != nil {
+	if err := fw.SetFile(fmt.Sprintf("./logs/%s-%s-%s.log", Y, M, D)); err != nil {
 		fmt.Println(err)
 	}
 	l.RegisterWriter(fw)
