@@ -1,60 +1,90 @@
 package emqx
 
 import (
-	"RisenIOT/backend/config"
 	"RisenIOT/backend/internal/env"
-	"errors"
+	"encoding/base64"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"net/http"
+	"strings"
 )
 
-type EmqxApi interface {
-	sendMsgToTopic(msg string, topic string, qos int) error
-}
-
 type Emqx struct {
-	emqxList []EmqxApi
 }
 
-// NewEmqx 创建Emqx
-func NewEmqx() *Emqx {
+type EmqxConfig struct {
+	Enable            string // Emqx 服务器是否启用
+	Panel             string // Emqx 面板地址
+	PanelApiKey       string // Emqx 面板ApiKey
+	PanelApiSecretKey string // Emqx 面板SecretKey
+}
+
+// Create 创建设备命令实例
+func Create() *Emqx {
 	return &Emqx{}
 }
 
-// LoadConfig 加载配置
-func (e *Emqx) LoadConfig() {
-	config.EmqxEnable, _ = env.GetEnv("EMQX_ENABLE")
-	config.EmqxPanel, _ = env.GetEnv("EMQX_PANEL")
-	config.EmqxPanelApiKey, _ = env.GetEnv("EMQX_PANEL_API_KEY")
-	config.EmqxPanelApiSecretKey, _ = env.GetEnv("EMQX_PANEL_API_SECRET_KEY")
+// loadConfig 加载配置
+func (d *Emqx) loadConfig() EmqxConfig {
+	var emqxConfig EmqxConfig
+	emqxConfig.Enable, _ = env.GetEnv("EMQX_ENABLE")
+	emqxConfig.Panel, _ = env.GetEnv("EMQX_PANEL")
+	emqxConfig.PanelApiKey, _ = env.GetEnv("EMQX_PANEL_API_KEY")
+	emqxConfig.PanelApiSecretKey, _ = env.GetEnv("EMQX_PANEL_API_SECRET_KEY")
+	return emqxConfig
 }
 
-// Register 注册Emqx实例到列表
-func (e *Emqx) Register(ea EmqxApi) {
-	e.emqxList = append(e.emqxList, ea)
-}
+// SendDataToTopic 发送消息到指定主题
+func (d Emqx) SendDataToTopic(Data string, DataType string, Topic string, qos int) error {
 
-// CreateEmqx 创建Emqx实例
-func CreateEmqx() *Emqx {
-	ne := NewEmqx()
-	ne.LoadConfig()
-	ndc := newDeviceCmd()
-	ne.Register(ndc)
-	return ne
-}
-
-// DeviceCmdPush 设备命令推送
-func (e *Emqx) DeviceCmdPush(cmd string, device string, qos int) error {
-
-	// 推送检查
-	if config.EmqxEnable != "true" {
-		// 返回错误
-		return errors.New("未启用EMQX选项")
+	// 处理消息载荷类型, 如果不为 base64 则以字符串的形式传输
+	if DataType != "base64" {
+		DataType = "plain"
 	}
 
-	for _, emqx := range e.emqxList {
-		err := emqx.sendMsgToTopic(cmd, device, qos)
-		if err != nil {
-			return err
-		}
+	payloadBodyOrigin := map[string]interface{}{"payload_encoding": DataType, "topic": Topic, "qos": 1, "payload": Data, "retain": false}
+	payloadBody, err := json.Marshal(payloadBodyOrigin)
+	if err != nil {
+		fmt.Println("json.Marshal failed:", err)
+		return err
 	}
+
+	fmt.Println("发送消息: ", string(payloadBody))
+
+	url := d.loadConfig().Panel + "/api/v5/publish"
+	method := "POST"
+
+	// 加密认真信息
+	sEnc := base64.StdEncoding.EncodeToString([]byte(d.loadConfig().PanelApiKey + ":" + d.loadConfig().PanelApiSecretKey))
+
+	fmt.Println("认证信息: ", sEnc)
+	fmt.Println("接口地址: ", url)
+
+	payload := strings.NewReader(string(payloadBody))
+
+	client := &http.Client{}
+	req, err := http.NewRequest(method, url, payload)
+
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Authorization", "Basic "+sEnc)
+
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	defer res.Body.Close()
+
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	fmt.Println("EMQX API 响应: " + string(body))
 	return nil
 }

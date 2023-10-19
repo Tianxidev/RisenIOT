@@ -1,10 +1,9 @@
 package core
 
 import (
-	"RisenIOT/backend/config"
 	"RisenIOT/backend/global"
 	"RisenIOT/backend/internal/casbin"
-	"RisenIOT/backend/internal/emqx"
+	"RisenIOT/backend/internal/device"
 	"RisenIOT/backend/internal/env"
 	"RisenIOT/backend/internal/logger"
 	"RisenIOT/backend/middleware"
@@ -21,15 +20,13 @@ func Init() {
 	global.Logger = logger.CreateLogger()
 
 	// 读取配置文件
-	config.SysName, _ = env.GetEnv("APP_NAME")
-	global.Logger.INFO("欢迎使用" + config.SysName + "系统")
+	global.SysName, _ = env.GetEnv("APP_NAME")
+	global.Logger.INFO("欢迎使用" + global.SysName + "系统")
 	global.Logger.INFO("加载系统配置完成")
 
-	// Emqx 初始化
-	global.Emqx = emqx.CreateEmqx()
-	if config.EmqxEnable == "true" {
-		global.Logger.INFO("EMQX 服务器已启用")
-	}
+	// 初始化设备管理模块
+	global.Device = device.CreateDevice()
+	global.Logger.INFO("初始化设备管理模块")
 
 	// casbin 初始化
 	err := casbin.SetupCasbinEnforcer()

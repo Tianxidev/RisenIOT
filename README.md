@@ -65,4 +65,6 @@ go build -o RisenIOT ./
 - [ ] HTTP API 接入协议支持
 - [X] 标准 MQTT 协议支持
 
+## 设备协议支持
 
+- [ ] 云之声灯控协议

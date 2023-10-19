@@ -43,4 +43,4 @@ TODO.md
 # config
 .env
 .bak
-rbac.csv
+config/rbac.csv

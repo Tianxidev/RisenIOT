@@ -55,11 +55,22 @@ func DeviceCmdPush(c *gin.Context) {
 		return
 	}
 
+	// 解析命令参数 qos
+	device_type, ok := json["device_type"].(string)
+	if !ok {
+		c.JSON(200, gin.H{
+			"code": 400,
+			"msg":  "参数错误, 无法读取设备类型",
+		})
+		global.Logger.ERROR(fmt.Sprintf("参数错误: %s", err))
+		return
+	}
+
 	// 转换 QOS 为int
 	qos := int(qos_val)
 
 	// 推送命令
-	if err := global.Emqx.DeviceCmdPush(command, device_id, qos); err != nil {
+	if err := global.Device.DeviceCmdPush(command, "mqtt", device_id, device_type, qos); err != nil {
 		c.JSON(200, gin.H{
 			"code": 400,
 			"msg":  fmt.Sprintf("推送命令失败: %s", err),

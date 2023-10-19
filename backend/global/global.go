@@ -1,14 +1,16 @@
 package global
 
 import (
-	"RisenIOT/backend/internal/emqx"
+	"RisenIOT/backend/internal/device"
 	"RisenIOT/backend/internal/logger"
 	"github.com/casbin/casbin/v2"
 )
 
 var (
+	SysName         = "RisenIOT"
+	SysVersion      = "0.0.1"
 	Logger          *logger.Logger
-	Emqx            *emqx.Emqx
+	Device          *device.Device
 	DatabaseSetting *databaseSetting
 	CasbinEnforcer  *casbin.Enforcer
 )

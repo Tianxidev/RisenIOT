@@ -10,6 +10,8 @@ type BaseRouter struct{}
 // InitBaseRouter 初始化基础路由
 func (s *BaseRouter) InitBaseRouter(Router *gin.RouterGroup) {
 	r := Router.Group("base")
-	r.GET("/version", controller.GetVersion)
-	r.GET("/consoleLogWS", controller.ConsoleLogWS)
+	base := controller.NewBaseController()
+	r.GET("/sys/version", base.GetVersion)
+	r.GET("/auth/reload", base.CasbinReload)
+	r.GET("/log/consoleLogWS", base.ConsoleLogWS)
 }
