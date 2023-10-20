@@ -13,6 +13,11 @@ import (
 type Device struct {
 }
 
+type Core struct {
+	ProductID  string `json:"productID"`  // 产品id
+	DeviceName string `json:"deviceName"` // 设备名称
+}
+
 // 设备类型数组
 var deviceTypeArray = []string{"unisound"}
 

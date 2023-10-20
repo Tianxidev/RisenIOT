@@ -26,37 +26,37 @@ func (l *Logger) RegisterWriter(writer LogWriter) {
 }
 
 // INFO 记录 INFO 级别的日志
-func (l *Logger) INFO(data interface{}) {
+func (l *Logger) INFO(format string, a ...any) {
 	for _, writer := range l.writerList {
-		writer.Write("INFO", data)
+		writer.Write("INFO", fmt.Sprintf(format, a...))
 	}
 }
 
 // DEBUG 记录 DEBUG 级别的日志
-func (l *Logger) DEBUG(data interface{}) {
+func (l *Logger) DEBUG(format string, a ...any) {
 	for _, writer := range l.writerList {
-		writer.Write("DEBUG", data)
+		writer.Write("DEBUG", fmt.Sprintf(format, a...))
 	}
 }
 
 // WARNING 记录 WARNING 级别的日志
-func (l *Logger) WARNING(data interface{}) {
+func (l *Logger) WARNING(format string, a ...any) {
 	for _, writer := range l.writerList {
-		writer.Write("WARNING", data)
+		writer.Write("WARNING", fmt.Sprintf(format, a...))
 	}
 }
 
 // ERROR 记录 ERROR 级别的日志
-func (l *Logger) ERROR(data interface{}) {
+func (l *Logger) ERROR(format string, a ...any) {
 	for _, writer := range l.writerList {
-		writer.Write("ERROR", data)
+		writer.Write("ERROR", fmt.Sprintf(format, a...))
 	}
 }
 
 // LOG 记录 自定义级别的日志
-func (l *Logger) LOG(level string, data interface{}) {
+func (l *Logger) LOG(level string, format string, a ...any) {
 	for _, writer := range l.writerList {
-		writer.Write(level, data)
+		writer.Write(level, fmt.Sprintf(format, a...))
 	}
 }
 

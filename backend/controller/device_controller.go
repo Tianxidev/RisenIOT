@@ -18,7 +18,7 @@ func DeviceCmdPush(c *gin.Context) {
 			"code": 400,
 			"msg":  "参数错误, 无法解析json",
 		})
-		global.Logger.ERROR(fmt.Sprintf("参数错误: %s", err))
+		global.Logger.ERROR("参数错误: %s", err)
 		return
 	}
 
@@ -29,7 +29,7 @@ func DeviceCmdPush(c *gin.Context) {
 			"code": 400,
 			"msg":  "参数错误, 无法读取设备ID",
 		})
-		global.Logger.ERROR(fmt.Sprintf("参数错误: %s", err))
+		global.Logger.ERROR("参数错误: %s", err)
 		return
 	}
 
@@ -40,7 +40,7 @@ func DeviceCmdPush(c *gin.Context) {
 			"code": 400,
 			"msg":  "参数错误, 无法读取命令",
 		})
-		global.Logger.ERROR(fmt.Sprintf("参数错误: %s", err))
+		global.Logger.ERROR("参数错误: %s", err)
 		return
 	}
 
@@ -51,7 +51,7 @@ func DeviceCmdPush(c *gin.Context) {
 			"code": 400,
 			"msg":  "参数错误, 无法读取QOS",
 		})
-		global.Logger.ERROR(fmt.Sprintf("参数错误: %s", err))
+		global.Logger.ERROR("参数错误: %s", err)
 		return
 	}
 
@@ -62,7 +62,7 @@ func DeviceCmdPush(c *gin.Context) {
 			"code": 400,
 			"msg":  "参数错误, 无法读取设备类型",
 		})
-		global.Logger.ERROR(fmt.Sprintf("参数错误: %s", err))
+		global.Logger.ERROR("参数错误: %s", err)
 		return
 	}
 
@@ -75,11 +75,11 @@ func DeviceCmdPush(c *gin.Context) {
 			"code": 400,
 			"msg":  fmt.Sprintf("推送命令失败: %s", err),
 		})
-		global.Logger.ERROR(fmt.Sprintf("推送命令失败: %s", err))
+		global.Logger.ERROR("推送命令失败: %s", err)
 		return
 	}
 
-	global.Logger.INFO(fmt.Sprintf("推送 %s 设备 %s 指令, QOS等级 %d", device_id, command, qos))
+	global.Logger.INFO("推送 %s 设备 %s 指令, QOS等级 %d", device_id, command, qos)
 	c.JSON(200, gin.H{
 		"code": 200,
 		"msg":  "推送命令成功",

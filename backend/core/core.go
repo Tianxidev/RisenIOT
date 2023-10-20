@@ -31,7 +31,7 @@ func Init() {
 	// casbin 初始化
 	err := casbin.SetupCasbinEnforcer()
 	if err != nil {
-		global.Logger.ERROR(fmt.Sprintf("初始化权限管理模块异常: %v", err))
+		global.Logger.ERROR("初始化权限管理模块异常: %v", err)
 	}
 
 }
