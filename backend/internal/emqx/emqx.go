@@ -2,6 +2,7 @@ package emqx
 
 import (
 	"RisenIOT/backend/internal/env"
+	"RisenIOT/backend/utils"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -13,11 +14,24 @@ import (
 type Emqx struct {
 }
 
+// EmqxConfig Emqx配置结构体
 type EmqxConfig struct {
 	Enable            string // Emqx 服务器是否启用
 	Panel             string // Emqx 面板地址
 	PanelApiKey       string // Emqx 面板ApiKey
 	PanelApiSecretKey string // Emqx 面板SecretKey
+}
+
+type MqttDeviceList struct {
+	Data []MqttDevice `json:"data"`
+}
+
+// MqttDevice MQTT设备信息结构体
+type MqttDevice struct {
+	DeviceId    string `json:"clientid"`     // 设备ID
+	IpAddress   string `json:"ip_address"`   // 设备IP地址
+	Username    string `json:"username"`     // 设备用户名
+	ConnectedAt string `json:"connected_at"` // 设备连接时间
 }
 
 // Create 创建设备命令实例
@@ -33,6 +47,11 @@ func (d *Emqx) loadConfig() EmqxConfig {
 	emqxConfig.PanelApiKey, _ = env.GetEnv("EMQX_PANEL_API_KEY")
 	emqxConfig.PanelApiSecretKey, _ = env.GetEnv("EMQX_PANEL_API_SECRET_KEY")
 	return emqxConfig
+}
+
+// getAuthKey 获取认证密钥
+func (d Emqx) getAuthKey() string {
+	return base64.StdEncoding.EncodeToString([]byte(d.loadConfig().PanelApiKey + ":" + d.loadConfig().PanelApiSecretKey))
 }
 
 // SendDataToTopic 发送消息到指定主题
@@ -55,12 +74,6 @@ func (d Emqx) SendDataToTopic(Data string, DataType string, Topic string, qos in
 	url := d.loadConfig().Panel + "/api/v5/publish"
 	method := "POST"
 
-	// 加密认真信息
-	sEnc := base64.StdEncoding.EncodeToString([]byte(d.loadConfig().PanelApiKey + ":" + d.loadConfig().PanelApiSecretKey))
-
-	fmt.Println("认证信息: ", sEnc)
-	fmt.Println("接口地址: ", url)
-
 	payload := strings.NewReader(string(payloadBody))
 
 	client := &http.Client{}
@@ -71,7 +84,7 @@ func (d Emqx) SendDataToTopic(Data string, DataType string, Topic string, qos in
 		return err
 	}
 	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("Authorization", "Basic "+sEnc)
+	req.Header.Add("Authorization", "Basic "+d.getAuthKey())
 
 	res, err := client.Do(req)
 	if err != nil {
@@ -87,4 +100,32 @@ func (d Emqx) SendDataToTopic(Data string, DataType string, Topic string, qos in
 	}
 	fmt.Println("EMQX API 响应: " + string(body))
 	return nil
+}
+
+// GetDeviceList 获取设备列表
+func (d Emqx) GetDeviceList() (*[]MqttDevice, error) {
+
+	url := d.loadConfig().Panel + "/api/v5/clients"
+
+	header := map[string]string{
+		"Content-Type":  "application/json",
+		"Authorization": "Basic " + d.getAuthKey(),
+	}
+
+	body, err := utils.HttpGet(url, header)
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	// 反序列化
+	var mqttDeviceList MqttDeviceList
+	err = json.Unmarshal([]byte(body), &mqttDeviceList)
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	return &mqttDeviceList.Data, nil
+
 }

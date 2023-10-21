@@ -28,9 +28,9 @@ func NewBaseController() *BaseController {
 func (nbc *BaseController) GetVersion(c *gin.Context) {
 	global.Logger.INFO("请求获取系统版本信息")
 	c.JSON(200, gin.H{
-		"code":       200,
-		"SysName":    global.SysName,
-		"SysVersion": global.SysVersion,
+		"code":          200,
+		"SystemName":    global.SysName,
+		"SystemVersion": global.SysVersion,
 	})
 }
 
@@ -54,7 +54,7 @@ func (nbc *BaseController) ConsoleLogWS(c *gin.Context) {
 	}
 	defer wsConn.Close()
 
-	// 判断客户端
+	// 判断客户端 5 秒内是否发送了 token
 	wsConn.SetReadDeadline(time.Now().Add(5 * time.Second))
 	_, b, err := wsConn.ReadMessage()
 	if err != nil {
@@ -64,11 +64,22 @@ func (nbc *BaseController) ConsoleLogWS(c *gin.Context) {
 	wsConn.SetReadDeadline(time.Time{})
 	token := string(b)
 	if token != "WsTerminal" {
-		wsConn.WriteMessage(1, []byte("Invalid client token"))
+		wsConn.WriteMessage(1, []byte("无法识别客户端"))
 		wsConn.Close()
 		return
 	}
-	wsConn.WriteMessage(1, []byte("token success"))
-	wsConn.Close()
+
+	global.Logger.INFO("已连接到 Web 日志控制台:" + wsConn.RemoteAddr().String())
+
+	wsConn.WriteMessage(1, []byte("欢迎访问 Web 日志控制台!"))
+
+	for {
+
+		//err = wsConn.WriteMessage(1, message)
+		//if err != nil {
+		//	log.Println("write:", err)
+		//	break
+		//}
+	}
 
 }

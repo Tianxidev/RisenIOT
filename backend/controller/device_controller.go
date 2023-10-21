@@ -6,15 +6,29 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type DeviceController struct{}
+
+// NewDeviceController 实例化设备控制器
+func NewDeviceController() *DeviceController {
+	return &DeviceController{}
+}
+
+// DeviceDataReceive 设备上报数据接收
+func (dc *DeviceController) DeviceDataReceive(context *gin.Context) {
+	reqBody, _ := context.GetRawData()
+	fmt.Printf("接收到设备数据: %s\n", reqBody)
+
+}
+
 // DeviceCmdPush 设备命令推送
-func DeviceCmdPush(c *gin.Context) {
+func (dc *DeviceController) DeviceCmdPush(context *gin.Context) {
 
 	// 读取post json
 	var json map[string]interface{}
 
-	err := c.BindJSON(&json)
+	err := context.BindJSON(&json)
 	if err != nil {
-		c.JSON(200, gin.H{
+		context.JSON(200, gin.H{
 			"code": 400,
 			"msg":  "参数错误, 无法解析json",
 		})
@@ -25,7 +39,7 @@ func DeviceCmdPush(c *gin.Context) {
 	// 解析设备id device_id
 	device_id, ok := json["device_id"].(string)
 	if !ok {
-		c.JSON(200, gin.H{
+		context.JSON(200, gin.H{
 			"code": 400,
 			"msg":  "参数错误, 无法读取设备ID",
 		})
@@ -36,7 +50,7 @@ func DeviceCmdPush(c *gin.Context) {
 	// 解析命令 command
 	command, ok := json["command"].(string)
 	if !ok {
-		c.JSON(200, gin.H{
+		context.JSON(200, gin.H{
 			"code": 400,
 			"msg":  "参数错误, 无法读取命令",
 		})
@@ -47,7 +61,7 @@ func DeviceCmdPush(c *gin.Context) {
 	// 解析命令参数 qos
 	qos_val, ok := json["qos"].(float64)
 	if !ok {
-		c.JSON(200, gin.H{
+		context.JSON(200, gin.H{
 			"code": 400,
 			"msg":  "参数错误, 无法读取QOS",
 		})
@@ -58,7 +72,7 @@ func DeviceCmdPush(c *gin.Context) {
 	// 解析命令参数 qos
 	device_type, ok := json["device_type"].(string)
 	if !ok {
-		c.JSON(200, gin.H{
+		context.JSON(200, gin.H{
 			"code": 400,
 			"msg":  "参数错误, 无法读取设备类型",
 		})
@@ -71,7 +85,7 @@ func DeviceCmdPush(c *gin.Context) {
 
 	// 推送命令
 	if err := global.Device.DeviceCmdPush(command, "mqtt", device_id, device_type, qos); err != nil {
-		c.JSON(200, gin.H{
+		context.JSON(200, gin.H{
 			"code": 400,
 			"msg":  fmt.Sprintf("推送命令失败: %s", err),
 		})
@@ -80,8 +94,89 @@ func DeviceCmdPush(c *gin.Context) {
 	}
 
 	global.Logger.INFO("推送 %s 设备 %s 指令, QOS等级 %d", device_id, command, qos)
-	c.JSON(200, gin.H{
+	context.JSON(200, gin.H{
 		"code": 200,
 		"msg":  "推送命令成功",
 	})
+}
+
+// DeviceList 设备列表
+func (dc *DeviceController) DeviceList(context *gin.Context) {
+	if list, err := global.Device.DeviceList(); err == nil {
+		global.Logger.INFO("获取设备列表成功")
+		context.JSON(200, gin.H{
+			"code":  200,
+			"msg":   "获取设备列表成功",
+			"total": len(list),
+			"data":  list,
+		})
+		return
+	} else {
+		global.Logger.ERROR("获取设备列表失败: %s", err)
+		context.JSON(200, gin.H{
+			"code": 400,
+			"msg":  fmt.Sprintf("获取设备列表失败: %s", err),
+		})
+	}
+	return
+}
+
+// DeviceExecute 执行器开启
+func (dc *DeviceController) DeviceExecute(context *gin.Context) {
+
+	// 读取post json
+	var json map[string]interface{}
+
+	err := context.BindJSON(&json)
+	if err != nil {
+		context.JSON(200, gin.H{
+			"code": 400,
+			"msg":  "参数错误, 无法解析json",
+		})
+		global.Logger.ERROR("参数错误: %s", err)
+		return
+	}
+
+	// 解析设备id device_id
+	device_id, ok := json["device_id"].(string)
+	if !ok {
+		context.JSON(200, gin.H{
+			"code": 400,
+			"msg":  "参数错误, 无法读取设备ID",
+		})
+		global.Logger.ERROR("参数错误: %s", err)
+		return
+	}
+
+	// 解析命令 command
+	command, ok := json["command"].(string)
+	if !ok {
+		context.JSON(200, gin.H{
+			"code": 400,
+			"msg":  "参数错误, 无法读取命令",
+		})
+		global.Logger.ERROR("参数错误: %s", err)
+		return
+	}
+
+	// 判断时候是开灯命令
+	if command == "on" {
+		err := global.Device.SendHex(device_id, "MQTT", global.Device.Get().LampOffCmd())
+		if err != nil {
+			global.Logger.ERROR("下发指令异常: %s", err)
+		}
+	}
+
+	if command == "off" {
+		err := global.Device.SendHex(device_id, "MQTT", global.Device.Get().LampOffCmd())
+		if err != nil {
+			global.Logger.ERROR("下发指令异常: %s", err)
+		}
+	}
+
+	context.JSON(200, gin.H{
+		"code": 200,
+		"msg":  "下发指令成功",
+	})
+
 }

@@ -15,6 +15,9 @@ type fileWriter struct {
 type consoleWriter struct {
 }
 
+// WebSocketLogChan 字符串日志通道
+type WebSocketLogChan chan string
+
 // SetFile 设置文件写入器写入的文件名
 func (f *fileWriter) SetFile(filename string) (err error) {
 	if f.file != nil {

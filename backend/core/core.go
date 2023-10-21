@@ -61,11 +61,11 @@ func Enable() {
 	engine.Use(middleware.Cors())
 	engine.Use(middleware.Auth(global.CasbinEnforcer))
 
-	PrivateGroup := engine.Group("/api/v1")
+	v1Group := engine.Group("/api/v1")
 
 	systemRouter := router.GroupApp
-	systemRouter.InitBaseRouter(PrivateGroup)
-	systemRouter.InitDeviceRouter(PrivateGroup)
+	systemRouter.InitBaseRouter(v1Group)
+	systemRouter.InitDeviceRouter(v1Group)
 
 	PORT, err := env.GetEnv("APP_WEB_PORT")
 	if err != nil {
