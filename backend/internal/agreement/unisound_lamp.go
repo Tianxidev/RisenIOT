@@ -31,7 +31,7 @@ func (u *UnisoundLamp) randomGenerate() []byte {
 func (u *UnisoundLamp) LampOnCmd() []byte {
 	var ulc unisoundLampCmd
 	var cmd []byte
-	// 举例下发给设备的开灯命令：ff 00 01 06 DF 0B 01 A0 C2 34
+	// 举例下发给设备的开灯命令：FF 00 01 06 DF 0B 01 A0 C2 34
 	ulc.Random = u.randomGenerate()
 	ulc.Addr = []byte{0x01}
 	ulc.Cmd = []byte{0x06}
@@ -58,7 +58,7 @@ func (u *UnisoundLamp) LampOnCmd() []byte {
 func (u *UnisoundLamp) LampOffCmd() []byte {
 	var ulc unisoundLampCmd
 	var cmd []byte
-	// 举例下发给设备的关灯命令：ff 00 01 06 DF 0B 01 5F 82 74
+	// 举例下发给设备的关灯命令：FF 00 01 06 DF 0B 01 5F 82 74
 	ulc.Random = u.randomGenerate()
 	ulc.Addr = []byte{0x01}
 	ulc.Cmd = []byte{0x06}

@@ -24,6 +24,9 @@ func Init() {
 	global.Logger.INFO("欢迎使用" + global.SysName + "系统")
 	global.Logger.INFO("加载系统配置完成")
 
+	// 打印系统版本号
+	global.Logger.INFO("系统版本号: " + global.SysVersion)
+
 	// 初始化设备管理模块
 	global.Device = device.CreateDevice()
 	global.Logger.INFO("初始化设备管理模块")
