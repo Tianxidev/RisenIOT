@@ -2,7 +2,6 @@ package utils
 
 import (
 	"encoding/json"
-	"github.com/hootrhino/wmi"
 )
 
 // CpuUsage CPU使用率
@@ -48,29 +47,6 @@ func (m NetworkInterfaceUsage) String() string {
 
 // GetCpuUsage 获取系统 CPU 使用率
 func GetCpuUsage() ([]CpuUsage, error) {
-
-	// 判断操作系统时候是 Windows
-	if IsWindows() {
-		// Get-WmiObject -query "SELECT Name, PercentIdleTime FROM Win32_PerfFormattedData_PerfOS_Processor"
-		type Model struct {
-			Name            string
-			PercentIdleTime uint64
-		}
-		var PerfOS_Processor []Model
-		err := wmi.Query(`SELECT Name, PercentIdleTime FROM Win32_PerfFormattedData_PerfOS_Processor`,
-			&PerfOS_Processor)
-		if err != nil {
-			return nil, err
-		}
-		Usages := []CpuUsage{}
-		for _, v := range PerfOS_Processor {
-			Usages = append(Usages, CpuUsage{
-				Name:  "CPU:" + v.Name,
-				Usage: 100 - v.PercentIdleTime,
-			})
-		}
-		return Usages, nil
-	}
 
 	return []CpuUsage{}, nil
 }

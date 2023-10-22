@@ -14,7 +14,8 @@ func (s *BaseRouter) InitDeviceRouter(Router *gin.RouterGroup) {
 	var deviceController = new(controller.DeviceController)
 
 	router.GET("/list", deviceController.DeviceList)
-	router.POST("/data/receive", deviceController.DeviceDataReceive)
+	router.POST("/data/receive/emqx/webhook", deviceController.DeviceDataReceiveFromEmqxWebHook)
 	router.POST("/cmd/push", deviceController.DeviceCmdPush)
-	router.POST("/cmd/execute", deviceController.DeviceExecute)
+	router.POST("/cmd/execute/lamp", deviceController.DeviceExecute)
+	router.POST("/cmd/execute/lamp/dimming", deviceController.DeviceLampDimming)
 }

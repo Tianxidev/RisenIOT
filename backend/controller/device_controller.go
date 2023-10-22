@@ -4,6 +4,7 @@ import (
 	"RisenIOT/backend/global"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"strconv"
 )
 
 type DeviceController struct{}
@@ -13,11 +14,10 @@ func NewDeviceController() *DeviceController {
 	return &DeviceController{}
 }
 
-// DeviceDataReceive 设备上报数据接收
-func (dc *DeviceController) DeviceDataReceive(context *gin.Context) {
+// DeviceDataReceiveFromEmqxWebHook 设备数据接收 EMQX WebHook
+func (dc *DeviceController) DeviceDataReceiveFromEmqxWebHook(context *gin.Context) {
 	reqBody, _ := context.GetRawData()
 	fmt.Printf("接收到设备数据: %s\n", reqBody)
-
 }
 
 // DeviceCmdPush 设备命令推送
@@ -169,6 +169,59 @@ func (dc *DeviceController) DeviceExecute(context *gin.Context) {
 
 	if command == "off" {
 		err := global.Device.SendHex(device_id, "MQTT", global.Device.Get().LampOffCmd())
+		if err != nil {
+			global.Logger.ERROR("下发指令异常: %s", err)
+		}
+	}
+
+	context.JSON(200, gin.H{
+		"code": 200,
+		"msg":  "下发指令成功",
+	})
+
+}
+
+// DeviceLampDimming 调光接口
+func (dc *DeviceController) DeviceLampDimming(context *gin.Context) {
+	// 读取post json
+	var json map[string]interface{}
+
+	err := context.BindJSON(&json)
+	if err != nil {
+		context.JSON(200, gin.H{
+			"code": 400,
+			"msg":  "参数错误, 无法解析json",
+		})
+		global.Logger.ERROR("参数错误: %s", err)
+		return
+	}
+
+	// 解析设备id device_id
+	device_id, ok := json["device_id"].(string)
+	if !ok {
+		context.JSON(200, gin.H{
+			"code": 400,
+			"msg":  "参数错误, 无法读取设备ID",
+		})
+		global.Logger.ERROR("参数错误: %s", err)
+		return
+	}
+
+	// 解析强度 rssi
+	rssi, ok := json["rssi"].(string)
+	if !ok {
+		context.JSON(200, gin.H{
+			"code": 400,
+			"msg":  "参数错误, 无法读取命令",
+		})
+		global.Logger.ERROR("参数错误: %s", err)
+		return
+	}
+
+	if rssi != "" {
+		// 强度字符串转int
+		RSSI, _ := strconv.Atoi(rssi)
+		err := global.Device.SendHex(device_id, "MQTT", global.Device.Get().LampBrightnessCmd(RSSI))
 		if err != nil {
 			global.Logger.ERROR("下发指令异常: %s", err)
 		}
