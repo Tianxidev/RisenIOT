@@ -161,7 +161,7 @@ func (dc *DeviceController) DeviceExecute(context *gin.Context) {
 
 	// 判断时候是开灯命令
 	if command == "on" {
-		err := global.Device.SendHex(device_id, "MQTT", global.Device.Get().LampOffCmd())
+		err := global.Device.SendHex(device_id, "MQTT", global.Device.Get().LampOnCmd())
 		if err != nil {
 			global.Logger.ERROR("下发指令异常: %s", err)
 		}
