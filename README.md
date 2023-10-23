@@ -24,9 +24,8 @@ npm run dev
 ```bash
 // Windows 平台
 go mod tidy
-go mod vendor
 go env -w CGO_ENABLED=0
-go env -w GOOS=linux
+go env -w GOOS=windows
 go env -w GOARCH=amd64
 go run ./
 ```
@@ -45,15 +44,13 @@ npm run build
 ```bash
 // Windows 平台
 go mod tidy
-go mod vendor
 go env -w CGO_ENABLED=0
-go env -w GOOS=linux
+go env -w GOOS=windows
 go env -w GOARCH=amd64
 go build -o RisenIOT.exe ./
 
 // 交叉编译 Linux 平台
 go mod tidy
-go mod vendor
 go env -w CGO_ENABLED=0
 go env -w GOOS=linux
 go env -w GOARCH=amd64

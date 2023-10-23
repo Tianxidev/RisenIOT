@@ -1,12 +1,11 @@
 package device
 
 import (
-	"RisenIOT/backend/internal/agreement"
+	"RisenIOT/backend/internal/agreement/unisound/lamp"
 	"RisenIOT/backend/internal/emqx"
 	"encoding/base64"
 	"encoding/hex"
 	"errors"
-	"fmt"
 	"sort"
 	"strings"
 )
@@ -57,16 +56,16 @@ func (d *Device) DeviceList() ([]Info, error) {
 }
 
 // Get 获取设备实例
-func (d *Device) Get() *agreement.UnisoundLamp {
-	return agreement.NewUnisoundLamp()
+func (d *Device) Get() *lamp.UnisoundLamp {
+	return lamp.NewUnisoundLamp()
 }
 
 // SendHex 发送 HEX 数据
-func (d *Device) SendHex(DeviceId, DeviceConnType string, data []byte) error {
+func (d *Device) SendHex(Topic, DeviceConnType string, data []byte) error {
 	if DeviceConnType == "MQTT" {
 		Payload := base64.StdEncoding.EncodeToString(data)
 		mqtt := emqx.Create()
-		err := mqtt.SendDataToTopic(Payload, "base64", DeviceId, 1)
+		err := mqtt.SendDataToTopic(Payload, "base64", Topic, 1)
 		if err != nil {
 			return err
 		}
@@ -84,8 +83,6 @@ func (d *Device) DeviceCmdPush(Payload string, Agreement string, DeviceId string
 	// 判断设备类型是否是[云知声]
 	if DeviceType == "unisound" && Agreement == "mqtt" {
 
-		fmt.Println("云知声设备")
-
 		var data []byte
 
 		// 将 HEX 编码的字符串转换为 HEX 数据
@@ -93,8 +90,6 @@ func (d *Device) DeviceCmdPush(Payload string, Agreement string, DeviceId string
 		for _, v := range data1 {
 			data = append(data, v)
 		}
-
-		fmt.Println("发送消息: ", data)
 
 		// 将 HEX 数据转换为 Base64 编码的字符串
 		sEnc := base64.StdEncoding.EncodeToString([]byte(data))

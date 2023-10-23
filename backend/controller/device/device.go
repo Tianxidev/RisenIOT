@@ -1,9 +1,12 @@
 package device
 
 import (
+	"RisenIOT/backend/controller/response"
 	"RisenIOT/backend/global"
+	"RisenIOT/backend/internal/agreement/unisound/lamp"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/valyala/fastjson"
 )
 
 type Controller struct {
@@ -11,8 +14,34 @@ type Controller struct {
 
 // ReceiveDataFromEmqxWebHook 设备数据接收 EMQX WebHook
 func (dc *Controller) ReceiveDataFromEmqxWebHook(context *gin.Context) {
-	reqBody, _ := context.GetRawData()
-	fmt.Printf("接收到设备数据: %s\n", reqBody)
+
+	var err error
+	var p fastjson.Parser
+	var v *fastjson.Value
+
+	// 反序列化请求体
+	data, _ := context.GetRawData()
+	if v, err = p.Parse(string(data)); err != nil {
+		response.Error(context, 400, "参数错误, 无法解析json")
+		global.Logger.ERROR("参数错误: %s", err)
+		return
+	}
+
+	// 判断是否是存在 topic
+	if v.Exists("topic") && v.Get("topic").String() != "" {
+
+		// 判断是否是云知声灯控协议
+		if ok := lamp.NewUnisoundLamp().TopicHandler(v); ok {
+			response.Success(context, "接收成功", nil)
+			return
+		}
+
+	}
+
+	global.Logger.LOG("EMQX", "未知数据: %s", v.String())
+	response.Success(context, "接收成功", nil)
+
+	return
 }
 
 // DeviceList 设备列表

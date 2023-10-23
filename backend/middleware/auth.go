@@ -16,7 +16,6 @@ func Auth(e *casbin.Enforcer) gin.HandlerFunc {
 
 		// 判断策略是否已经存在
 		if ok, _ := e.Enforce(sub, obj, act); ok {
-			global.Logger.INFO("用户请求认证通过")
 			c.Next()
 		} else {
 			global.Logger.INFO("用户请求权限不足")

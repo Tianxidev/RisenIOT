@@ -69,8 +69,6 @@ func (d Emqx) SendDataToTopic(Data string, DataType string, Topic string, qos in
 		return err
 	}
 
-	fmt.Println("发送消息: ", string(payloadBody))
-
 	url := d.loadConfig().Panel + "/api/v5/publish"
 	method := "POST"
 
@@ -93,12 +91,11 @@ func (d Emqx) SendDataToTopic(Data string, DataType string, Topic string, qos in
 	}
 	defer res.Body.Close()
 
-	body, err := ioutil.ReadAll(res.Body)
+	_, err = ioutil.ReadAll(res.Body)
 	if err != nil {
 		fmt.Println(err)
 		return err
 	}
-	fmt.Println("EMQX API 响应: " + string(body))
 	return nil
 }
 

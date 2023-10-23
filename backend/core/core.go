@@ -1,6 +1,7 @@
 package core
 
 import (
+	"RisenIOT/backend/controller/response"
 	"RisenIOT/backend/global"
 	"RisenIOT/backend/internal/casbin"
 	"RisenIOT/backend/internal/device"
@@ -88,20 +89,11 @@ func Enable() {
 
 		routers := engine.Routes()
 		for _, v := range routers {
-			fmt.Println(v.Method)
-			fmt.Println(v.Path)
-
-			// 添加路由
 			json[v.Path] = v.Method
-
 		}
 
 		// 返回json
-		c.JSON(200, gin.H{
-			"code": 200,
-			"msg":  "success",
-			"data": json,
-		})
+		response.Success(c, "获取路由列表成功", json)
 
 	})
 
