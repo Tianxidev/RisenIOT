@@ -6,7 +6,6 @@ require (
 	github.com/casbin/casbin/v2 v2.77.2
 	github.com/gin-gonic/gin v1.9.1
 	github.com/gorilla/websocket v1.5.0
-	github.com/hootrhino/wmi v0.0.0-20230603082700-cfa077a8cf01
 	gopkg.in/ini.v1 v1.67.0
 )
 
@@ -17,7 +16,6 @@ require (
 	github.com/chenzhuoyu/iasm v0.9.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
-	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.15.5 // indirect

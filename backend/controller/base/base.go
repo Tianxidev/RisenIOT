@@ -1,4 +1,4 @@
-package controller
+package base
 
 import (
 	"RisenIOT/backend/global"
@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-type BaseController struct {
+type Controller struct {
 }
 
 var upgrader = websocket.Upgrader{
@@ -20,12 +20,8 @@ var upgrader = websocket.Upgrader{
 	},
 } // use default options
 
-func NewBaseController() *BaseController {
-	return &BaseController{}
-}
-
 // GetVersion 获取系统版本信息
-func (nbc *BaseController) GetVersion(c *gin.Context) {
+func (nbc *Controller) GetVersion(c *gin.Context) {
 	global.Logger.INFO("请求获取系统版本信息")
 	c.JSON(200, gin.H{
 		"code":          200,
@@ -35,7 +31,7 @@ func (nbc *BaseController) GetVersion(c *gin.Context) {
 }
 
 // CasbinReload 权限管理重启
-func (nbc *BaseController) CasbinReload(c *gin.Context) {
+func (nbc *Controller) CasbinReload(c *gin.Context) {
 	casbin.SetupCasbinEnforcer()
 	c.JSON(200, gin.H{
 		"code": 200,
@@ -44,7 +40,7 @@ func (nbc *BaseController) CasbinReload(c *gin.Context) {
 }
 
 // ConsoleLogWS 控制台日志WebSocket
-func (nbc *BaseController) ConsoleLogWS(c *gin.Context) {
+func (nbc *Controller) ConsoleLogWS(c *gin.Context) {
 
 	// 升级get请求为webSocket协议
 	wsConn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
@@ -72,14 +68,5 @@ func (nbc *BaseController) ConsoleLogWS(c *gin.Context) {
 	global.Logger.INFO("已连接到 Web 日志控制台:" + wsConn.RemoteAddr().String())
 
 	wsConn.WriteMessage(1, []byte("欢迎访问 Web 日志控制台!"))
-
-	for {
-
-		//err = wsConn.WriteMessage(1, message)
-		//if err != nil {
-		//	log.Println("write:", err)
-		//	break
-		//}
-	}
-
+	wsConn.Close()
 }

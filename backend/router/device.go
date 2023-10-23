@@ -1,21 +1,34 @@
 package router
 
 import (
-	"RisenIOT/backend/controller"
+	"RisenIOT/backend/controller/device"
+	"RisenIOT/backend/controller/unisound"
 	"github.com/gin-gonic/gin"
 )
 
-type DeviceRouter struct{}
+// New 初始化相关路由
+func (s *DeviceRouter) New(Router *gin.RouterGroup) {
 
-// InitDeviceRouter 初始化设备相关路由
-func (s *BaseRouter) InitDeviceRouter(Router *gin.RouterGroup) {
+	// 路由分组
 	router := Router.Group("device")
 
-	var deviceController = new(controller.DeviceController)
+	// 创建控制器
+	deviceController := new(device.Controller)
+	lampController := new(unisound.LampController)
 
+	// 设备管理 - 查询设备列表
 	router.GET("/list", deviceController.DeviceList)
-	router.POST("/data/receive/emqx/webhook", deviceController.DeviceDataReceiveFromEmqxWebHook)
+
+	// 设备管理 - 接收设备数据 EMQX WebHook
+	router.POST("/data/receive/emqx/webhook", deviceController.ReceiveDataFromEmqxWebHook)
+
+	// 设备管理 - 设备命令透传推送
 	router.POST("/cmd/push", deviceController.DeviceCmdPush)
-	router.POST("/cmd/execute/lamp", deviceController.DeviceExecute)
-	router.POST("/cmd/execute/lamp/dimming", deviceController.DeviceLampDimming)
+
+	// 设备管理 - 云知声灯控 - 灯开关接口
+	router.POST("/unisound/lamp/execute", lampController.LampOpenOrClose)
+
+	// 设备管理 - 云知声灯控 - 灯调光接口
+	router.POST("/unisound/lamp/dimming", lampController.LampDimming)
+
 }

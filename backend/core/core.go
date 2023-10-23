@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
+	"log"
 	"os"
 )
 
@@ -42,9 +43,13 @@ func Init() {
 // Enable 核心启动函数
 func Enable() {
 
+	// 配置 gin 为生产模式
 	gin.SetMode(gin.ReleaseMode)
+
+	// 初始化 gin
 	engine := gin.New()
 
+	// 配置 gin 日志
 	conf := gin.LoggerConfig{
 		SkipPaths: []string{},
 		Output:    ioutil.Discard,
@@ -60,23 +65,58 @@ func Enable() {
 		},
 	}
 
+	// 配置 gin 日志中间件
 	engine.Use(gin.LoggerWithConfig(conf))
+
+	// 配置 gin 同源策略中间件
 	engine.Use(middleware.Cors())
+
+	// 配置 gin 认证中间件
 	engine.Use(middleware.Auth(global.CasbinEnforcer))
 
-	v1Group := engine.Group("/api/v1")
+	// 创建路由组
+	v1ApiGroup := engine.Group("/api/v1")
 
-	systemRouter := router.GroupApp
-	systemRouter.InitBaseRouter(v1Group)
-	systemRouter.InitDeviceRouter(v1Group)
+	// 初始化路由
+	router.InitRouter(v1ApiGroup)
 
+	// 查询路由列表
+	engine.GET("/api/list", func(c *gin.Context) {
+
+		// 创建json map
+		json := make(map[string]interface{})
+
+		routers := engine.Routes()
+		for _, v := range routers {
+			fmt.Println(v.Method)
+			fmt.Println(v.Path)
+
+			// 添加路由
+			json[v.Path] = v.Method
+
+		}
+
+		// 返回json
+		c.JSON(200, gin.H{
+			"code": 200,
+			"msg":  "success",
+			"data": json,
+		})
+
+	})
+
+	// 读取环境变量中的端口号
 	PORT, err := env.GetEnv("APP_WEB_PORT")
 	if err != nil {
 		global.Logger.ERROR("无法读取环境变量中的端口号")
 		os.Exit(0)
 	}
 
+	// 启动 gin
 	global.Logger.INFO("Web 服务启动中, 工作端口:" + PORT)
-
-	engine.Run(":" + PORT)
+	err = engine.Run(":" + PORT)
+	if err != nil {
+		log.Fatalf("Web 服务启动失败: %v", err)
+		os.Exit(0)
+	}
 }

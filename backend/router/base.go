@@ -1,19 +1,21 @@
 package router
 
 import (
-	"RisenIOT/backend/controller"
+	"RisenIOT/backend/controller/base"
 	"github.com/gin-gonic/gin"
 )
 
-type BaseRouter struct{}
+// New 初始化路由
+func (s *BaseRouter) New(Router *gin.RouterGroup) {
 
-// InitBaseRouter 初始化基础路由
-func (s *BaseRouter) InitBaseRouter(Router *gin.RouterGroup) {
-	r := Router.Group("base")
+	// 路由分组
+	router := Router.Group("base")
 
-	base := controller.NewBaseController()
+	// 创建控制器
+	controller := new(base.Controller)
 
-	r.GET("/sys/version", base.GetVersion)
-	r.GET("/auth/reload", base.CasbinReload)
-	r.GET("/log/consoleLogWS", base.ConsoleLogWS)
+	// 注册接口
+	router.GET("/sys/version", controller.GetVersion)
+	router.GET("/auth/reload", controller.CasbinReload)
+	router.GET("/log/consoleLogWS", controller.ConsoleLogWS)
 }
