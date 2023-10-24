@@ -6,6 +6,7 @@ import (
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"golang.org/x/text/transform"
 	"io/ioutil"
+	"sort"
 )
 
 var hexNumbers = []byte("0123456789ABCDEF")
@@ -56,4 +57,14 @@ func GbkToUtf8(str []byte) (b []byte, err error) {
 		return
 	}
 	return
+}
+
+// InStringArray 判断字符串是否在数组中
+func InStringArray(target string, strArray []string) bool {
+	sort.Strings(strArray)
+	index := sort.SearchStrings(strArray, target)
+	if index < len(strArray) && strArray[index] == target {
+		return true
+	}
+	return false
 }
