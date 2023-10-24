@@ -3,10 +3,13 @@ package device
 import (
 	"RisenIOT/backend/internal/agreement/unisound/lamp"
 	"RisenIOT/backend/internal/emqx"
+	"RisenIOT/backend/internal/redis"
 	"encoding/base64"
 	"encoding/hex"
+	"encoding/json"
 	"errors"
-	"sort"
+	"github.com/bytedance/sonic"
+	"log"
 	"strings"
 )
 
@@ -15,20 +18,12 @@ type Device struct {
 
 // Info 设备信息结构体
 type Info struct {
-	ProductID      string `json:"productID"`      // 产品ID
-	DeviceUser     string `json:"deviceUser"`     // 设备用户名
-	DeviceIP       string `json:"deviceIP"`       // 设备IP
-	DeviceConnType string `json:"deviceConnType"` // 设备连接类型
-}
-
-// in 判断字符串是否在数组中
-func in(target string, str_array []string) bool {
-	sort.Strings(str_array)
-	index := sort.SearchStrings(str_array, target)
-	if index < len(str_array) && str_array[index] == target {
-		return true
-	}
-	return false
+	ProductID      string        `json:"productID"`      // 产品ID
+	DeviceUser     string        `json:"deviceUser"`     // 设备用户名
+	DeviceIP       string        `json:"deviceIP"`       // 设备IP
+	DeviceConnType string        `json:"deviceConnType"` // 设备连接类型
+	DeviceType     string        `json:"deviceType"`     // 设备类型
+	DeviceInfo     []interface{} // 设备信息
 }
 
 // CreateDevice 创建设备实例
@@ -40,16 +35,35 @@ func CreateDevice() *Device {
 func (d *Device) DeviceList() ([]Info, error) {
 	var deviceList []Info
 
+	// 读取 Redis 中的设备信息
+	if DeviceListFromRedis, err := redis.NewRedis().Get("deviceList"); err == nil {
+		err = sonic.Unmarshal([]byte(DeviceListFromRedis), &deviceList)
+		if err != nil {
+			log.Println(err)
+		}
+	}
+
+	log.Println(deviceList)
+
+	// 读取 MQTT 设备列表
 	if mqttDeviceList, err := emqx.Create().GetDeviceList(); err == nil {
-		for _, v := range *mqttDeviceList {
+
+		// 遍历设备列表
+		for _, item := range *mqttDeviceList {
 			deviceList = append(deviceList, Info{
-				ProductID:      v.DeviceId,
-				DeviceUser:     v.Username,
-				DeviceIP:       v.IpAddress,
+				ProductID:      item.DeviceId,
+				DeviceUser:     item.Username,
+				DeviceIP:       item.IpAddress,
 				DeviceConnType: "MQTT",
 			})
 		}
 	}
+
+	// list 转 json
+	deviceListJson, _ := json.Marshal(deviceList)
+
+	// 写入设备信息到 Redis
+	redis.NewRedis().Set("deviceList", string(deviceListJson), 99999)
 
 	return deviceList, nil
 
@@ -62,6 +76,11 @@ func (d *Device) Get() *lamp.UnisoundLamp {
 
 // SendHex 发送 HEX 数据
 func (d *Device) SendHex(Topic, DeviceConnType string, data []byte) error {
+
+	if Topic == "" || DeviceConnType == "" || data == nil {
+		return nil
+	}
+
 	if DeviceConnType == "MQTT" {
 		Payload := base64.StdEncoding.EncodeToString(data)
 		mqtt := emqx.Create()

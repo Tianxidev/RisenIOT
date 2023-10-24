@@ -57,6 +57,10 @@ func (d Emqx) getAuthKey() string {
 // SendDataToTopic 发送消息到指定主题
 func (d Emqx) SendDataToTopic(Data string, DataType string, Topic string, qos int) error {
 
+	if Data == "" || Topic == "" {
+		return nil
+	}
+
 	// 处理消息载荷类型, 如果不为 base64 则以字符串的形式传输
 	if DataType != "base64" {
 		DataType = "plain"
