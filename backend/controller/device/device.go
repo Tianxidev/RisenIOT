@@ -27,18 +27,17 @@ func (dc *Controller) ReceiveDataFromEmqxWebHook(context *gin.Context) {
 		return
 	}
 
-	// 判断是否是存在 topic
-	if v.Exists("topic") && v.Get("topic").String() != "" {
+	// 创建协议识别结果管道
+	protocolChan := make(chan string)
 
-		// 判断是否是云知声灯控协议
-		if ok := lamp.NewUnisoundLamp().TopicHandler(v); ok {
-			response.Success(context, "接收成功", nil)
-			return
-		}
+	// 判断是否是 [云知声灯控] 协议
+	go lamp.NewUnisoundLamp().TopicHandler(v, protocolChan)
 
-	}
+	// 读取管道
+	protocol := <-protocolChan
 
-	global.Logger.LOG("EMQX", "未知数据: %s", v.String())
+	global.Logger.LOG("EMQX", "%s", protocol)
+
 	response.Success(context, "接收成功", nil)
 
 	return

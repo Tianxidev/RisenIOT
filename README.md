@@ -65,3 +65,24 @@ go build -o RisenIOT ./
 ## 设备协议支持
 
 - [X] 云之声灯控协议
+
+
+## EMQX WebHook 配置
+
+接口: /api/v1/device/data/receive/emqx/webhook
+
+```sql
+SELECT
+  timestamp,
+  topic,
+  qos,
+  event,
+  publish_received_at,
+  peerhost,
+  clientid,
+  payload,
+  bin2hexstr(payload) as payload_hexstr
+FROM
+  "#"
+```
+

@@ -26,4 +26,5 @@ func Success(context *gin.Context, msg string, data interface{}) {
 		"msg":  msg,
 		"data": data,
 	})
+
 }

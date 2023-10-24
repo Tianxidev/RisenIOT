@@ -2,6 +2,7 @@ package lamp
 
 import (
 	"RisenIOT/backend/utils"
+	"fmt"
 	"github.com/valyala/fastjson"
 	"log"
 	"regexp"
@@ -25,7 +26,7 @@ func NewUnisoundLamp() *UnisoundLamp {
 }
 
 // TopicHandler 订阅处理器
-func (u *UnisoundLamp) TopicHandler(v *fastjson.Value) bool {
+func (u *UnisoundLamp) TopicHandler(v *fastjson.Value, protocol chan string) {
 
 	topic := v.Get("topic").String()
 
@@ -40,18 +41,28 @@ func (u *UnisoundLamp) TopicHandler(v *fastjson.Value) bool {
 
 	// 检查匹配结果1
 	if len(match1) > 1 {
-		log.Printf("[ 云知声灯控 ] 接收设备 %s 上报的数据: %X", match1[1], v.GetStringBytes("payload"))
-		return true
+
+		data := v.Get("payload_hexstr").String()
+
+		// 去除双引号
+		data = data[1 : len(data)-1]
+
+		protocol <- fmt.Sprintf("[ 云知声灯控 ] 接收设备 %s 上报的数据: %s", match1[1], data)
+		return
 
 	}
 
 	// 检查匹配结果2
 	if len(match2) > 1 {
-		log.Printf("[ 云知声灯控 ] 下发到设备 %s 的数据: %X", match2[1], v.GetStringBytes("payload"))
-		return true
-	}
 
-	return false
+		data := v.Get("payload_hexstr").String()
+
+		// 去除双引号
+		data = data[1 : len(data)-1]
+
+		protocol <- fmt.Sprintf("[ 云知声灯控 ] 下发到设备 %s 的数据: %s", match2[1], data)
+		return
+	}
 
 }
 
@@ -70,10 +81,27 @@ func (u *UnisoundLamp) LampOnCmd(channel int) []byte {
 		return []byte{}
 	}
 
-	// 通道 a - 举例下发给设备的开灯命令：
+	// 通道 a - 举例下发给设备的开灯命令：FF 00 01 06 DF 09 01 A0 63 F4
 	if channel == 1 {
-		log.Printf("[ 云知声灯控 ] 通道 a 暂不支持")
-		return []byte{}
+		ulc.Random = u.randomGenerate()
+		ulc.Addr = []byte{0x01}
+		ulc.Cmd = []byte{0x06}
+		ulc.Data = []byte{0xDF, 0x09, 0x01, 0xA0}
+
+		// 构建命令
+		cmd = append(cmd, ulc.Random...)
+		cmd = append(cmd, ulc.Addr...)
+		cmd = append(cmd, ulc.Cmd...)
+		cmd = append(cmd, ulc.Data...)
+
+		// 忽略随机码部分计算 CRC 校验码
+		crc := utils.CRC16(cmd[2:])
+		ulc.CRC = []byte{byte(crc & 0xff), byte(crc >> 8)}
+		cmd = append(cmd, ulc.CRC...)
+
+		log.Printf("[ 云知声灯控 ] 通道 a 开灯命令: %X", cmd)
+
+		return cmd
 	}
 
 	// 通道 b - 举例下发给设备的开灯命令：FF 00 01 06 DF 0B 01 A0 C2 34
@@ -114,13 +142,30 @@ func (u *UnisoundLamp) LampOffCmd(channel int) []byte {
 		return []byte{}
 	}
 
-	// 通道 a - 举例下发给设备的开灯命令：
+	// 通道 a - 举例下发给设备的关灯命令：FF 00 01 06 DF 09 01 5F 23 B4
 	if channel == 1 {
-		log.Printf("[ 云知声灯控 ] 通道 a 暂不支持")
-		return []byte{}
+		ulc.Random = u.randomGenerate()
+		ulc.Addr = []byte{0x01}
+		ulc.Cmd = []byte{0x06}
+		ulc.Data = []byte{0xDF, 0x09, 0x01, 0x5F}
+
+		// 构建命令
+		cmd = append(cmd, ulc.Random...)
+		cmd = append(cmd, ulc.Addr...)
+		cmd = append(cmd, ulc.Cmd...)
+		cmd = append(cmd, ulc.Data...)
+
+		// 忽略随机码部分计算 CRC 校验码
+		crc := utils.CRC16(cmd[2:])
+		ulc.CRC = []byte{byte(crc & 0xff), byte(crc >> 8)}
+		cmd = append(cmd, ulc.CRC...)
+
+		log.Printf("[ 云知声灯控 ] 通道 a 关灯命令: %X", cmd)
+
+		return cmd
 	}
 
-	// 通道 b - 举例下发给设备的开灯命令：FF 00 01 06 DF 0B 01 5F 82 74
+	// 通道 b - 举例下发给设备的关灯命令：FF 00 01 06 DF 0B 01 5F 82 74
 	if channel == 2 {
 
 		ulc.Random = u.randomGenerate()
@@ -153,25 +198,62 @@ func (u *UnisoundLamp) LampBrightnessCmd(brightness int, channel int) []byte {
 	var ulc unisoundLampCmd
 	var cmd []byte
 
-	// 举例下发给设备的调节亮度命令：ff 00 01 06 DF 0C 00 00 72 1D -> 亮度0%
-	// 举例下发给设备的调节亮度命令：ff 00 01 06 DF 0C 00 14 72 12 -> 亮度20%
-	// 举例下发给设备的调节亮度命令：ff 00 01 06 DF 0C 00 64 73 F6 -> 亮度100%
-	ulc.Random = u.randomGenerate()
-	ulc.Addr = []byte{0x01}
-	ulc.Cmd = []byte{0x06}
-	ulc.Data = []byte{0xDF, 0x0C, 0x00, byte(brightness)}
+	// 检查通道是否合法
+	if channel < 1 || channel > 3 {
+		return []byte{}
+	}
 
-	// 构建命令
-	cmd = append(cmd, ulc.Random...)
-	cmd = append(cmd, ulc.Addr...)
-	cmd = append(cmd, ulc.Cmd...)
-	cmd = append(cmd, ulc.Data...)
+	// 通道 a - 举例下发给设备的调节亮度命令：ff 00 01 06 DF 0A 00 00 92 1C -> 亮度0%
+	// 通道 a - 举例下发给设备的调节亮度命令：ff 00 01 06 DF 0A 00 14 92 13 -> 亮度20%
+	// 通道 a - 举例下发给设备的调节亮度命令：ff 00 01 06 DF 0A 00 64 93 F7 -> 亮度100%
+	if channel == 1 {
 
-	// 忽略随机码部分计算 CRC 校验码
-	crc := utils.CRC16(cmd[2:])
-	ulc.CRC = []byte{byte(crc & 0xff), byte(crc >> 8)}
-	cmd = append(cmd, ulc.CRC...)
+		ulc.Random = u.randomGenerate()
+		ulc.Addr = []byte{0x01}
+		ulc.Cmd = []byte{0x06}
+		ulc.Data = []byte{0xDF, 0x0A, 0x00, byte(brightness)}
 
-	return cmd
+		// 构建命令
+		cmd = append(cmd, ulc.Random...)
+		cmd = append(cmd, ulc.Addr...)
+		cmd = append(cmd, ulc.Cmd...)
+		cmd = append(cmd, ulc.Data...)
 
+		// 忽略随机码部分计算 CRC 校验码
+		crc := utils.CRC16(cmd[2:])
+		ulc.CRC = []byte{byte(crc & 0xff), byte(crc >> 8)}
+		cmd = append(cmd, ulc.CRC...)
+
+		log.Printf("[ 云知声灯控 ] 通道 a 调光命令: %X", cmd)
+
+		return cmd
+	}
+
+	// 通道 b - 举例下发给设备的调节亮度命令：ff 00 01 06 DF 0C 00 00 72 1D -> 亮度0%
+	// 通道 b - 举例下发给设备的调节亮度命令：ff 00 01 06 DF 0C 00 14 72 12 -> 亮度20%
+	// 通道 b - 举例下发给设备的调节亮度命令：ff 00 01 06 DF 0C 00 64 73 F6 -> 亮度100%
+	if channel == 2 {
+
+		ulc.Random = u.randomGenerate()
+		ulc.Addr = []byte{0x01}
+		ulc.Cmd = []byte{0x06}
+		ulc.Data = []byte{0xDF, 0x0C, 0x00, byte(brightness)}
+
+		// 构建命令
+		cmd = append(cmd, ulc.Random...)
+		cmd = append(cmd, ulc.Addr...)
+		cmd = append(cmd, ulc.Cmd...)
+		cmd = append(cmd, ulc.Data...)
+
+		// 忽略随机码部分计算 CRC 校验码
+		crc := utils.CRC16(cmd[2:])
+		ulc.CRC = []byte{byte(crc & 0xff), byte(crc >> 8)}
+		cmd = append(cmd, ulc.CRC...)
+
+		log.Printf("[ 云知声灯控 ] 通道 b 调光命令: %X", cmd)
+
+		return cmd
+	}
+
+	return []byte{}
 }

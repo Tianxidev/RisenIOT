@@ -1,6 +1,14 @@
 package utils
 
-import "encoding/binary"
+import (
+	"bytes"
+	"encoding/binary"
+	"golang.org/x/text/encoding/simplifiedchinese"
+	"golang.org/x/text/transform"
+	"io/ioutil"
+)
+
+var hexNumbers = []byte("0123456789ABCDEF")
 
 // BToU16 从字节切片中获取uint16
 func BToU16(b []byte, index int, offset int) uint16 {
@@ -30,4 +38,22 @@ func U32ToB(v uint32, b []byte) {
 // U64ToB 将uint64转换为字节切片
 func U64ToB(v uint64, b []byte) {
 	binary.BigEndian.PutUint64(b, v)
+}
+
+// ByteToHex 编码
+func ByteToHex(value byte) []byte {
+	buf := make([]byte, 2)
+	buf[0] = hexNumbers[value>>4]
+	buf[1] = hexNumbers[value&0x0F]
+	return buf
+}
+
+// GbkToUtf8 gbk转utf8
+func GbkToUtf8(str []byte) (b []byte, err error) {
+	r := transform.NewReader(bytes.NewReader(str), simplifiedchinese.GBK.NewDecoder())
+	b, err = ioutil.ReadAll(r)
+	if err != nil {
+		return
+	}
+	return
 }
