@@ -5,8 +5,9 @@ import (
 	"RisenIOT/backend/global"
 	"RisenIOT/backend/internal/agreement/unisound/lamp"
 	"fmt"
+	"github.com/bytedance/sonic"
+	"github.com/bytedance/sonic/ast"
 	"github.com/gin-gonic/gin"
-	"github.com/valyala/fastjson"
 )
 
 type Controller struct {
@@ -14,14 +15,14 @@ type Controller struct {
 
 // ReceiveDataFromEmqxWebHook 设备数据接收 EMQX WebHook
 func (dc *Controller) ReceiveDataFromEmqxWebHook(context *gin.Context) {
-
 	var err error
-	var p fastjson.Parser
-	var v *fastjson.Value
+	var root ast.Node
 
-	// 反序列化请求体
-	data, _ := context.GetRawData()
-	if v, err = p.Parse(string(data)); err != nil {
+	// 读取请求体
+	RawData, _ := context.GetRawData()
+
+	// 解析请求体
+	if root, err = sonic.GetFromString(string(RawData)); err != nil {
 		response.Error(context, 400, "参数错误, 无法解析json")
 		global.Logger.ERROR("参数错误: %s", err)
 		return
@@ -31,7 +32,7 @@ func (dc *Controller) ReceiveDataFromEmqxWebHook(context *gin.Context) {
 	protocolChan := make(chan string)
 
 	// 判断是否是 [云知声灯控] 协议
-	go lamp.NewUnisoundLamp().TopicHandler(v, protocolChan)
+	go lamp.NewUnisoundLamp().TopicHandler(root, protocolChan)
 
 	// 读取管道
 	protocol := <-protocolChan

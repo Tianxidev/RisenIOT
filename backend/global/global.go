@@ -8,7 +8,7 @@ import (
 
 var (
 	SysName         = "RisenIOT"
-	SysVersion      = "0.0.1.0004"
+	SysVersion      = "0.0.1.0006"
 	Logger          *logger.Logger
 	Device          *device.Device
 	DatabaseSetting *databaseSetting

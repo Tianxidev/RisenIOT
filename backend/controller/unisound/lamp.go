@@ -3,8 +3,9 @@ package unisound
 import (
 	"RisenIOT/backend/controller/response"
 	"RisenIOT/backend/global"
+	"github.com/bytedance/sonic"
+	"github.com/bytedance/sonic/ast"
 	"github.com/gin-gonic/gin"
-	"github.com/valyala/fastjson"
 )
 
 type LampController struct {
@@ -16,25 +17,26 @@ var topicPrefix = "/Lamp/TransIn/"
 func (dc *LampController) LampOpenOrClose(context *gin.Context) {
 
 	var err error
-	var p fastjson.Parser
-	var v *fastjson.Value
+	var root ast.Node
 
-	// 反序列化请求体
-	data, _ := context.GetRawData()
-	if v, err = p.Parse(string(data)); err != nil {
+	// 读取请求体
+	RawData, _ := context.GetRawData()
+
+	// 解析请求体
+	if root, err = sonic.GetFromString(string(RawData)); err != nil {
 		response.Error(context, 400, "参数错误, 无法解析json")
 		global.Logger.ERROR("参数错误: %s", err)
 		return
 	}
 
 	// 设备id
-	deviceId := v.GetStringBytes("device_id")
+	deviceId, _ := root.Get("device_id").String()
 
 	// 命令
-	command := v.GetStringBytes("command")
+	command, _ := root.Get("command").String()
 
 	// 通道
-	chanVal, err := v.Get("chan").Int()
+	chanVal, err := root.Get("chan").Int64()
 	if err != nil {
 		response.Error(context, 400, "参数错误, 无法读取通道")
 		global.Logger.ERROR("参数错误: %s", err)
@@ -42,14 +44,14 @@ func (dc *LampController) LampOpenOrClose(context *gin.Context) {
 	}
 
 	// 拼接订阅
-	topic := topicPrefix + string(deviceId)
+	topic := topicPrefix + deviceId
 
 	global.Logger.INFO("接收到开关灯命令到订阅 %s, 通道: %d", topic, chanVal)
 
 	// 判断是否是开灯命令
 	if string(command) == "on" {
 
-		err := global.Device.SendHex(topic, "MQTT", global.Device.Get().LampOnCmd(chanVal))
+		err := global.Device.SendHex(topic, "MQTT", global.Device.Get().LampOnCmd(int(chanVal)))
 		if err != nil {
 			global.Logger.ERROR("下发指令异常: %d", err)
 			response.Error(context, 400, "下发指令异常")
@@ -59,7 +61,7 @@ func (dc *LampController) LampOpenOrClose(context *gin.Context) {
 
 	// 判断是否是关灯命令
 	if string(command) == "off" {
-		err := global.Device.SendHex(topic, "MQTT", global.Device.Get().LampOffCmd(chanVal))
+		err := global.Device.SendHex(topic, "MQTT", global.Device.Get().LampOffCmd(int(chanVal)))
 		if err != nil {
 			global.Logger.ERROR("下发指令异常: %s", err)
 			response.Error(context, 400, "下发指令异常")
@@ -75,22 +77,23 @@ func (dc *LampController) LampOpenOrClose(context *gin.Context) {
 func (dc *LampController) LampDimming(context *gin.Context) {
 
 	var err error
-	var p fastjson.Parser
-	var v *fastjson.Value
+	var root ast.Node
 
-	// 反序列化请求体
-	data, _ := context.GetRawData()
-	if v, err = p.Parse(string(data)); err != nil {
+	// 读取请求体
+	RawData, _ := context.GetRawData()
+
+	// 解析请求体
+	if root, err = sonic.GetFromString(string(RawData)); err != nil {
 		response.Error(context, 400, "参数错误, 无法解析json")
 		global.Logger.ERROR("参数错误: %s", err)
 		return
 	}
 
 	// 设备id
-	deviceId := v.GetStringBytes("device_id")
+	deviceId, _ := root.Get("device_id").String()
 
 	// 亮度
-	brightness, err := v.Get("brightness").Int()
+	brightness, err := root.Get("brightness").Int64()
 	if err != nil {
 		response.Error(context, 400, "参数错误, 无法读取亮度")
 		global.Logger.ERROR("参数错误: %s", err)
@@ -98,7 +101,7 @@ func (dc *LampController) LampDimming(context *gin.Context) {
 	}
 
 	// 通道
-	chanVal, err := v.Get("chan").Int()
+	chanVal, err := root.Get("chan").Int64()
 	if err != nil {
 		response.Error(context, 400, "参数错误, 无法读取通道")
 		global.Logger.ERROR("参数错误: %s", err)
@@ -106,13 +109,13 @@ func (dc *LampController) LampDimming(context *gin.Context) {
 	}
 
 	// 拼接订阅
-	topic := topicPrefix + string(deviceId)
+	topic := topicPrefix + deviceId
 
 	global.Logger.INFO("接收到调光命令到订阅 %s, 通道: %d", topic, chanVal)
 
 	// 下发指令
 	if brightness != 0 {
-		err := global.Device.SendHex(topic, "MQTT", global.Device.Get().LampBrightnessCmd(brightness, chanVal))
+		err := global.Device.SendHex(topic, "MQTT", global.Device.Get().LampBrightnessCmd(int(brightness), int(chanVal)))
 		if err != nil {
 			response.Error(context, 400, "下发指令异常")
 			global.Logger.ERROR("下发指令异常: %s", err)

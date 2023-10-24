@@ -3,7 +3,7 @@ package lamp
 import (
 	"RisenIOT/backend/utils"
 	"fmt"
-	"github.com/valyala/fastjson"
+	"github.com/bytedance/sonic/ast"
 	"log"
 	"regexp"
 )
@@ -26,9 +26,9 @@ func NewUnisoundLamp() *UnisoundLamp {
 }
 
 // TopicHandler 订阅处理器
-func (u *UnisoundLamp) TopicHandler(v *fastjson.Value, protocol chan string) {
+func (u *UnisoundLamp) TopicHandler(jsonRoot ast.Node, protocol chan string) {
 
-	topic := v.Get("topic").String()
+	topic, _ := jsonRoot.Get("topic").String()
 
 	// 示例订阅格式: /Lamp/TransOut/868247062445885
 	re1 := regexp.MustCompile(`/Lamp/TransOut/(\d{15})`)
@@ -42,10 +42,7 @@ func (u *UnisoundLamp) TopicHandler(v *fastjson.Value, protocol chan string) {
 	// 检查匹配结果1
 	if len(match1) > 1 {
 
-		data := v.Get("payload_hexstr").String()
-
-		// 去除双引号
-		data = data[1 : len(data)-1]
+		data, _ := jsonRoot.Get("payload_hexstr").String()
 
 		protocol <- fmt.Sprintf("[ 云知声灯控 ] 接收设备 %s 上报的数据: %s", match1[1], data)
 		return
@@ -55,10 +52,7 @@ func (u *UnisoundLamp) TopicHandler(v *fastjson.Value, protocol chan string) {
 	// 检查匹配结果2
 	if len(match2) > 1 {
 
-		data := v.Get("payload_hexstr").String()
-
-		// 去除双引号
-		data = data[1 : len(data)-1]
+		data, _ := jsonRoot.Get("payload_hexstr").String()
 
 		protocol <- fmt.Sprintf("[ 云知声灯控 ] 下发到设备 %s 的数据: %s", match2[1], data)
 		return
@@ -78,6 +72,7 @@ func (u *UnisoundLamp) LampOnCmd(channel int) []byte {
 
 	// 检查通道是否合法
 	if channel < 1 || channel > 3 {
+		log.Printf("[ 云知声灯控 ] 通道不合法: %d", channel)
 		return []byte{}
 	}
 
@@ -139,6 +134,7 @@ func (u *UnisoundLamp) LampOffCmd(channel int) []byte {
 
 	// 检查通道是否合法
 	if channel < 1 || channel > 3 {
+		log.Printf("[ 云知声灯控 ] 通道不合法: %d", channel)
 		return []byte{}
 	}
 
@@ -200,6 +196,7 @@ func (u *UnisoundLamp) LampBrightnessCmd(brightness int, channel int) []byte {
 
 	// 检查通道是否合法
 	if channel < 1 || channel > 3 {
+		log.Printf("[ 云知声灯控 ] 通道不合法: %d", channel)
 		return []byte{}
 	}
 
