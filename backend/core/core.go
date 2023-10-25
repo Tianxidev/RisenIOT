@@ -19,24 +19,24 @@ import (
 func Init() {
 
 	// 初始化日志模块
-	global.Logger = logger.CreateLogger()
+	logger.InitGlobalLogger()
 
 	// 读取配置文件
 	global.SysName, _ = env.GetEnv("APP_NAME")
-	global.Logger.INFO("欢迎使用" + global.SysName + "系统")
-	global.Logger.INFO("加载系统配置完成")
+	logger.GlobalLogger.INFO("欢迎使用" + global.SysName + "系统")
+	logger.GlobalLogger.INFO("加载系统配置完成")
 
 	// 打印系统版本号
-	global.Logger.INFO("系统版本号: " + global.SysVersion)
+	logger.GlobalLogger.INFO("系统版本号: " + global.SysVersion)
 
 	// 初始化设备管理模块
 	global.Device = device.CreateDevice()
-	global.Logger.INFO("初始化设备管理模块")
+	logger.GlobalLogger.INFO("初始化设备管理模块")
 
 	// casbin 初始化
 	err := casbin.SetupCasbinEnforcer()
 	if err != nil {
-		global.Logger.ERROR("初始化权限管理模块异常: %v", err)
+		logger.GlobalLogger.ERROR("初始化权限管理模块异常: %v", err)
 	}
 
 }
@@ -61,7 +61,7 @@ func Enable() {
 				p.Path,
 				p.ClientIP,
 			)
-			global.Logger.LOG("GIN", data)
+			logger.GlobalLogger.LOG("GIN", data)
 			return data
 		},
 	}
@@ -100,12 +100,12 @@ func Enable() {
 	// 读取环境变量中的端口号
 	PORT, err := env.GetEnv("APP_WEB_PORT")
 	if err != nil {
-		global.Logger.ERROR("无法读取环境变量中的端口号")
+		logger.GlobalLogger.ERROR("无法读取环境变量中的端口号")
 		os.Exit(0)
 	}
 
 	// 启动 gin
-	global.Logger.INFO("Web 服务启动中, 工作端口:" + PORT)
+	logger.GlobalLogger.INFO("Web 服务启动中, 工作端口:" + PORT)
 	err = engine.Run(":" + PORT)
 	if err != nil {
 		log.Fatalf("Web 服务启动失败: %v", err)

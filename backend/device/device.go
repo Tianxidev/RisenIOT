@@ -7,6 +7,7 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"errors"
+	"github.com/bytedance/sonic/ast"
 	"github.com/goccy/go-json"
 	"log"
 	"strings"
@@ -128,7 +129,7 @@ func (d *Device) DeviceCmdPush(Payload string, Agreement string, DeviceId string
 }
 
 // UpdateDeviceInfo 更新设备信息
-func (d *Device) UpdateDeviceInfo(deviceId string, deviceInfo interface{}) error {
+func (d *Device) UpdateDeviceInfo(deviceId string, deviceInfo ast.Node) error {
 
 	var device Info
 

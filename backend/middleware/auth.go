@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"RisenIOT/backend/global"
+	"RisenIOT/backend/logger"
 	"github.com/casbin/casbin/v2"
 	"github.com/gin-gonic/gin"
 )
@@ -18,7 +18,7 @@ func Auth(e *casbin.Enforcer) gin.HandlerFunc {
 		if ok, _ := e.Enforce(sub, obj, act); ok {
 			c.Next()
 		} else {
-			global.Logger.INFO("用户请求权限不足")
+			logger.GlobalLogger.INFO("用户请求权限不足")
 			c.JSON(200, gin.H{
 				"code": 403,
 				"msg":  "权限不足",

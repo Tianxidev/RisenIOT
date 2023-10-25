@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"github.com/bytedance/sonic/ast"
+	"github.com/goccy/go-json"
 	"log"
 	"regexp"
 )
@@ -22,8 +23,10 @@ type unisoundLampCmd struct {
 }
 
 type UnisoundLampInfo struct {
-	ChannelA int `json:"channel_a"` // A 通道亮度
-	ChannelB int `json:"channel_b"` // B 通道亮度
+	DeviceId   string `json:"device_id"`   // 设备ID
+	DeviceType string `json:"device_type"` // 设备类型
+	ChannelA   int    `json:"channel_a"`   // A 通道亮度
+	ChannelB   int    `json:"channel_b"`   // B 通道亮度
 }
 
 // NewUnisoundLamp 创建云知声灯控协议实例
@@ -77,15 +80,24 @@ func (u *UnisoundLamp) TopicHandler(jsonRoot ast.Node, protocol chan string) {
 		if ulc.Cmd[0] == 0x03 && ulc.Data[0] == 0x40 && ulc.Data[1] == 0x05 && ulc.Data[2] == 0x01 {
 
 			var uli UnisoundLampInfo
+
+			// 更新设备信息
+			uli.DeviceId = clientId
+			uli.DeviceType = "UnisoundLamp"
 			uli.ChannelA = int(ulc.Data[3])
 			uli.ChannelB = int(ulc.Data[4])
 
-			protocol <- fmt.Sprintf("[ 云知声灯控 ] 读取到 A 通道亮度: %d , B 通道亮度: %d", ulc.Data[3], ulc.Data[4])
+			jsonStr, _ := json.Marshal(uli)
+
+			log.Printf("[ 云知声灯控 ] 读取设备 %s 到 A 通道亮度: %d , B 通道亮度: %d", clientId, ulc.Data[3], ulc.Data[4])
+
+			// 返回识别结果
+			protocol <- string(jsonStr)
 			return
 		}
 
 		// 未识别协议
-		protocol <- fmt.Sprintf("[ 云知声灯控 ] 接收设备 %s 上报的未知数据: %s", clientId, data)
+		log.Printf("[ 云知声灯控 ] 接收设备 %s 上报的未知数据: %s", clientId, data)
 		return
 
 	}

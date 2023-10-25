@@ -4,6 +4,7 @@ import (
 	"RisenIOT/backend/agreement/unisound/lamp"
 	"RisenIOT/backend/controller/response"
 	"RisenIOT/backend/global"
+	"RisenIOT/backend/logger"
 	"fmt"
 	"github.com/bytedance/sonic"
 	"github.com/bytedance/sonic/ast"
@@ -24,7 +25,7 @@ func (dc *Controller) ReceiveDataFromEmqxWebHook(context *gin.Context) {
 	// 解析请求体
 	if root, err = sonic.GetFromString(string(RawData)); err != nil {
 		response.Error(context, 400, "参数错误, 无法解析json")
-		global.Logger.ERROR("参数错误: %s", err)
+		logger.GlobalLogger.ERROR("参数错误: %s", err)
 		return
 	}
 
@@ -34,10 +35,22 @@ func (dc *Controller) ReceiveDataFromEmqxWebHook(context *gin.Context) {
 	// 判断是否是 [云知声灯控] 协议
 	go lamp.NewUnisoundLamp().TopicHandler(root, protocolChan)
 
-	// 读取管道
-	protocol := <-protocolChan
+	// 解析协议结果
+	if root, err = sonic.GetFromString(<-protocolChan); err != nil {
+		response.Error(context, 400, "参数错误, 无法解析json")
+		logger.GlobalLogger.ERROR("参数错误: %s", err)
+		return
+	}
 
-	global.Logger.LOG("EMQX", "%s", protocol)
+	// 设备id
+	deviceId, _ := root.Get("device_id").String()
+
+	// 更新设备信息
+	if err := global.Device.UpdateDeviceInfo(deviceId, root); err != nil {
+		logger.GlobalLogger.ERROR("更新设备信息失败: %s", err)
+		response.Error(context, 400, fmt.Sprintf("更新设备信息失败: %s", err))
+		return
+	}
 
 	response.Success(context, "接收成功", nil)
 
@@ -47,7 +60,7 @@ func (dc *Controller) ReceiveDataFromEmqxWebHook(context *gin.Context) {
 // DeviceList 设备列表
 func (dc *Controller) DeviceList(context *gin.Context) {
 	if list, err := global.Device.DeviceList(); err == nil {
-		global.Logger.INFO("获取设备列表成功")
+		logger.GlobalLogger.INFO("获取设备列表成功")
 		context.JSON(200, gin.H{
 			"code":  200,
 			"msg":   "获取设备列表成功",
@@ -56,7 +69,7 @@ func (dc *Controller) DeviceList(context *gin.Context) {
 		})
 		return
 	} else {
-		global.Logger.ERROR("获取设备列表失败: %s", err)
+		logger.GlobalLogger.ERROR("获取设备列表失败: %s", err)
 		context.JSON(200, gin.H{
 			"code": 400,
 			"msg":  fmt.Sprintf("获取设备列表失败: %s", err),
@@ -77,7 +90,7 @@ func (dc *Controller) DeviceCmdPush(context *gin.Context) {
 			"code": 400,
 			"msg":  "参数错误, 无法解析json",
 		})
-		global.Logger.ERROR("参数错误: %s", err)
+		logger.GlobalLogger.ERROR("参数错误: %s", err)
 		return
 	}
 
@@ -88,7 +101,7 @@ func (dc *Controller) DeviceCmdPush(context *gin.Context) {
 			"code": 400,
 			"msg":  "参数错误, 无法读取设备ID",
 		})
-		global.Logger.ERROR("参数错误: %s", err)
+		logger.GlobalLogger.ERROR("参数错误: %s", err)
 		return
 	}
 
@@ -99,7 +112,7 @@ func (dc *Controller) DeviceCmdPush(context *gin.Context) {
 			"code": 400,
 			"msg":  "参数错误, 无法读取命令",
 		})
-		global.Logger.ERROR("参数错误: %s", err)
+		logger.GlobalLogger.ERROR("参数错误: %s", err)
 		return
 	}
 
@@ -110,7 +123,7 @@ func (dc *Controller) DeviceCmdPush(context *gin.Context) {
 			"code": 400,
 			"msg":  "参数错误, 无法读取QOS",
 		})
-		global.Logger.ERROR("参数错误: %s", err)
+		logger.GlobalLogger.ERROR("参数错误: %s", err)
 		return
 	}
 
@@ -121,7 +134,7 @@ func (dc *Controller) DeviceCmdPush(context *gin.Context) {
 			"code": 400,
 			"msg":  "参数错误, 无法读取设备类型",
 		})
-		global.Logger.ERROR("参数错误: %s", err)
+		logger.GlobalLogger.ERROR("参数错误: %s", err)
 		return
 	}
 
@@ -134,11 +147,11 @@ func (dc *Controller) DeviceCmdPush(context *gin.Context) {
 			"code": 400,
 			"msg":  fmt.Sprintf("推送命令失败: %s", err),
 		})
-		global.Logger.ERROR("推送命令失败: %s", err)
+		logger.GlobalLogger.ERROR("推送命令失败: %s", err)
 		return
 	}
 
-	global.Logger.INFO("推送 %s 设备 %s 指令, QOS等级 %d", device_id, command, qos)
+	logger.GlobalLogger.INFO("推送 %s 设备 %s 指令, QOS等级 %d", device_id, command, qos)
 	context.JSON(200, gin.H{
 		"code": 200,
 		"msg":  "推送命令成功",

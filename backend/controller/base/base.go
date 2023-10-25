@@ -3,6 +3,7 @@ package base
 import (
 	"RisenIOT/backend/casbin"
 	"RisenIOT/backend/global"
+	"RisenIOT/backend/logger"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"log"
@@ -23,7 +24,7 @@ var upgrader = websocket.Upgrader{
 
 // GetVersion 获取系统版本信息
 func (nbc *Controller) GetVersion(c *gin.Context) {
-	global.Logger.INFO("请求获取系统版本信息")
+	logger.GlobalLogger.INFO("请求获取系统版本信息")
 	c.JSON(200, gin.H{
 		"code":          200,
 		"SystemName":    global.SysName,
@@ -55,7 +56,7 @@ func (nbc *Controller) ConsoleLogWS(c *gin.Context) {
 	wsConn.SetReadDeadline(time.Now().Add(5 * time.Second))
 	_, b, err := wsConn.ReadMessage()
 	if err != nil {
-		global.Logger.ERROR("读取客户端信息失败: %v", err)
+		logger.GlobalLogger.ERROR("读取客户端信息失败: %v", err)
 		return
 	}
 	wsConn.SetReadDeadline(time.Time{})
@@ -66,7 +67,7 @@ func (nbc *Controller) ConsoleLogWS(c *gin.Context) {
 		return
 	}
 
-	global.Logger.INFO("已连接到 Web 日志控制台:" + wsConn.RemoteAddr().String())
+	logger.GlobalLogger.INFO("已连接到 Web 日志控制台:" + wsConn.RemoteAddr().String())
 
 	wsConn.WriteMessage(1, []byte("欢迎访问 Web 日志控制台!"))
 	wsConn.Close()

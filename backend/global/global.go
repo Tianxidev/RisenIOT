@@ -2,14 +2,12 @@ package global
 
 import (
 	"RisenIOT/backend/device"
-	"RisenIOT/backend/logger"
 	"github.com/casbin/casbin/v2"
 )
 
 var (
 	SysName         = "RisenIOT"
 	SysVersion      = "0.0.1.0007"
-	Logger          *logger.Logger
 	Device          *device.Device
 	DatabaseSetting *databaseSetting
 	CasbinEnforcer  *casbin.Enforcer

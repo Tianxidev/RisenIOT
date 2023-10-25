@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+var GlobalLogger *Logger
+
 // LogWriter 日志写入器接口
 type LogWriter interface {
 	Write(level string, data interface{}) error
@@ -13,11 +15,6 @@ type LogWriter interface {
 // Logger 日志器
 type Logger struct {
 	writerList []LogWriter
-}
-
-// NewLogger 创建日志器
-func NewLogger() *Logger {
-	return &Logger{}
 }
 
 // RegisterWriter 注册日志写入器
@@ -60,9 +57,9 @@ func (l *Logger) LOG(level string, format string, a ...any) {
 	}
 }
 
-// CreateLogger 创建日志器的实例
-func CreateLogger() *Logger {
-	l := NewLogger()
+// InitGlobalLogger 创建日志器的实例
+func InitGlobalLogger() {
+	GlobalLogger = new(Logger)
 
 	Y := time.Now().Format("2006")
 	M := time.Now().Format("01")
@@ -70,13 +67,12 @@ func CreateLogger() *Logger {
 
 	// 创建命令行写入器
 	cw := newConsoleWriter()
-	l.RegisterWriter(cw)
+	GlobalLogger.RegisterWriter(cw)
 
 	// 创建文件写入器
 	fw := newFileWriter()
 	if err := fw.SetFile(fmt.Sprintf("./logs/%s-%s-%s.log", Y, M, D)); err != nil {
 		fmt.Println(err)
 	}
-	l.RegisterWriter(fw)
-	return l
+	GlobalLogger.RegisterWriter(fw)
 }
