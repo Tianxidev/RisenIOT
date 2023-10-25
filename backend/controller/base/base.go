@@ -1,8 +1,8 @@
 package base
 
 import (
+	"RisenIOT/backend/casbin"
 	"RisenIOT/backend/global"
-	"RisenIOT/backend/internal/casbin"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"log"

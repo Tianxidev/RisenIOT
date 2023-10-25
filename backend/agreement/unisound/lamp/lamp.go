@@ -21,6 +21,11 @@ type unisoundLampCmd struct {
 	CRC    []byte // CRC-16/MODBUS 校验码, 2字节, 是对地址码+功能码+数据码的计算得到
 }
 
+type UnisoundLampInfo struct {
+	ChannelA int `json:"channel_a"` // A 通道亮度
+	ChannelB int `json:"channel_b"` // B 通道亮度
+}
+
 // NewUnisoundLamp 创建云知声灯控协议实例
 func NewUnisoundLamp() *UnisoundLamp {
 	return &UnisoundLamp{}
@@ -70,6 +75,11 @@ func (u *UnisoundLamp) TopicHandler(jsonRoot ast.Node, protocol chan string) {
 
 		// 协议识别 - 读取双灯开关亮度状态 - 03 功能码 - 4005 寄存器 - 01 长度
 		if ulc.Cmd[0] == 0x03 && ulc.Data[0] == 0x40 && ulc.Data[1] == 0x05 && ulc.Data[2] == 0x01 {
+
+			var uli UnisoundLampInfo
+			uli.ChannelA = int(ulc.Data[3])
+			uli.ChannelB = int(ulc.Data[4])
+
 			protocol <- fmt.Sprintf("[ 云知声灯控 ] 读取到 A 通道亮度: %d , B 通道亮度: %d", ulc.Data[3], ulc.Data[4])
 			return
 		}

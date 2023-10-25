@@ -1,10 +1,11 @@
 package redis
 
 import (
-	"RisenIOT/backend/internal/env"
+	"RisenIOT/backend/env"
 	"context"
 	"fmt"
 	"github.com/redis/go-redis/v9"
+	"time"
 )
 
 type MyRedis struct {
@@ -29,10 +30,10 @@ func NewRedis() *MyRedis {
 }
 
 // Set 设置值
-func (r *MyRedis) Set(key string, value string, time int) {
+func (r *MyRedis) Set(key string, value string, expiration int) {
 	ctx := context.Background()
 
-	ok, _ := r.rdb.Do(ctx, "setex", key, time, value).Result()
+	ok, _ := r.rdb.Set(ctx, key, value, time.Duration(expiration)).Result()
 	if ok != "OK" {
 		fmt.Println("设置值失败:", ok)
 	}
@@ -48,6 +49,8 @@ func (r *MyRedis) Get(key string) (string, error) {
 		return "", fmt.Errorf("key %s 不存在", key)
 	}
 
-	value := r.rdb.Do(ctx, "get", key).String()
+	// 获取值
+	value, _ := r.rdb.Get(ctx, key).Result()
+
 	return value, nil
 }

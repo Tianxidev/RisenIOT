@@ -1,9 +1,9 @@
 package device
 
 import (
+	"RisenIOT/backend/agreement/unisound/lamp"
 	"RisenIOT/backend/controller/response"
 	"RisenIOT/backend/global"
-	"RisenIOT/backend/internal/agreement/unisound/lamp"
 	"fmt"
 	"github.com/bytedance/sonic"
 	"github.com/bytedance/sonic/ast"

@@ -1,7 +1,7 @@
 package emqx
 
 import (
-	"RisenIOT/backend/internal/env"
+	"RisenIOT/backend/env"
 	"RisenIOT/backend/utils"
 	"encoding/base64"
 	"encoding/json"
