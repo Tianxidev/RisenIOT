@@ -2,6 +2,7 @@ package lamp
 
 import (
 	"RisenIOT/backend/utils"
+	"encoding/hex"
 	"fmt"
 	"github.com/bytedance/sonic/ast"
 	"log"
@@ -15,7 +16,7 @@ type UnisoundLamp struct {
 type unisoundLampCmd struct {
 	Random []byte // 随机码, 2字节
 	Addr   []byte // 设备地址, 1字节, 范围：01H～F7H(十进制 1～247)
-	Cmd    []byte // 命令码, 1字节,不同的功能对应不同的值, 03H:读单个或多个字寄存器; 06H: 写单个字寄存器; 10H: 写连续N个寄存器
+	Cmd    []byte // 功能码, 1字节,不同的功能对应不同的值, 03H:读单个或多个字寄存器; 06H: 写单个字寄存器; 10H: 写连续N个寄存器
 	Data   []byte // 数据, 具体和对应命令有关, 比如开关灯, 调节亮度, 读系统状态就是 2 个字节地址 + 2 字节数据组成, 不同的命令数据码不一样
 	CRC    []byte // CRC-16/MODBUS 校验码, 2字节, 是对地址码+功能码+数据码的计算得到
 }
@@ -29,6 +30,7 @@ func NewUnisoundLamp() *UnisoundLamp {
 func (u *UnisoundLamp) TopicHandler(jsonRoot ast.Node, protocol chan string) {
 
 	topic, _ := jsonRoot.Get("topic").String()
+	clientId, _ := jsonRoot.Get("clientid").String()
 
 	// 示例订阅格式: /Lamp/TransOut/868247062445885
 	re1 := regexp.MustCompile(`/Lamp/TransOut/(\d{15})`)
@@ -36,25 +38,52 @@ func (u *UnisoundLamp) TopicHandler(jsonRoot ast.Node, protocol chan string) {
 	// 示例订阅格式: /Lamp/TransIn/868247062445885
 	re2 := regexp.MustCompile(`/Lamp/TransIn/(\d{15})`)
 
+	// 匹配订阅
 	match1 := re1.FindStringSubmatch(topic)
 	match2 := re2.FindStringSubmatch(topic)
 
 	// 检查匹配结果1
-	if len(match1) > 1 {
+	if len(match1) > 1 && match1[1] == clientId {
+
+		var ulc unisoundLampCmd
 
 		data, _ := jsonRoot.Get("payload_hexstr").String()
 
-		protocol <- fmt.Sprintf("[ 云知声灯控 ] 接收设备 %s 上报的数据: %s", match1[1], data)
+		// 返回协议示例: 00FF 0103 4005 0101 145A AF
+		dataHex, _ := hex.DecodeString(data)
+
+		// 构建协议 末尾2字节为校验码
+		ulc.Random = dataHex[0:2]
+		ulc.Addr = dataHex[2:3]
+		ulc.Cmd = dataHex[3:4]
+		ulc.Data = dataHex[4 : len(dataHex)-2]
+		ulc.CRC = dataHex[len(dataHex)-2:]
+
+		// 检查 CRC 校验码
+		crc := utils.CRC16(dataHex[2 : len(dataHex)-2])
+		if ulc.CRC[0] != byte(crc&0xff) || ulc.CRC[1] == byte(crc>>8) {
+			log.Printf("[ 云知声灯控 ] CRC 校验通过: %X => %X", ulc.CRC, crc)
+		} else {
+			log.Printf("[ 云知声灯控 ] CRC 校验失败: %X => %X", ulc.CRC, crc)
+			return
+		}
+
+		// 协议识别 - 读取双灯开关亮度状态 - 03 功能码 - 4005 寄存器 - 01 长度
+		if ulc.Cmd[0] == 0x03 && ulc.Data[0] == 0x40 && ulc.Data[1] == 0x05 && ulc.Data[2] == 0x01 {
+			protocol <- fmt.Sprintf("[ 云知声灯控 ] 读取到 A 通道亮度: %d , B 通道亮度: %d", ulc.Data[3], ulc.Data[4])
+			return
+		}
+
+		// 未识别协议
+		protocol <- fmt.Sprintf("[ 云知声灯控 ] 接收设备 %s 上报的未知数据: %s", clientId, data)
 		return
 
 	}
 
 	// 检查匹配结果2
-	if len(match2) > 1 {
-
+	if len(match2) > 1 && match2[1] == clientId {
 		data, _ := jsonRoot.Get("payload_hexstr").String()
-
-		protocol <- fmt.Sprintf("[ 云知声灯控 ] 下发到设备 %s 的数据: %s", match2[1], data)
+		protocol <- fmt.Sprintf("[ 云知声灯控 ] 下发到设备 %s 的数据: %s", clientId, data)
 		return
 	}
 
@@ -76,7 +105,7 @@ func (u *UnisoundLamp) LampOnCmd(channel int) []byte {
 		return []byte{}
 	}
 
-	// 通道 a - 举例下发给设备的开灯命令：FF 00 01 06 DF 09 01 A0 63 F4
+	// 通道 a - 举例下发给设备的开灯命令：FF00 0106 DF09 01A0 63F4
 	if channel == 1 {
 		ulc.Random = u.randomGenerate()
 		ulc.Addr = []byte{0x01}
@@ -99,7 +128,7 @@ func (u *UnisoundLamp) LampOnCmd(channel int) []byte {
 		return cmd
 	}
 
-	// 通道 b - 举例下发给设备的开灯命令：FF 00 01 06 DF 0B 01 A0 C2 34
+	// 通道 b - 举例下发给设备的开灯命令：FF00 0106 DF0B 01A0 C234
 	if channel == 2 {
 
 		ulc.Random = u.randomGenerate()

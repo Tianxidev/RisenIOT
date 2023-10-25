@@ -31,4 +31,7 @@ func (s *DeviceRouter) New(Router *gin.RouterGroup) {
 	// 设备管理 - 云知声灯控 - 灯调光接口
 	router.POST("/unisound/lamp/dimming", lampController.LampDimming)
 
+	// 设备管理 - 云知声灯控 - 查询灯状态接口
+	router.POST("/unisound/lamp/status", lampController.LampStatus)
+
 }

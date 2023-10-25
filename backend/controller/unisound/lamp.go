@@ -126,3 +126,43 @@ func (dc *LampController) LampDimming(context *gin.Context) {
 	response.Success(context, "下发指令成功", nil)
 
 }
+
+// LampStatus 查询灯状态接口
+func (dc *LampController) LampStatus(context *gin.Context) {
+
+	var err error
+	var root ast.Node
+
+	// 读取请求体
+	RawData, _ := context.GetRawData()
+
+	// 解析请求体
+	if root, err = sonic.GetFromString(string(RawData)); err != nil {
+		response.Error(context, 400, "参数错误, 无法解析json")
+		global.Logger.ERROR("参数错误: %s", err)
+		return
+	}
+
+	// 读取设备id
+	deviceId, _ := root.Get("device_id").String()
+
+	global.Logger.INFO("接收到查询灯状态命令到订阅 %s", topicPrefix+deviceId)
+
+	// 查询灯光状态
+	//if status, err := global.Device.Get().LampStatus(deviceId); err == nil {
+	//	global.Logger.INFO("查询灯光状态成功")
+	//	context.JSON(200, gin.H{
+	//		"code": 200,
+	//		"msg":  "查询灯光状态成功",
+	//		"data": status,
+	//	})
+	//	return
+	//} else {
+	//	global.Logger.ERROR("查询灯光状态失败: %s", err)
+	//	context.JSON(200, gin.H{
+	//		"code": 400,
+	//		"msg":  "查询灯光状态失败",
+	//	})
+	//}
+
+}
