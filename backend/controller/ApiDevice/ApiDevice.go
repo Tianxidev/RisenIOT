@@ -1,8 +1,8 @@
-package device
+package ApiDevice
 
 import (
 	"RisenIOT/backend/agreement/unisound/lamp"
-	"RisenIOT/backend/controller/response"
+	"RisenIOT/backend/controller/ApiResponse"
 	"RisenIOT/backend/global"
 	"RisenIOT/backend/logger"
 	"fmt"
@@ -24,7 +24,7 @@ func (dc *Controller) ReceiveDataFromEmqxWebHook(context *gin.Context) {
 
 	// 解析请求体
 	if root, err = sonic.GetFromString(string(RawData)); err != nil {
-		response.Error(context, 400, "参数错误, 无法解析json")
+		ApiResponse.Error(context, 400, "参数错误, 无法解析json")
 		logger.GlobalLogger.ERROR("参数错误: %s", err)
 		return
 	}
@@ -37,7 +37,7 @@ func (dc *Controller) ReceiveDataFromEmqxWebHook(context *gin.Context) {
 
 	// 解析协议结果
 	if root, err = sonic.GetFromString(<-protocolChan); err != nil {
-		response.Error(context, 400, "参数错误, 无法解析json")
+		ApiResponse.Error(context, 400, "参数错误, 无法解析json")
 		logger.GlobalLogger.ERROR("参数错误: %s", err)
 		return
 	}
@@ -48,11 +48,11 @@ func (dc *Controller) ReceiveDataFromEmqxWebHook(context *gin.Context) {
 	// 更新设备信息
 	if err := global.Device.UpdateDeviceInfo(deviceId, root); err != nil {
 		logger.GlobalLogger.ERROR("更新设备信息失败: %s", err)
-		response.Error(context, 400, fmt.Sprintf("更新设备信息失败: %s", err))
+		ApiResponse.Error(context, 400, fmt.Sprintf("更新设备信息失败: %s", err))
 		return
 	}
 
-	response.Success(context, "接收成功", nil)
+	ApiResponse.Success(context, "接收成功", nil)
 
 	return
 }

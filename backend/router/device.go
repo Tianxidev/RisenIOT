@@ -1,8 +1,8 @@
 package router
 
 import (
-	"RisenIOT/backend/controller/device"
-	"RisenIOT/backend/controller/unisound"
+	"RisenIOT/backend/controller/ApiDevice"
+	"RisenIOT/backend/controller/ApiUnisound"
 	"github.com/gin-gonic/gin"
 )
 
@@ -13,8 +13,8 @@ func (s *DeviceRouter) New(Router *gin.RouterGroup) {
 	router := Router.Group("device")
 
 	// 创建控制器
-	deviceController := new(device.Controller)
-	lampController := new(unisound.LampController)
+	deviceController := new(ApiDevice.Controller)
+	lampController := new(ApiUnisound.LampController)
 
 	// 设备管理 - 查询设备列表
 	router.GET("/list", deviceController.DeviceList)
@@ -26,12 +26,12 @@ func (s *DeviceRouter) New(Router *gin.RouterGroup) {
 	router.POST("/cmd/push", deviceController.DeviceCmdPush)
 
 	// 设备管理 - 云知声灯控 - 灯开关接口
-	router.POST("/unisound/lamp/execute", lampController.LampOpenOrClose)
+	router.POST("/ApiUnisound/lamp/execute", lampController.LampOpenOrClose)
 
 	// 设备管理 - 云知声灯控 - 灯调光接口
-	router.POST("/unisound/lamp/dimming", lampController.LampDimming)
+	router.POST("/ApiUnisound/lamp/dimming", lampController.LampDimming)
 
 	// 设备管理 - 云知声灯控 - 查询灯状态接口
-	router.POST("/unisound/lamp/status", lampController.LampStatus)
+	router.POST("/ApiUnisound/lamp/status", lampController.LampStatus)
 
 }

@@ -1,10 +1,11 @@
 package casbin
 
 import (
-	"RisenIOT/backend/global"
 	"RisenIOT/backend/logger"
 	"github.com/casbin/casbin/v2"
 )
+
+var Enforcer *casbin.Enforcer
 
 // SetupCasbinEnforcer 初始化casbin
 func SetupCasbinEnforcer() error {
@@ -13,7 +14,7 @@ func SetupCasbinEnforcer() error {
 	logger.GlobalLogger.INFO("加载访问控制模型:" + modelPath)
 	logger.GlobalLogger.INFO("加载路由控制表:" + csvPath)
 	var err error
-	global.CasbinEnforcer, err = casbin.NewEnforcer(modelPath, csvPath)
+	Enforcer, err = casbin.NewEnforcer(modelPath, csvPath)
 	if err != nil {
 		logger.GlobalLogger.ERROR("启动 Casbin 失败: %v", err)
 		return err

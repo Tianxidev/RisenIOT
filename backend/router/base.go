@@ -1,7 +1,7 @@
 package router
 
 import (
-	"RisenIOT/backend/controller/base"
+	"RisenIOT/backend/controller/ApiBase"
 	"github.com/gin-gonic/gin"
 )
 
@@ -12,7 +12,7 @@ func (s *BaseRouter) New(Router *gin.RouterGroup) {
 	router := Router.Group("base")
 
 	// 创建控制器
-	controller := new(base.Controller)
+	controller := new(ApiBase.Controller)
 
 	// 注册接口
 	router.GET("/sys/version", controller.GetVersion)

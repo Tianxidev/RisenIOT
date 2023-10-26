@@ -37,7 +37,7 @@ export default defineConfig({
         import.meta.url)),
       "libs": fileURLToPath(new URL('src/libs',
         import.meta.url)),
-      "api": fileURLToPath(new URL('src/device',
+      "api": fileURLToPath(new URL('src/ApiDevice',
         import.meta.url)),
       "styles": fileURLToPath(new URL('src/styles',
         import.meta.url)),

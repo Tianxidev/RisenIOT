@@ -2,7 +2,7 @@ package core
 
 import (
 	"RisenIOT/backend/casbin"
-	"RisenIOT/backend/controller/response"
+	"RisenIOT/backend/controller/ApiResponse"
 	"RisenIOT/backend/device"
 	"RisenIOT/backend/env"
 	"RisenIOT/backend/global"
@@ -73,7 +73,7 @@ func Enable() {
 	engine.Use(middleware.Cors())
 
 	// 配置 gin 认证中间件
-	engine.Use(middleware.Auth(global.CasbinEnforcer))
+	engine.Use(middleware.Auth(casbin.Enforcer))
 
 	// 创建路由组
 	v1ApiGroup := engine.Group("/api/v1")
@@ -93,7 +93,7 @@ func Enable() {
 		}
 
 		// 返回json
-		response.Success(c, "获取路由列表成功", json)
+		ApiResponse.Success(c, "获取路由列表成功", json)
 
 	})
 

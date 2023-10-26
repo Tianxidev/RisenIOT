@@ -2,7 +2,6 @@ package global
 
 import (
 	"RisenIOT/backend/device"
-	"github.com/casbin/casbin/v2"
 )
 
 var (
@@ -10,7 +9,6 @@ var (
 	SysVersion      = "0.0.1.0007"
 	Device          *device.Device
 	DatabaseSetting *databaseSetting
-	CasbinEnforcer  *casbin.Enforcer
 )
 
 // databaseSetting 数据库配置

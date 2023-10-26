@@ -1,4 +1,4 @@
-package response
+package ApiResponse
 
 import "github.com/gin-gonic/gin"
 

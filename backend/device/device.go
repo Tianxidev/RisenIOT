@@ -61,7 +61,7 @@ func (d *Device) DeviceList() ([]Info, error) {
 
 			deviceList = append(deviceList, device)
 
-			// device 转 json
+			// api_device 转 json
 			deviceJson, _ := json.Marshal(device)
 
 			// 写入设备信息到 Redis
@@ -104,7 +104,7 @@ func (d *Device) DeviceCmdPush(Payload string, Agreement string, DeviceId string
 	Payload = strings.ReplaceAll(Payload, " ", "")
 
 	// 判断设备类型是否是[云知声]
-	if DeviceType == "unisound" && Agreement == "mqtt" {
+	if DeviceType == "ApiUnisound" && Agreement == "mqtt" {
 
 		var data []byte
 
@@ -147,7 +147,7 @@ func (d *Device) UpdateDeviceInfo(deviceId string, deviceInfo ast.Node) error {
 	// 更新设备信息
 	device.DeviceInfo = deviceInfo
 
-	// device 转 json
+	// api_device 转 json
 	deviceJson, _ := json.Marshal(device)
 
 	// 写入设备信息到 Redis

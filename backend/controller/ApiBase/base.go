@@ -1,4 +1,4 @@
-package base
+package ApiBase
 
 import (
 	"RisenIOT/backend/casbin"
