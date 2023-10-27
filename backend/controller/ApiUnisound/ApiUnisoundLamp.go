@@ -1,8 +1,9 @@
 package ApiUnisound
 
 import (
+	"RisenIOT/backend/agreement"
 	"RisenIOT/backend/controller/ApiResponse"
-	"RisenIOT/backend/global"
+	"RisenIOT/backend/device"
 	"RisenIOT/backend/logger"
 	"github.com/bytedance/sonic"
 	"github.com/bytedance/sonic/ast"
@@ -52,7 +53,8 @@ func (dc *LampController) LampOpenOrClose(context *gin.Context) {
 	// 判断是否是开灯命令
 	if string(command) == "on" {
 
-		err := global.Device.SendHex(topic, "MQTT", global.Device.Get().LampOnCmd(int(chanVal)))
+		//err := device.CreateDevice().SendHex(topic, "MQTT", device.CreateDevice().Get().LampOnCmd(int(chanVal)))
+		err := device.CreateDevice().SendHex(topic, "MQTT", agreement.NewUnisoundLamp().LampOnCmd(int(chanVal)))
 		if err != nil {
 			logger.GlobalLogger.ERROR("下发指令异常: %d", err)
 			ApiResponse.Error(context, 400, "下发指令异常")
@@ -62,7 +64,7 @@ func (dc *LampController) LampOpenOrClose(context *gin.Context) {
 
 	// 判断是否是关灯命令
 	if string(command) == "off" {
-		err := global.Device.SendHex(topic, "MQTT", global.Device.Get().LampOffCmd(int(chanVal)))
+		err := device.CreateDevice().SendHex(topic, "MQTT", agreement.NewUnisoundLamp().LampOffCmd(int(chanVal)))
 		if err != nil {
 			logger.GlobalLogger.ERROR("下发指令异常: %s", err)
 			ApiResponse.Error(context, 400, "下发指令异常")
@@ -116,7 +118,7 @@ func (dc *LampController) LampDimming(context *gin.Context) {
 
 	// 下发指令
 	if brightness != 0 {
-		err := global.Device.SendHex(topic, "MQTT", global.Device.Get().LampBrightnessCmd(int(brightness), int(chanVal)))
+		err := device.CreateDevice().SendHex(topic, "MQTT", agreement.NewUnisoundLamp().LampBrightnessCmd(int(brightness), int(chanVal)))
 		if err != nil {
 			ApiResponse.Error(context, 400, "下发指令异常")
 			logger.GlobalLogger.ERROR("下发指令异常: %s", err)
@@ -149,21 +151,21 @@ func (dc *LampController) LampStatus(context *gin.Context) {
 
 	logger.GlobalLogger.INFO("接收到查询灯状态命令到订阅 %s", topicPrefix+deviceId)
 
-	// 查询灯光状态
-	//if status, err := global.Device.Get().LampStatus(deviceId); err == nil {
-	//	logger.GlobalLogger.INFO("查询灯光状态成功")
-	//	context.JSON(200, gin.H{
-	//		"code": 200,
-	//		"msg":  "查询灯光状态成功",
-	//		"data": status,
-	//	})
-	//	return
-	//} else {
-	//	logger.GlobalLogger.ERROR("查询灯光状态失败: %s", err)
-	//	context.JSON(200, gin.H{
-	//		"code": 400,
-	//		"msg":  "查询灯光状态失败",
-	//	})
-	//}
+	// 查询设备状态 redis
+	if deviceInfo, err := device.CreateDevice().GetDeviceInfo(deviceId); err == nil {
+		logger.GlobalLogger.INFO("查询设备状态成功")
+		context.JSON(200, gin.H{
+			"code": 200,
+			"msg":  "查询设备状态成功",
+			"data": deviceInfo,
+		})
+		return
+	} else {
+		logger.GlobalLogger.ERROR("查询设备状态失败: %s", err)
+		context.JSON(200, gin.H{
+			"code": 400,
+			"msg":  "查询设备状态失败",
+		})
+	}
 
 }

@@ -1,14 +1,8 @@
 package global
 
-import (
-	"RisenIOT/backend/device"
-)
-
 var (
-	SysName         = "RisenIOT"
-	SysVersion      = "0.0.1.0007"
-	Device          *device.Device
-	DatabaseSetting *databaseSetting
+	SysName    = "RisenIOT"
+	SysVersion = "0.0.1.0009"
 )
 
 // databaseSetting 数据库配置

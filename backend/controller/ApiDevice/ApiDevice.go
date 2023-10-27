@@ -1,9 +1,9 @@
 package ApiDevice
 
 import (
-	"RisenIOT/backend/agreement/unisound/lamp"
+	"RisenIOT/backend/agreement"
 	"RisenIOT/backend/controller/ApiResponse"
-	"RisenIOT/backend/global"
+	"RisenIOT/backend/device"
 	"RisenIOT/backend/logger"
 	"fmt"
 	"github.com/bytedance/sonic"
@@ -29,28 +29,8 @@ func (dc *Controller) ReceiveDataFromEmqxWebHook(context *gin.Context) {
 		return
 	}
 
-	// 创建协议识别结果管道
-	protocolChan := make(chan string)
-
 	// 判断是否是 [云知声灯控] 协议
-	go lamp.NewUnisoundLamp().TopicHandler(root, protocolChan)
-
-	// 解析协议结果
-	if root, err = sonic.GetFromString(<-protocolChan); err != nil {
-		ApiResponse.Error(context, 400, "参数错误, 无法解析json")
-		logger.GlobalLogger.ERROR("参数错误: %s", err)
-		return
-	}
-
-	// 设备id
-	deviceId, _ := root.Get("device_id").String()
-
-	// 更新设备信息
-	if err := global.Device.UpdateDeviceInfo(deviceId, root); err != nil {
-		logger.GlobalLogger.ERROR("更新设备信息失败: %s", err)
-		ApiResponse.Error(context, 400, fmt.Sprintf("更新设备信息失败: %s", err))
-		return
-	}
+	go agreement.NewUnisoundLamp().TopicHandler(root)
 
 	ApiResponse.Success(context, "接收成功", nil)
 
@@ -59,7 +39,7 @@ func (dc *Controller) ReceiveDataFromEmqxWebHook(context *gin.Context) {
 
 // DeviceList 设备列表
 func (dc *Controller) DeviceList(context *gin.Context) {
-	if list, err := global.Device.DeviceList(); err == nil {
+	if list, err := device.CreateDevice().DeviceList(); err == nil {
 		logger.GlobalLogger.INFO("获取设备列表成功")
 		context.JSON(200, gin.H{
 			"code":  200,
@@ -142,7 +122,7 @@ func (dc *Controller) DeviceCmdPush(context *gin.Context) {
 	qos := int(qos_val)
 
 	// 推送命令
-	if err := global.Device.DeviceCmdPush(command, "mqtt", device_id, device_type, qos); err != nil {
+	if err := device.CreateDevice().DeviceCmdPush(command, "mqtt", device_id, device_type, qos); err != nil {
 		context.JSON(200, gin.H{
 			"code": 400,
 			"msg":  fmt.Sprintf("推送命令失败: %s", err),

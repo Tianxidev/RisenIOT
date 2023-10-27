@@ -3,7 +3,6 @@ package core
 import (
 	"RisenIOT/backend/casbin"
 	"RisenIOT/backend/controller/ApiResponse"
-	"RisenIOT/backend/device"
 	"RisenIOT/backend/env"
 	"RisenIOT/backend/global"
 	"RisenIOT/backend/logger"
@@ -28,10 +27,6 @@ func Init() {
 
 	// 打印系统版本号
 	logger.GlobalLogger.INFO("系统版本号: " + global.SysVersion)
-
-	// 初始化设备管理模块
-	global.Device = device.CreateDevice()
-	logger.GlobalLogger.INFO("初始化设备管理模块")
 
 	// casbin 初始化
 	err := casbin.SetupCasbinEnforcer()

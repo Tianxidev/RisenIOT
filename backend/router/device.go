@@ -26,12 +26,12 @@ func (s *DeviceRouter) New(Router *gin.RouterGroup) {
 	router.POST("/cmd/push", deviceController.DeviceCmdPush)
 
 	// 设备管理 - 云知声灯控 - 灯开关接口
-	router.POST("/ApiUnisound/lamp/execute", lampController.LampOpenOrClose)
+	router.POST("/unisound/lamp/execute", lampController.LampOpenOrClose)
 
 	// 设备管理 - 云知声灯控 - 灯调光接口
-	router.POST("/ApiUnisound/lamp/dimming", lampController.LampDimming)
+	router.POST("/unisound/lamp/dimming", lampController.LampDimming)
 
 	// 设备管理 - 云知声灯控 - 查询灯状态接口
-	router.POST("/ApiUnisound/lamp/status", lampController.LampStatus)
+	router.POST("/unisound/lamp/status", lampController.LampStatus)
 
 }

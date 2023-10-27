@@ -1,9 +1,10 @@
-package lamp
+package agreement
 
 import (
+	"RisenIOT/backend/device"
+	"RisenIOT/backend/logger"
 	"RisenIOT/backend/utils"
 	"encoding/hex"
-	"fmt"
 	"github.com/bytedance/sonic/ast"
 	"github.com/goccy/go-json"
 	"log"
@@ -23,10 +24,11 @@ type unisoundLampCmd struct {
 }
 
 type UnisoundLampInfo struct {
-	DeviceId   string `json:"device_id"`   // 设备ID
 	DeviceType string `json:"device_type"` // 设备类型
 	ChannelA   int    `json:"channel_a"`   // A 通道亮度
 	ChannelB   int    `json:"channel_b"`   // B 通道亮度
+	Longitude  string `json:"longitude"`   // 经度
+	Latitude   string `json:"latitude"`    // 纬度
 }
 
 // NewUnisoundLamp 创建云知声灯控协议实例
@@ -35,7 +37,7 @@ func NewUnisoundLamp() *UnisoundLamp {
 }
 
 // TopicHandler 订阅处理器
-func (u *UnisoundLamp) TopicHandler(jsonRoot ast.Node, protocol chan string) {
+func (u *UnisoundLamp) TopicHandler(jsonRoot ast.Node) {
 
 	topic, _ := jsonRoot.Get("topic").String()
 	clientId, _ := jsonRoot.Get("clientid").String()
@@ -70,9 +72,9 @@ func (u *UnisoundLamp) TopicHandler(jsonRoot ast.Node, protocol chan string) {
 		// 检查 CRC 校验码
 		crc := utils.CRC16(dataHex[2 : len(dataHex)-2])
 		if ulc.CRC[0] != byte(crc&0xff) || ulc.CRC[1] == byte(crc>>8) {
-			log.Printf("[ 云知声灯控 ] CRC 校验通过: %X => %X", ulc.CRC, crc)
+			logger.GlobalLogger.INFO("[ 云知声灯控 ] CRC 校验通过: %X => %X", ulc.CRC, crc)
 		} else {
-			log.Printf("[ 云知声灯控 ] CRC 校验失败: %X => %X", ulc.CRC, crc)
+			logger.GlobalLogger.INFO("[ 云知声灯控 ] CRC 校验失败: %X => %X", ulc.CRC, crc)
 			return
 		}
 
@@ -81,23 +83,31 @@ func (u *UnisoundLamp) TopicHandler(jsonRoot ast.Node, protocol chan string) {
 
 			var uli UnisoundLampInfo
 
+			// 读取设备信息
+			deviceInfo, err := device.CreateDevice().GetDeviceInfo(clientId)
+			deviceInfoJson, _ := json.Marshal(deviceInfo)
+			_ = json.Unmarshal(deviceInfoJson, &uli)
+
 			// 更新设备信息
-			uli.DeviceId = clientId
-			uli.DeviceType = "UnisoundLamp"
+			uli.DeviceType = "云知声灯控"
 			uli.ChannelA = int(ulc.Data[3])
 			uli.ChannelB = int(ulc.Data[4])
 
 			jsonStr, _ := json.Marshal(uli)
 
-			log.Printf("[ 云知声灯控 ] 读取设备 %s 到 A 通道亮度: %d , B 通道亮度: %d", clientId, ulc.Data[3], ulc.Data[4])
+			logger.GlobalLogger.INFO("[ 云知声灯控 ] 读取设备 %s 到 A 通道亮度: %d , B 通道亮度: %d", clientId, ulc.Data[3], ulc.Data[4])
 
-			// 返回识别结果
-			protocol <- string(jsonStr)
+			// 更新设备信息
+			err = device.CreateDevice().UpdateDeviceInfo(clientId, string(jsonStr))
+			if err != nil {
+				logger.GlobalLogger.ERROR("更新设备信息失败")
+			}
+
 			return
 		}
 
 		// 未识别协议
-		log.Printf("[ 云知声灯控 ] 接收设备 %s 上报的未知数据: %s", clientId, data)
+		logger.GlobalLogger.INFO("[ 云知声灯控 ] 接收设备 %s 上报的未知数据: %s", clientId, data)
 		return
 
 	}
@@ -105,7 +115,7 @@ func (u *UnisoundLamp) TopicHandler(jsonRoot ast.Node, protocol chan string) {
 	// 检查匹配结果2
 	if len(match2) > 1 && match2[1] == clientId {
 		data, _ := jsonRoot.Get("payload_hexstr").String()
-		protocol <- fmt.Sprintf("[ 云知声灯控 ] 下发到设备 %s 的数据: %s", clientId, data)
+		logger.GlobalLogger.INFO("[ 云知声灯控 ] 下发到设备 %s 的数据: %s", clientId, data)
 		return
 	}
 
@@ -305,3 +315,10 @@ func (u *UnisoundLamp) LampBrightnessCmd(brightness int, channel int) []byte {
 
 	return []byte{}
 }
+
+// 经纬度读取
+// 写经纬度: 5A0A 0110 DF12 05 6340B380 1D253F60 0008 D958
+//返回:   0A5A 0110 DF12 0005 9BDB
+//
+//读经纬度: F643 0103 DF12 0005 1E18
+//返回:  43F6 0103 DF12 05 6340B380 1D253F60 0008 CB8B

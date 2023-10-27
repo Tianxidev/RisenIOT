@@ -1,13 +1,12 @@
 package device
 
 import (
-	"RisenIOT/backend/agreement/unisound/lamp"
 	"RisenIOT/backend/emqx"
+	"RisenIOT/backend/logger"
 	"RisenIOT/backend/redis"
 	"encoding/base64"
 	"encoding/hex"
 	"errors"
-	"github.com/bytedance/sonic/ast"
 	"github.com/goccy/go-json"
 	"log"
 	"strings"
@@ -73,11 +72,6 @@ func (d *Device) DeviceList() ([]Info, error) {
 
 }
 
-// Get 获取设备实例
-func (d *Device) Get() *lamp.UnisoundLamp {
-	return lamp.NewUnisoundLamp()
-}
-
 // SendHex 发送 HEX 数据
 func (d *Device) SendHex(Topic, DeviceConnType string, data []byte) error {
 
@@ -129,23 +123,27 @@ func (d *Device) DeviceCmdPush(Payload string, Agreement string, DeviceId string
 }
 
 // UpdateDeviceInfo 更新设备信息
-func (d *Device) UpdateDeviceInfo(deviceId string, deviceInfo ast.Node) error {
+func (d *Device) UpdateDeviceInfo(deviceId string, deviceInfo interface{}) error {
 
 	var device Info
+	var deviceInfoMap map[string]interface{}
+	err := json.Unmarshal([]byte(deviceInfo.(string)), &deviceInfoMap)
+	if err != nil {
+		logger.GlobalLogger.ERROR("解析设备更新信息失败: %s", err)
+	}
 
 	// 查询 Redis 中是否存在设备信息
 	if deviceInfo, err := redis.NewRedis().Get(deviceId); err == nil {
 		if deviceInfo != "" {
-			log.Printf("从 Redis 中获取设备信息: %s", deviceInfo)
 			err := json.Unmarshal([]byte(deviceInfo), &device)
 			if err != nil {
-				log.Printf("解析设备信息失败: %s", err)
+				logger.GlobalLogger.ERROR("解析设备信息失败: %s", err)
 			}
 		}
 	}
 
 	// 更新设备信息
-	device.DeviceInfo = deviceInfo
+	device.DeviceInfo = deviceInfoMap
 
 	// api_device 转 json
 	deviceJson, _ := json.Marshal(device)
@@ -154,4 +152,22 @@ func (d *Device) UpdateDeviceInfo(deviceId string, deviceInfo ast.Node) error {
 	redis.NewRedis().Set(device.ProductID, string(deviceJson), -1)
 
 	return nil
+}
+
+// GetDeviceInfo 获取设备信息
+func (d *Device) GetDeviceInfo(deviceId string) (map[string]interface{}, error) {
+	var device Info
+
+	// 查询 Redis 中是否存在设备信息
+	if deviceInfo, err := redis.NewRedis().Get(deviceId); err == nil {
+		if deviceInfo != "" {
+			err := json.Unmarshal([]byte(deviceInfo), &device)
+			if err != nil {
+				logger.GlobalLogger.ERROR("解析设备信息失败: %s", err)
+			}
+		}
+	}
+
+	return device.DeviceInfo.(map[string]interface{}), nil
+
 }
