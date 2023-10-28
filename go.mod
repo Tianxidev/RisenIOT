@@ -6,6 +6,7 @@ require (
 	github.com/bytedance/sonic v1.10.2
 	github.com/casbin/casbin/v2 v2.77.2
 	github.com/gin-gonic/gin v1.9.1
+	github.com/goccy/go-json v0.10.2
 	github.com/gorilla/websocket v1.5.0
 	github.com/redis/go-redis/v9 v9.2.1
 	golang.org/x/text v0.13.0
@@ -23,9 +24,7 @@ require (
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.15.5 // indirect
-	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
-	github.com/kisielk/godepgraph v0.0.0-20221115040737-2d0831789458 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.5 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/leodido/go-urn v1.2.4 // indirect
