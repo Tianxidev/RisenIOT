@@ -124,7 +124,6 @@ func (d *Device) DeviceCmdPush(Payload string, Agreement string, DeviceId string
 
 // UpdateDeviceInfo 更新设备信息
 func (d *Device) UpdateDeviceInfo(deviceId string, deviceInfo map[string]interface{}) error {
-
 	var device Info
 
 	// 查询 Redis 中是否存在设备信息
@@ -161,6 +160,11 @@ func (d *Device) GetDeviceInfo(deviceId string) (map[string]interface{}, error) 
 				logger.GlobalLogger.ERROR("解析设备信息失败: %s", err)
 			}
 		}
+	}
+
+	// 判空设备信息
+	if device.DeviceInfo == nil {
+		return nil, errors.New("设备信息为空")
 	}
 
 	return device.DeviceInfo.(map[string]interface{}), nil
