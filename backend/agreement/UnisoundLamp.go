@@ -147,6 +147,67 @@ func (u *UnisoundLamp) TopicHandler(jsonRoot ast.Node) {
 			return
 		}
 
+		// 协议识别 - 设置光照强度返回 - 06 功能码 - DF 0A 寄存器 - 01 长度 - 通道 A
+		// 示例返回: 00 FF 01 06 DF 0A 00 00 72 1D - 0% 亮度
+		// 示例返回: 00 FF 01 06 DF 0A 00 14 72 12 - 20% 亮度
+		// 示例返回: 00 FF 01 06 DF 0A 00 64 73 F6 - 100% 亮度
+		if ulc.Cmd[0] == 0x06 && ulc.Data[0] == 0xDF && ulc.Data[1] == 0x0A && ulc.Data[2] == 0x00 {
+			var uli UnisoundLampInfo
+
+			// 读取设备信息
+			deviceInfo, err := device.CreateDevice().GetDeviceInfo(clientId)
+			deviceInfoJson, _ := json.Marshal(deviceInfo)
+			_ = json.Unmarshal(deviceInfoJson, &uli)
+
+			// 更新设备信息
+			uli.DeviceType = "云知声灯控"
+			uli.ChannelA = int(ulc.Data[4])
+
+			// 转换为map
+			uliJson, _ := json.Marshal(uli)
+			var deviceInfoMap map[string]interface{}
+			_ = json.Unmarshal(uliJson, &deviceInfoMap)
+
+			logger.GlobalLogger.INFO("[ 云知声灯控 ] 读取设备 %s 到 A 通道亮度: %d", clientId, ulc.Data[4])
+
+			// 更新设备信息
+			err = device.CreateDevice().UpdateDeviceInfo(clientId, deviceInfoMap)
+			if err != nil {
+				logger.GlobalLogger.ERROR("更新设备信息失败")
+			}
+
+		}
+
+		// 协议识别 - 设置光照强度返回 - 06 功能码 - DF 0C 寄存器 - 01 长度 - 通道 B
+		// 示例返回: 00 FF 01 06 DF 0C 00 00 72 1D - 0% 亮度
+		// 示例返回: 00 FF 01 06 DF 0C 00 14 72 12 - 20% 亮度
+		// 示例返回: 00 FF 01 06 DF 0C 00 64 73 F6 - 100% 亮度
+		if ulc.Cmd[0] == 0x06 && ulc.Data[0] == 0xDF && ulc.Data[1] == 0x0C && ulc.Data[2] == 0x00 {
+			var uli UnisoundLampInfo
+
+			// 读取设备信息
+			deviceInfo, err := device.CreateDevice().GetDeviceInfo(clientId)
+			deviceInfoJson, _ := json.Marshal(deviceInfo)
+			_ = json.Unmarshal(deviceInfoJson, &uli)
+
+			// 更新设备信息
+			uli.DeviceType = "云知声灯控"
+			uli.ChannelB = int(ulc.Data[4])
+
+			// 转换为map
+			uliJson, _ := json.Marshal(uli)
+			var deviceInfoMap map[string]interface{}
+			_ = json.Unmarshal(uliJson, &deviceInfoMap)
+
+			logger.GlobalLogger.INFO("[ 云知声灯控 ] 读取设备 %s 到 B 通道亮度: %d", clientId, ulc.Data[4])
+
+			// 更新设备信息
+			err = device.CreateDevice().UpdateDeviceInfo(clientId, deviceInfoMap)
+			if err != nil {
+				logger.GlobalLogger.ERROR("更新设备信息失败")
+			}
+		}
+
 		// 未识别协议
 		logger.GlobalLogger.INFO("[ 云知声灯控 ] 接收设备 %s 上报的未知数据: %s", clientId, data)
 		return
