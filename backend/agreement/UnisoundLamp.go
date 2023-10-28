@@ -53,6 +53,7 @@ func (u *UnisoundLamp) TopicHandler(jsonRoot ast.Node) {
 	if len(match1) > 1 && match1[1] == clientId {
 
 		var ulc unisoundLampCmd
+		var uli UnisoundLampInfo
 
 		data, _ := jsonRoot.Get("payload_hexstr").String()
 
@@ -80,8 +81,6 @@ func (u *UnisoundLamp) TopicHandler(jsonRoot ast.Node) {
 		// 1D253F60：纬度
 		// 0008：时区
 		if ulc.Cmd[0] == 0x03 && ulc.Data[0] == 0xDF && ulc.Data[1] == 0x12 && ulc.Data[2] == 0x05 {
-
-			var uli UnisoundLampInfo
 
 			// 读取设备信息
 			deviceInfo, _ := device.CreateDevice().GetDeviceInfo(clientId)
@@ -119,8 +118,6 @@ func (u *UnisoundLamp) TopicHandler(jsonRoot ast.Node) {
 		// 协议识别 - 读取双灯开关亮度状态 - 03 功能码 - 4005 寄存器 - 01 长度
 		if ulc.Cmd[0] == 0x03 && ulc.Data[0] == 0x40 && ulc.Data[1] == 0x05 && ulc.Data[2] == 0x01 {
 
-			var uli UnisoundLampInfo
-
 			// 读取设备信息
 			deviceInfo, err := device.CreateDevice().GetDeviceInfo(clientId)
 			deviceInfoJson, _ := json.Marshal(deviceInfo)
@@ -148,11 +145,10 @@ func (u *UnisoundLamp) TopicHandler(jsonRoot ast.Node) {
 		}
 
 		// 协议识别 - 设置光照强度返回 - 06 功能码 - DF 0A 寄存器 - 01 长度 - 通道 A
-		// 示例返回: 00 FF 01 06 DF 0A 00 00 72 1D - 0% 亮度
-		// 示例返回: 00 FF 01 06 DF 0A 00 14 72 12 - 20% 亮度
-		// 示例返回: 00 FF 01 06 DF 0A 00 64 73 F6 - 100% 亮度
+		// 示例返回: 00 FF 01 06 DF 0A 00 00 92 1C - 0% 亮度
+		// 示例返回: 00 FF 01 06 DF 0A 00 14 92 13 - 20% 亮度
+		// 示例返回: 00 FF 01 06 DF 0A 00 64 93 F7 - 100% 亮度
 		if ulc.Cmd[0] == 0x06 && ulc.Data[0] == 0xDF && ulc.Data[1] == 0x0A && ulc.Data[2] == 0x00 {
-			var uli UnisoundLampInfo
 
 			// 读取设备信息
 			deviceInfo, err := device.CreateDevice().GetDeviceInfo(clientId)
@@ -161,21 +157,21 @@ func (u *UnisoundLamp) TopicHandler(jsonRoot ast.Node) {
 
 			// 更新设备信息
 			uli.DeviceType = "云知声灯控"
-			uli.ChannelA = int(ulc.Data[4])
+			uli.ChannelA = int(ulc.Data[3])
 
 			// 转换为map
 			uliJson, _ := json.Marshal(uli)
 			var deviceInfoMap map[string]interface{}
 			_ = json.Unmarshal(uliJson, &deviceInfoMap)
 
-			logger.GlobalLogger.INFO("[ 云知声灯控 ] 读取设备 %s 到 A 通道亮度: %d", clientId, ulc.Data[4])
+			logger.GlobalLogger.INFO("[ 云知声灯控 ] 读取设备 %s 到 A 通道亮度: %d", clientId, ulc.Data[3])
 
 			// 更新设备信息
 			err = device.CreateDevice().UpdateDeviceInfo(clientId, deviceInfoMap)
 			if err != nil {
 				logger.GlobalLogger.ERROR("更新设备信息失败")
 			}
-
+			return
 		}
 
 		// 协议识别 - 设置光照强度返回 - 06 功能码 - DF 0C 寄存器 - 01 长度 - 通道 B
@@ -183,7 +179,6 @@ func (u *UnisoundLamp) TopicHandler(jsonRoot ast.Node) {
 		// 示例返回: 00 FF 01 06 DF 0C 00 14 72 12 - 20% 亮度
 		// 示例返回: 00 FF 01 06 DF 0C 00 64 73 F6 - 100% 亮度
 		if ulc.Cmd[0] == 0x06 && ulc.Data[0] == 0xDF && ulc.Data[1] == 0x0C && ulc.Data[2] == 0x00 {
-			var uli UnisoundLampInfo
 
 			// 读取设备信息
 			deviceInfo, err := device.CreateDevice().GetDeviceInfo(clientId)
@@ -192,20 +187,21 @@ func (u *UnisoundLamp) TopicHandler(jsonRoot ast.Node) {
 
 			// 更新设备信息
 			uli.DeviceType = "云知声灯控"
-			uli.ChannelB = int(ulc.Data[4])
+			uli.ChannelB = int(ulc.Data[3])
 
 			// 转换为map
 			uliJson, _ := json.Marshal(uli)
 			var deviceInfoMap map[string]interface{}
 			_ = json.Unmarshal(uliJson, &deviceInfoMap)
 
-			logger.GlobalLogger.INFO("[ 云知声灯控 ] 读取设备 %s 到 B 通道亮度: %d", clientId, ulc.Data[4])
+			logger.GlobalLogger.INFO("[ 云知声灯控 ] 读取设备 %s 到 B 通道亮度: %d", clientId, ulc.Data[3])
 
 			// 更新设备信息
 			err = device.CreateDevice().UpdateDeviceInfo(clientId, deviceInfoMap)
 			if err != nil {
 				logger.GlobalLogger.ERROR("更新设备信息失败")
 			}
+			return
 		}
 
 		// 未识别协议
