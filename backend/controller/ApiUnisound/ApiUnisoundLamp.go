@@ -5,9 +5,11 @@ import (
 	"RisenIOT/backend/controller/ApiResponse"
 	"RisenIOT/backend/device"
 	"RisenIOT/backend/logger"
+	"fmt"
 	"github.com/bytedance/sonic"
 	"github.com/bytedance/sonic/ast"
 	"github.com/gin-gonic/gin"
+	"strconv"
 )
 
 type LampController struct {
@@ -52,8 +54,6 @@ func (dc *LampController) LampOpenOrClose(context *gin.Context) {
 
 	// 判断是否是开灯命令
 	if string(command) == "on" {
-
-		//err := device.CreateDevice().SendHex(topic, "MQTT", device.CreateDevice().Get().LampOnCmd(int(chanVal)))
 		err := device.CreateDevice().SendHex(topic, "MQTT", agreement.NewUnisoundLamp().LampOnCmd(int(chanVal)))
 		if err != nil {
 			logger.GlobalLogger.ERROR("下发指令异常: %d", err)
@@ -117,13 +117,11 @@ func (dc *LampController) LampDimming(context *gin.Context) {
 	logger.GlobalLogger.INFO("接收到调光命令到订阅 %s, 通道: %d", topic, chanVal)
 
 	// 下发指令
-	if brightness != 0 {
-		err := device.CreateDevice().SendHex(topic, "MQTT", agreement.NewUnisoundLamp().LampBrightnessCmd(int(brightness), int(chanVal)))
-		if err != nil {
-			ApiResponse.Error(context, 400, "下发指令异常")
-			logger.GlobalLogger.ERROR("下发指令异常: %s", err)
-			return
-		}
+	err = device.CreateDevice().SendHex(topic, "MQTT", agreement.NewUnisoundLamp().LampBrightnessCmd(int(brightness), int(chanVal)))
+	if err != nil {
+		ApiResponse.Error(context, 400, "下发指令异常")
+		logger.GlobalLogger.ERROR("下发指令异常: %s", err)
+		return
 	}
 
 	ApiResponse.Success(context, "下发指令成功", nil)
@@ -157,6 +155,77 @@ func (dc *LampController) LampStatus(context *gin.Context) {
 		context.JSON(200, gin.H{
 			"code": 200,
 			"msg":  "查询设备状态成功",
+			"data": deviceInfo,
+		})
+		return
+	} else {
+		logger.GlobalLogger.ERROR("查询设备状态失败: %s", err)
+		context.JSON(200, gin.H{
+			"code": 400,
+			"msg":  "查询设备状态失败",
+		})
+	}
+
+}
+
+// SetLocation 设置经纬度接口
+func (dc *LampController) SetLocation(context *gin.Context) {
+
+	var err error
+	var root ast.Node
+	var longitudeByte []byte
+	var latitudeByte []byte
+
+	// 读取请求体
+	RawData, _ := context.GetRawData()
+
+	// 解析请求体
+	if root, err = sonic.GetFromString(string(RawData)); err != nil {
+		ApiResponse.Error(context, 400, "参数错误, 无法解析json")
+		logger.GlobalLogger.ERROR("参数错误: %s", err)
+		return
+	}
+
+	// 读取设备id
+	deviceId, _ := root.Get("device_id").String()
+
+	// 读取经度
+	longitude, err := root.Get("longitude").String()
+
+	// 读取维度
+	latitude, err := root.Get("latitude").String()
+
+	// 查询设备状态 redis
+	if deviceInfo, err := device.CreateDevice().GetDeviceInfo(deviceId); err == nil {
+
+		// 更新经度
+		deviceInfo["longitude"] = longitude
+
+		// 更新纬度
+		deviceInfo["latitude"] = latitude
+
+		// 更新设备信息
+		err := device.CreateDevice().UpdateDeviceInfo(deviceId, deviceInfo)
+		if err != nil {
+			logger.GlobalLogger.ERROR("更新设备信息失败: %s", err)
+		}
+
+		// 转换字符串为 uint
+		longitudeUint, _ := strconv.ParseUint(longitude, 10, 64)
+		latitudeUint, _ := strconv.ParseUint(latitude, 10, 64)
+
+		fmt.Println(longitudeUint)
+		fmt.Println(latitudeUint)
+
+		// 下发经纬度到设备
+		err = device.CreateDevice().SendHex(topicPrefix+deviceId, "MQTT", agreement.NewUnisoundLamp().SetLocationCmd(longitudeByte, latitudeByte))
+		if err != nil {
+			logger.GlobalLogger.ERROR("更新设备信息失败: %s", err)
+		}
+
+		context.JSON(200, gin.H{
+			"code": 200,
+			"msg":  "更新经纬度状态成功",
 			"data": deviceInfo,
 		})
 		return

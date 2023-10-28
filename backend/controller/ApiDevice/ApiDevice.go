@@ -32,6 +32,12 @@ func (dc *Controller) ReceiveDataFromEmqxWebHook(context *gin.Context) {
 	// 判断是否是 [云知声灯控] 协议
 	go agreement.NewUnisoundLamp().TopicHandler(root)
 
+	// 打印协议报文
+	data, _ := root.Get("payload_hexstr").String()
+	topic, _ := root.Get("topic").String()
+	clientid, _ := root.Get("clientid").String()
+	logger.GlobalLogger.LOG("EMQX", "接收到设备 %s 发送到订阅 %s 的数据: %s", clientid, topic, data)
+
 	ApiResponse.Success(context, "接收成功", nil)
 
 	return

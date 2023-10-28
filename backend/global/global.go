@@ -2,7 +2,7 @@ package global
 
 var (
 	SysName    = "RisenIOT"
-	SysVersion = "0.0.1.0009"
+	SysVersion = "0.0.1.0010"
 )
 
 // databaseSetting 数据库配置

@@ -34,4 +34,7 @@ func (s *DeviceRouter) New(Router *gin.RouterGroup) {
 	// 设备管理 - 云知声灯控 - 查询灯状态接口
 	router.POST("/unisound/lamp/status", lampController.LampStatus)
 
+	// 设备管理 - 云知声灯控 - 设置设备经纬度
+	router.POST("/unisound/lamp/position", lampController.SetLocation)
+
 }

@@ -5,6 +5,7 @@ import (
 	"RisenIOT/backend/logger"
 	"RisenIOT/backend/utils"
 	"encoding/hex"
+	"fmt"
 	"github.com/bytedance/sonic/ast"
 	"github.com/goccy/go-json"
 	"log"
@@ -45,12 +46,8 @@ func (u *UnisoundLamp) TopicHandler(jsonRoot ast.Node) {
 	// 示例订阅格式: /Lamp/TransOut/868247062445885
 	re1 := regexp.MustCompile(`/Lamp/TransOut/(\d{15})`)
 
-	// 示例订阅格式: /Lamp/TransIn/868247062445885
-	re2 := regexp.MustCompile(`/Lamp/TransIn/(\d{15})`)
-
 	// 匹配订阅
 	match1 := re1.FindStringSubmatch(topic)
-	match2 := re2.FindStringSubmatch(topic)
 
 	// 检查匹配结果1
 	if len(match1) > 1 && match1[1] == clientId {
@@ -78,6 +75,47 @@ func (u *UnisoundLamp) TopicHandler(jsonRoot ast.Node) {
 			return
 		}
 
+		// 协议识别 - 读取设备经纬度 - 示例返回: 43F6 0103 DF12 05 6340B380 1D253F60 0008 CB8B
+		// 6340B380：经度
+		// 1D253F60：纬度
+		// 0008：时区
+		if ulc.Cmd[0] == 0x03 && ulc.Data[0] == 0xDF && ulc.Data[1] == 0x12 && ulc.Data[2] == 0x05 {
+
+			var uli UnisoundLampInfo
+
+			// 读取设备信息
+			deviceInfo, _ := device.CreateDevice().GetDeviceInfo(clientId)
+			deviceInfoJson, _ := json.Marshal(deviceInfo)
+			_ = json.Unmarshal(deviceInfoJson, &uli)
+
+			// 转换出经度int
+			longitudeInt := utils.BToU32(ulc.Data, 3, 10)
+
+			// 转换出纬度int
+			latitudeInt := utils.BToU32(ulc.Data, 11, 18)
+
+			// 经度
+			uli.Longitude = fmt.Sprintf("%d", longitudeInt)
+
+			// 纬度
+			uli.Latitude = fmt.Sprintf("%d", latitudeInt)
+
+			// 转换为map
+			uliJson, _ := json.Marshal(uli)
+			var deviceInfoMap map[string]interface{}
+			_ = json.Unmarshal(uliJson, &deviceInfoMap)
+
+			// 更新设备信息
+			err := device.CreateDevice().UpdateDeviceInfo(clientId, deviceInfoMap)
+			if err != nil {
+				logger.GlobalLogger.ERROR("更新设备信息失败")
+			}
+
+			logger.GlobalLogger.INFO("[ 云知声灯控 ] 设备 %s 经度: %d, 纬度: %d", clientId, longitudeInt, latitudeInt)
+
+			return
+		}
+
 		// 协议识别 - 读取双灯开关亮度状态 - 03 功能码 - 4005 寄存器 - 01 长度
 		if ulc.Cmd[0] == 0x03 && ulc.Data[0] == 0x40 && ulc.Data[1] == 0x05 && ulc.Data[2] == 0x01 {
 
@@ -93,12 +131,15 @@ func (u *UnisoundLamp) TopicHandler(jsonRoot ast.Node) {
 			uli.ChannelA = int(ulc.Data[3])
 			uli.ChannelB = int(ulc.Data[4])
 
-			jsonStr, _ := json.Marshal(uli)
+			// 转换为map
+			uliJson, _ := json.Marshal(uli)
+			var deviceInfoMap map[string]interface{}
+			_ = json.Unmarshal(uliJson, &deviceInfoMap)
 
 			logger.GlobalLogger.INFO("[ 云知声灯控 ] 读取设备 %s 到 A 通道亮度: %d , B 通道亮度: %d", clientId, ulc.Data[3], ulc.Data[4])
 
 			// 更新设备信息
-			err = device.CreateDevice().UpdateDeviceInfo(clientId, string(jsonStr))
+			err = device.CreateDevice().UpdateDeviceInfo(clientId, deviceInfoMap)
 			if err != nil {
 				logger.GlobalLogger.ERROR("更新设备信息失败")
 			}
@@ -110,13 +151,6 @@ func (u *UnisoundLamp) TopicHandler(jsonRoot ast.Node) {
 		logger.GlobalLogger.INFO("[ 云知声灯控 ] 接收设备 %s 上报的未知数据: %s", clientId, data)
 		return
 
-	}
-
-	// 检查匹配结果2
-	if len(match2) > 1 && match2[1] == clientId {
-		data, _ := jsonRoot.Get("payload_hexstr").String()
-		logger.GlobalLogger.INFO("[ 云知声灯控 ] 下发到设备 %s 的数据: %s", clientId, data)
-		return
 	}
 
 }
@@ -133,7 +167,7 @@ func (u *UnisoundLamp) LampOnCmd(channel int) []byte {
 
 	// 检查通道是否合法
 	if channel < 1 || channel > 3 {
-		log.Printf("[ 云知声灯控 ] 通道不合法: %d", channel)
+		logger.GlobalLogger.ERROR("[ 云知声灯控 ] 通道不合法: %d", channel)
 		return []byte{}
 	}
 
@@ -155,7 +189,7 @@ func (u *UnisoundLamp) LampOnCmd(channel int) []byte {
 		ulc.CRC = []byte{byte(crc & 0xff), byte(crc >> 8)}
 		cmd = append(cmd, ulc.CRC...)
 
-		log.Printf("[ 云知声灯控 ] 通道 a 开灯命令: %X", cmd)
+		logger.GlobalLogger.INFO("[ 云知声灯控 ] 通道 a 开灯命令: %X", cmd)
 
 		return cmd
 	}
@@ -179,7 +213,7 @@ func (u *UnisoundLamp) LampOnCmd(channel int) []byte {
 		ulc.CRC = []byte{byte(crc & 0xff), byte(crc >> 8)}
 		cmd = append(cmd, ulc.CRC...)
 
-		log.Printf("[ 云知声灯控 ] 通道 b 开灯命令: %X", cmd)
+		logger.GlobalLogger.INFO("[ 云知声灯控 ] 通道 b 开灯命令: %X", cmd)
 
 		return cmd
 	}
@@ -195,7 +229,7 @@ func (u *UnisoundLamp) LampOffCmd(channel int) []byte {
 
 	// 检查通道是否合法
 	if channel < 1 || channel > 3 {
-		log.Printf("[ 云知声灯控 ] 通道不合法: %d", channel)
+		logger.GlobalLogger.ERROR("[ 云知声灯控 ] 通道不合法: %d", channel)
 		return []byte{}
 	}
 
@@ -217,7 +251,7 @@ func (u *UnisoundLamp) LampOffCmd(channel int) []byte {
 		ulc.CRC = []byte{byte(crc & 0xff), byte(crc >> 8)}
 		cmd = append(cmd, ulc.CRC...)
 
-		log.Printf("[ 云知声灯控 ] 通道 a 关灯命令: %X", cmd)
+		logger.GlobalLogger.INFO("[ 云知声灯控 ] 通道 a 关灯命令: %X", cmd)
 
 		return cmd
 	}
@@ -241,7 +275,7 @@ func (u *UnisoundLamp) LampOffCmd(channel int) []byte {
 		ulc.CRC = []byte{byte(crc & 0xff), byte(crc >> 8)}
 		cmd = append(cmd, ulc.CRC...)
 
-		log.Printf("[ 云知声灯控 ] 通道 b 关灯命令: %X", cmd)
+		logger.GlobalLogger.INFO("[ 云知声灯控 ] 通道 b 关灯命令: %X", cmd)
 
 		return cmd
 	}
@@ -282,7 +316,7 @@ func (u *UnisoundLamp) LampBrightnessCmd(brightness int, channel int) []byte {
 		ulc.CRC = []byte{byte(crc & 0xff), byte(crc >> 8)}
 		cmd = append(cmd, ulc.CRC...)
 
-		log.Printf("[ 云知声灯控 ] 通道 a 调光命令: %X", cmd)
+		logger.GlobalLogger.INFO("[ 云知声灯控 ] 通道 a 调光命令: %X", cmd)
 
 		return cmd
 	}
@@ -308,7 +342,7 @@ func (u *UnisoundLamp) LampBrightnessCmd(brightness int, channel int) []byte {
 		ulc.CRC = []byte{byte(crc & 0xff), byte(crc >> 8)}
 		cmd = append(cmd, ulc.CRC...)
 
-		log.Printf("[ 云知声灯控 ] 通道 b 调光命令: %X", cmd)
+		logger.GlobalLogger.INFO("[ 云知声灯控 ] 通道 b 调光命令: %X", cmd)
 
 		return cmd
 	}
@@ -316,9 +350,33 @@ func (u *UnisoundLamp) LampBrightnessCmd(brightness int, channel int) []byte {
 	return []byte{}
 }
 
-// 经纬度读取
-// 写经纬度: 5A0A 0110 DF12 05 6340B380 1D253F60 0008 D958
-//返回:   0A5A 0110 DF12 0005 9BDB
-//
-//读经纬度: F643 0103 DF12 0005 1E18
-//返回:  43F6 0103 DF12 05 6340B380 1D253F60 0008 CB8B
+// SetLocationCmd 设置经纬度
+func (u *UnisoundLamp) SetLocationCmd(longitude []byte, latitude []byte) []byte {
+
+	var ulc unisoundLampCmd
+	var cmd []byte
+
+	// 举例下发给设备的经纬度命令：5A0A 0110 DF12 05 6340B380 1D253F60 0008 D958
+	// 6340B380: 经度
+	// 1D253F60: 纬度
+	// 0008: 时区
+	ulc.Random = u.randomGenerate()
+	ulc.Addr = []byte{0x01}
+	ulc.Cmd = []byte{0x10}
+	ulc.Data = []byte{0xDF, 0x12, 0x05}
+
+	ulc.Data = append(ulc.Data, longitude...)
+	ulc.Data = append(ulc.Data, latitude...)
+	ulc.Data = append(ulc.Data, 0x00)
+	ulc.Data = append(ulc.Data, 0x08)
+
+	// 忽略随机码部分计算 CRC 校验码
+	crc := utils.CRC16(cmd[2:])
+	ulc.CRC = []byte{byte(crc & 0xff), byte(crc >> 8)}
+	cmd = append(cmd, ulc.CRC...)
+
+	log.Printf("[ 云知声灯控 ] 设置经纬度命令: %X", cmd)
+
+	return cmd
+
+}

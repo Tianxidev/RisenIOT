@@ -68,3 +68,10 @@ func InStringArray(target string, strArray []string) bool {
 	}
 	return false
 }
+
+// HexToFloat64 16进制转float64
+func HexToFloat64(hex []byte) float64 {
+	var f float64
+	_ = binary.Read(bytes.NewBuffer(hex), binary.BigEndian, &f)
+	return f
+}

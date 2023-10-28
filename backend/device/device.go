@@ -123,14 +123,9 @@ func (d *Device) DeviceCmdPush(Payload string, Agreement string, DeviceId string
 }
 
 // UpdateDeviceInfo 更新设备信息
-func (d *Device) UpdateDeviceInfo(deviceId string, deviceInfo interface{}) error {
+func (d *Device) UpdateDeviceInfo(deviceId string, deviceInfo map[string]interface{}) error {
 
 	var device Info
-	var deviceInfoMap map[string]interface{}
-	err := json.Unmarshal([]byte(deviceInfo.(string)), &deviceInfoMap)
-	if err != nil {
-		logger.GlobalLogger.ERROR("解析设备更新信息失败: %s", err)
-	}
 
 	// 查询 Redis 中是否存在设备信息
 	if deviceInfo, err := redis.NewRedis().Get(deviceId); err == nil {
@@ -143,7 +138,7 @@ func (d *Device) UpdateDeviceInfo(deviceId string, deviceInfo interface{}) error
 	}
 
 	// 更新设备信息
-	device.DeviceInfo = deviceInfoMap
+	device.DeviceInfo = deviceInfo
 
 	// api_device 转 json
 	deviceJson, _ := json.Marshal(device)
