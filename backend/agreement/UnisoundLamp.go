@@ -88,10 +88,10 @@ func (u *UnisoundLamp) TopicHandler(jsonRoot ast.Node) {
 			deviceInfoJson, _ := json.Marshal(deviceInfo)
 			_ = json.Unmarshal(deviceInfoJson, &uli)
 
-			// 转换出经度int
+			// 转换出经度int: 1665184640
 			longitudeInt := utils.BToU32(ulc.Data, 3, 10)
 
-			// 转换出纬度int
+			// 转换出纬度int: 576395
 			latitudeInt := utils.BToU32(ulc.Data, 11, 18)
 
 			// 经度
@@ -351,10 +351,22 @@ func (u *UnisoundLamp) LampBrightnessCmd(brightness int, channel int) []byte {
 }
 
 // SetLocationCmd 设置经纬度
-func (u *UnisoundLamp) SetLocationCmd(longitude []byte, latitude []byte) []byte {
+func (u *UnisoundLamp) SetLocationCmd(longitude int, latitude int) []byte {
 
 	var ulc unisoundLampCmd
 	var cmd []byte
+
+	// 转换经纬度为字节切片
+	longitudeByte := utils.IntToBytes(longitude)
+	latitudeByte := utils.IntToBytes(latitude)
+
+	// 检查byte不为空
+	if len(longitudeByte) == 0 || len(latitudeByte) == 0 {
+		log.Printf("[ 云知声灯控 ] 经纬度不能为空")
+		return []byte{}
+	}
+
+	log.Printf("[ 云知声灯控 ] 设置经纬度: %d => %X, %d => %X", longitude, longitudeByte, latitude, latitudeByte)
 
 	// 举例下发给设备的经纬度命令：5A0A 0110 DF12 05 6340B380 1D253F60 0008 D958
 	// 6340B380: 经度
@@ -365,10 +377,16 @@ func (u *UnisoundLamp) SetLocationCmd(longitude []byte, latitude []byte) []byte 
 	ulc.Cmd = []byte{0x10}
 	ulc.Data = []byte{0xDF, 0x12, 0x05}
 
-	ulc.Data = append(ulc.Data, longitude...)
-	ulc.Data = append(ulc.Data, latitude...)
+	ulc.Data = append(ulc.Data, longitudeByte...)
+	ulc.Data = append(ulc.Data, latitudeByte...)
 	ulc.Data = append(ulc.Data, 0x00)
 	ulc.Data = append(ulc.Data, 0x08)
+
+	// 构建命令
+	cmd = append(cmd, ulc.Random...)
+	cmd = append(cmd, ulc.Addr...)
+	cmd = append(cmd, ulc.Cmd...)
+	cmd = append(cmd, ulc.Data...)
 
 	// 忽略随机码部分计算 CRC 校验码
 	crc := utils.CRC16(cmd[2:])

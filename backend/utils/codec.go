@@ -7,6 +7,7 @@ import (
 	"golang.org/x/text/transform"
 	"io/ioutil"
 	"sort"
+	"strconv"
 )
 
 var hexNumbers = []byte("0123456789ABCDEF")
@@ -39,6 +40,31 @@ func U32ToB(v uint32, b []byte) {
 // U64ToB 将uint64转换为字节切片
 func U64ToB(v uint64, b []byte) {
 	binary.BigEndian.PutUint64(b, v)
+}
+
+// StringToInt 字符串转int
+func StringToInt(str string) int {
+	var i int
+	var err error
+	if i, err = strconv.Atoi(str); err != nil {
+		return 0
+	}
+	return i
+}
+
+// IntToBytes int转字节切片
+func IntToBytes(n int) []byte {
+	x := int32(n)
+	bytesBuffer := bytes.NewBuffer([]byte{})
+	binary.Write(bytesBuffer, binary.BigEndian, x)
+	return bytesBuffer.Bytes()
+}
+
+// Int64ToBytes int64转字节切片
+func Int64ToBytes(i uint64) []byte {
+	var buf = make([]byte, 8)
+	binary.BigEndian.PutUint64(buf, i)
+	return buf
 }
 
 // ByteToHex 编码
