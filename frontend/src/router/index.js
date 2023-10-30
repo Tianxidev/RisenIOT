@@ -65,7 +65,6 @@ router.beforeEach(async (to, from, next) => {
     next();
 });
 
-
 router.afterEach((to, from) => {
     window.document.title = to.meta.title + " - RisenIOT 物联网云平台";
 })
