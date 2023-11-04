@@ -1,5 +1,5 @@
 {
-  "name": "frontend",
+  "name": "riseniot_frontend",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,17 +9,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@element-plus/icons-vue": "^2.1.0",
-    "axios": "^1.3.5",
-    "element-plus": "^2.4.0",
-    "pinia": "^2.0.32",
+    "axios": "^1.6.0",
+    "pinia": "^2.1.7",
+    "tdesign-vue-next": "^1.6.5",
     "vue": "^3.3.4",
-    "vue-router": "^4.1.6"
+    "vue-router": "^4.2.5"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.2.3",
-    "@vitejs/plugin-vue-jsx": "^3.0.0",
-    "sass": "^1.62.0",
+    "less": "^4.2.0",
     "vite": "^4.4.5"
   }
 }

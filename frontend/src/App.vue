@@ -2,11 +2,7 @@
 </script>
 
 <template>
-  <a-config-provider :locale="locale">
-    <RouterView/>
-  </a-config-provider>
+  <RouterView />
 </template>
 
-<style scoped>
-
-</style>
+<style lang="less" scoped></style>
