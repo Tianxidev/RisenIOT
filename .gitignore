@@ -36,6 +36,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+*.rp
 
 # todo
 TODO*.md
