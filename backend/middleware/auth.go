@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"RisenIOT/backend/logger"
+	"RisenIOT/backend/pkg/logger"
 	"github.com/casbin/casbin/v2"
 	"github.com/gin-gonic/gin"
 )

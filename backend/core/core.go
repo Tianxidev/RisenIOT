@@ -1,12 +1,13 @@
 package core
 
 import (
-	"RisenIOT/backend/casbin"
+	"RisenIOT/backend/common/database"
+	"RisenIOT/backend/common/global"
 	"RisenIOT/backend/controller/ApiResponse"
-	"RisenIOT/backend/env"
-	"RisenIOT/backend/global"
-	"RisenIOT/backend/logger"
 	"RisenIOT/backend/middleware"
+	"RisenIOT/backend/pkg/casbin"
+	"RisenIOT/backend/pkg/env"
+	"RisenIOT/backend/pkg/logger"
 	"RisenIOT/backend/router"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -28,11 +29,14 @@ func Init() {
 	// 打印系统版本号
 	logger.GlobalLogger.INFO("系统版本号: " + global.SysVersion)
 
+	// 初始化数据库
+	database.Setup("mysql")
+
 	// casbin 初始化
-	err := casbin.SetupCasbinEnforcer()
-	if err != nil {
-		logger.GlobalLogger.ERROR("初始化权限管理模块异常: %v", err)
-	}
+	//err := casbin.SetupCasbinEnforcer()
+	//if err != nil {
+	//	logger.GlobalLogger.ERROR("初始化权限管理模块异常: %v", err)
+	//}
 
 }
 

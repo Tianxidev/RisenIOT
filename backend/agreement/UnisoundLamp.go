@@ -2,7 +2,7 @@ package agreement
 
 import (
 	"RisenIOT/backend/device"
-	"RisenIOT/backend/logger"
+	"RisenIOT/backend/pkg/logger"
 	"RisenIOT/backend/utils"
 	"encoding/hex"
 	"fmt"

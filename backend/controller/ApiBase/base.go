@@ -1,9 +1,8 @@
 package ApiBase
 
 import (
-	"RisenIOT/backend/casbin"
-	"RisenIOT/backend/global"
-	"RisenIOT/backend/logger"
+	"RisenIOT/backend/common/global"
+	"RisenIOT/backend/pkg/logger"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"log"
@@ -34,7 +33,7 @@ func (nbc *Controller) GetVersion(c *gin.Context) {
 
 // CasbinReload 权限管理重启
 func (nbc *Controller) CasbinReload(c *gin.Context) {
-	casbin.SetupCasbinEnforcer()
+	//casbin.SetupCasbinEnforcer()
 	c.JSON(200, gin.H{
 		"code": 200,
 		"msg":  "success",

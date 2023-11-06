@@ -1,9 +1,20 @@
 package global
 
+import (
+	"RisenIOT/backend/common/config"
+	"github.com/casbin/casbin/v2"
+	"gorm.io/gorm"
+)
+
 var (
 	SysName    = "RisenIOT"
 	SysVersion = "0.0.1.0010"
 )
+
+var Cfg config.Conf = config.DefaultConfig()
+
+var CasbinEnforcer *casbin.SyncedEnforcer
+var Eloquent *gorm.DB
 
 // databaseSetting 数据库配置
 type databaseSetting struct {

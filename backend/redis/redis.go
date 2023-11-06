@@ -1,7 +1,7 @@
 package redis
 
 import (
-	"RisenIOT/backend/env"
+	"RisenIOT/backend/pkg/env"
 	"context"
 	"fmt"
 	"github.com/redis/go-redis/v9"
