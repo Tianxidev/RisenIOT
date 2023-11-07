@@ -8,17 +8,17 @@ import (
 
 // SysUserId 用户ID
 type SysUserId struct {
-	UserId int `gorm:"column:uid" gorm:"primary_key;"  json:"uid"`
+	UserId int `gorm:"column:uid" gorm:"primary_key;"  json:"uid"` // 用户ID
 }
 
 // SysUsername 用户名
 type SysUsername struct {
-	Username string `gorm:"column:username" gorm:"size:64" json:"username"`
+	Username string `gorm:"column:username" gorm:"size:64" json:"username"` // 用户名
 }
 
 // SysPassword 密码
 type SysPassword struct {
-	Password string `gorm:"column:password" gorm:"size:128" json:"password"`
+	Password string `gorm:"column:password" gorm:"size:128" json:"password"` // 密码
 }
 
 // LoginM 登录模型
@@ -31,6 +31,7 @@ type LoginM struct {
 type SysUser struct {
 	SysUserId
 	LoginM
+	RoleId int `gorm:"column:role_id" gorm:"size:11" json:"role_id"` // 角色ID
 }
 
 // TableName 表名
@@ -72,5 +73,17 @@ func (e SysUser) Insert() (id int, err error) {
 		return
 	}
 	id = e.UserId
+	return
+}
+
+// GetUserFromId 根据用户ID获取用户信息
+func (e *SysUser) GetUserFromId() (user SysUser, err error) {
+
+	// 查询用户信息
+	err = global.Eloquent.Table("sys_user").Where("uid = ? ", e.UserId).Find(&user).Error
+	if e != nil {
+		return
+	}
+
 	return
 }

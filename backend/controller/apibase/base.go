@@ -24,7 +24,7 @@ var upgrader = websocket.Upgrader{
 } // use default options
 
 // GetVersion 获取系统版本信息
-func (this *Controller) GetVersion(context *gin.Context) {
+func (e *Controller) GetVersion(context *gin.Context) {
 	logger.GlobalLogger.INFO("请求获取系统版本信息")
 	context.JSON(200, gin.H{
 		"code":          200,
@@ -34,7 +34,7 @@ func (this *Controller) GetVersion(context *gin.Context) {
 }
 
 // CasbinReload 权限管理重启
-func (this *Controller) CasbinReload(context *gin.Context) {
+func (e *Controller) CasbinReload(context *gin.Context) {
 	_, err := mycasbin.LoadPolicy()
 	if err != nil {
 		apiresponse.Error(context, 500, "加载权限管理模块异常: %v", err)
@@ -44,7 +44,7 @@ func (this *Controller) CasbinReload(context *gin.Context) {
 }
 
 // ConsoleLogWS 控制台日志WebSocket
-func (this *Controller) ConsoleLogWS(context *gin.Context) {
+func (e *Controller) ConsoleLogWS(context *gin.Context) {
 
 	// 升级get请求为webSocket协议
 	wsConn, err := upgrader.Upgrade(context.Writer, context.Request, nil)

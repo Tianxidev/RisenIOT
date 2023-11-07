@@ -2,6 +2,7 @@ package models
 
 import (
 	"RisenIOT/backend/common/global"
+	"RisenIOT/backend/pkg/myjwt"
 	"RisenIOT/backend/utils"
 )
 
@@ -26,4 +27,18 @@ func (u *Login) GetUser() (user SysUser, e error) {
 	}
 
 	return
+}
+
+// GenToken 生成 jwt token
+func (u *Login) GenToken() (token string, e error) {
+	user, err := u.GetUser()
+	if err != nil {
+		return "", err
+	}
+
+	// 生成 token
+	token, e = myjwt.GenToken(int64(user.SysUserId.UserId))
+
+	return
+
 }

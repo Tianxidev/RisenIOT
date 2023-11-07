@@ -27,6 +27,7 @@ func Setup() {
 					Password: "123456",
 				},
 			},
+			RoleId: 0,
 		}.Insert()
 		if err != nil {
 			logger.GlobalLogger.ERROR("插入管理员用户数据异常: %v", err)
@@ -45,12 +46,32 @@ func Setup() {
 		// 插入 root 角色的访问控制规则
 		_, err = CasbinRule{
 			PType: "p",
-			V0:    "root",
+			V0:    "0",
 			V1:    "*",
 			V2:    "*",
 		}.Insert()
 		if err != nil {
 			logger.GlobalLogger.ERROR("插入 root 角色的访问控制规则异常: %v", err)
+		}
+
+	}
+
+	// 检查表 sys_role 是否存在
+	if !global.Eloquent.Migrator().HasTable(&SysRole{}) {
+
+		// 创建表
+		err = global.Eloquent.AutoMigrate(&SysRole{})
+		if err != nil {
+			panic(err)
+		}
+
+		// 插入 root 角色
+		_, err = SysRole{
+			RoleName: "超级管理员",
+			RoleID:   0,
+		}.Insert()
+		if err != nil {
+			logger.GlobalLogger.ERROR("插入 root 角色异常: %v", err)
 		}
 
 	}

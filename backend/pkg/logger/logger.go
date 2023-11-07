@@ -29,6 +29,13 @@ func (l *Logger) INFO(format string, a ...any) {
 	}
 }
 
+// SUCCESS 记录 SUCCESS 级别的日志
+func (l *Logger) SUCCESS(format string, a ...any) {
+	for _, writer := range l.writerList {
+		writer.Write("SUCCESS", fmt.Sprintf(format, a...))
+	}
+}
+
 // DEBUG 记录 DEBUG 级别的日志
 func (l *Logger) DEBUG(format string, a ...any) {
 	for _, writer := range l.writerList {

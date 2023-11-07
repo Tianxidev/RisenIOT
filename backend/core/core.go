@@ -74,6 +74,8 @@ func Enable() {
 	// 配置 gin 日志中间件
 	engine.Use(gin.LoggerWithConfig(conf))
 
+	engine.Use(middleware.NoCache())
+
 	// 配置 gin 同源策略中间件
 	engine.Use(middleware.Cors())
 

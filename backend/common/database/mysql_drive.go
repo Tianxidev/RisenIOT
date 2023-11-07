@@ -15,7 +15,6 @@ type Mysql struct {
 }
 
 func (e *Mysql) Setup() {
-	//global.Source = e.GetConnect()
 	db, err := sql.Open("mysql", e.GetConnect())
 	if err != nil {
 		logger.GlobalLogger.ERROR(e.GetDriver()+" connect error :", err)

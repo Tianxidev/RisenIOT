@@ -3,7 +3,7 @@ package device
 import (
 	"RisenIOT/backend/emqx"
 	"RisenIOT/backend/pkg/logger"
-	"RisenIOT/backend/redis"
+	"RisenIOT/backend/pkg/redis"
 	"encoding/base64"
 	"encoding/hex"
 	"errors"

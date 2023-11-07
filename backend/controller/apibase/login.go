@@ -8,7 +8,7 @@ import (
 )
 
 // Login 登录
-func (this *Controller) Login(context *gin.Context) {
+func (e *Controller) Login(context *gin.Context) {
 	var loginVals models.Login
 	var code = 200
 	var msg = "登录成功"
@@ -26,9 +26,15 @@ func (this *Controller) Login(context *gin.Context) {
 	username = loginVals.Username
 
 	// 获取用户信息
-	user, e := loginVals.GetUser()
-	if e == nil {
-		apiresponse.Success(context, user, msg)
+	if _, err := loginVals.GetUser(); err == nil {
+
+		// 生成 jwt token
+		token, err := loginVals.GenToken()
+		if err != nil {
+			return
+		}
+		apiresponse.Success(context, token, msg)
+
 	} else {
 		msg = "登录失败"
 		code = 1
