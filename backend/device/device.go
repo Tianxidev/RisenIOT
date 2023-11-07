@@ -98,7 +98,7 @@ func (d *Device) DeviceCmdPush(Payload string, Agreement string, DeviceId string
 	Payload = strings.ReplaceAll(Payload, " ", "")
 
 	// 判断设备类型是否是[云知声]
-	if DeviceType == "ApiUnisound" && Agreement == "mqtt" {
+	if DeviceType == "apiunisound" && Agreement == "mqtt" {
 
 		var data []byte
 

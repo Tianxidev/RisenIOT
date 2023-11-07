@@ -1,8 +1,10 @@
-package ApiBase
+package apibase
 
 import (
 	"RisenIOT/backend/common/global"
+	"RisenIOT/backend/controller/apiresponse"
 	"RisenIOT/backend/pkg/logger"
+	"RisenIOT/backend/pkg/mycasbin"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"log"
@@ -22,9 +24,9 @@ var upgrader = websocket.Upgrader{
 } // use default options
 
 // GetVersion 获取系统版本信息
-func (nbc *Controller) GetVersion(c *gin.Context) {
+func (this *Controller) GetVersion(context *gin.Context) {
 	logger.GlobalLogger.INFO("请求获取系统版本信息")
-	c.JSON(200, gin.H{
+	context.JSON(200, gin.H{
 		"code":          200,
 		"SystemName":    global.SysName,
 		"SystemVersion": global.SysVersion,
@@ -32,19 +34,20 @@ func (nbc *Controller) GetVersion(c *gin.Context) {
 }
 
 // CasbinReload 权限管理重启
-func (nbc *Controller) CasbinReload(c *gin.Context) {
-	//casbin.SetupCasbinEnforcer()
-	c.JSON(200, gin.H{
-		"code": 200,
-		"msg":  "success",
-	})
+func (this *Controller) CasbinReload(context *gin.Context) {
+	_, err := mycasbin.LoadPolicy()
+	if err != nil {
+		apiresponse.Error(context, 500, "加载权限管理模块异常: %v", err)
+		return
+	}
+	apiresponse.Success(context, nil, "权限管理模块加载成功")
 }
 
 // ConsoleLogWS 控制台日志WebSocket
-func (nbc *Controller) ConsoleLogWS(c *gin.Context) {
+func (this *Controller) ConsoleLogWS(context *gin.Context) {
 
 	// 升级get请求为webSocket协议
-	wsConn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+	wsConn, err := upgrader.Upgrade(context.Writer, context.Request, nil)
 	if err != nil {
 		log.Print("upgrade:", err)
 		return

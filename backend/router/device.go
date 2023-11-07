@@ -1,8 +1,8 @@
 package router
 
 import (
-	"RisenIOT/backend/controller/ApiDevice"
-	"RisenIOT/backend/controller/ApiUnisound"
+	"RisenIOT/backend/controller/apidevice"
+	"RisenIOT/backend/controller/apiunisound"
 	"github.com/gin-gonic/gin"
 )
 
@@ -13,8 +13,8 @@ func (s *DeviceRouter) New(Router *gin.RouterGroup) {
 	router := Router.Group("device")
 
 	// 创建控制器
-	deviceController := new(ApiDevice.Controller)
-	lampController := new(ApiUnisound.LampController)
+	deviceController := new(apidevice.Controller)
+	lampController := new(apiunisound.LampController)
 
 	// 设备管理 - 查询设备列表
 	router.GET("/list", deviceController.DeviceList)

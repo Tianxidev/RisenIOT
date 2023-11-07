@@ -3,11 +3,12 @@ package core
 import (
 	"RisenIOT/backend/common/database"
 	"RisenIOT/backend/common/global"
-	"RisenIOT/backend/controller/ApiResponse"
+	"RisenIOT/backend/controller/apiresponse"
 	"RisenIOT/backend/middleware"
-	"RisenIOT/backend/pkg/casbin"
+	"RisenIOT/backend/models"
 	"RisenIOT/backend/pkg/env"
 	"RisenIOT/backend/pkg/logger"
+	"RisenIOT/backend/pkg/mycasbin"
 	"RisenIOT/backend/router"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -32,8 +33,13 @@ func Init() {
 	// 初始化数据库
 	database.Setup("mysql")
 
+	// 初始化数据库表模型
+	models.Setup()
+
 	// casbin 初始化
-	//err := casbin.SetupCasbinEnforcer()
+	mycasbin.Setup()
+
+	//err := mycasbin.SetupCasbinEnforcer()
 	//if err != nil {
 	//	logger.GlobalLogger.ERROR("初始化权限管理模块异常: %v", err)
 	//}
@@ -72,7 +78,7 @@ func Enable() {
 	engine.Use(middleware.Cors())
 
 	// 配置 gin 认证中间件
-	engine.Use(middleware.Auth(casbin.Enforcer))
+	engine.Use(middleware.Auth())
 
 	// 创建路由组
 	v1ApiGroup := engine.Group("/api/v1")
@@ -92,7 +98,7 @@ func Enable() {
 		}
 
 		// 返回json
-		ApiResponse.Success(c, "获取路由列表成功", json)
+		apiresponse.Success(c, json, "获取路由列表成功")
 
 	})
 

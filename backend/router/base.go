@@ -1,7 +1,7 @@
 package router
 
 import (
-	"RisenIOT/backend/controller/ApiBase"
+	"RisenIOT/backend/controller/apibase"
 	"github.com/gin-gonic/gin"
 )
 
@@ -12,10 +12,11 @@ func (s *BaseRouter) New(Router *gin.RouterGroup) {
 	router := Router.Group("base")
 
 	// 创建控制器
-	controller := new(ApiBase.Controller)
+	controller := new(apibase.Controller)
 
 	// 注册接口
 	router.GET("/sys/version", controller.GetVersion)
 	router.GET("/auth/reload", controller.CasbinReload)
-	router.GET("/log/consoleLogWS", controller.ConsoleLogWS)
+	//router.GET("/log/consoleLogWS", controller.ConsoleLogWS)
+	router.POST("/login", controller.Login)
 }

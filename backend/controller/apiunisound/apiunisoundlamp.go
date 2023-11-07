@@ -1,8 +1,8 @@
-package ApiUnisound
+package apiunisound
 
 import (
 	"RisenIOT/backend/agreement"
-	"RisenIOT/backend/controller/ApiResponse"
+	"RisenIOT/backend/controller/apiresponse"
 	"RisenIOT/backend/device"
 	"RisenIOT/backend/pkg/logger"
 	"RisenIOT/backend/utils"
@@ -27,7 +27,7 @@ func (dc *LampController) LampOpenOrClose(context *gin.Context) {
 
 	// 解析请求体
 	if root, err = sonic.GetFromString(string(RawData)); err != nil {
-		ApiResponse.Error(context, 400, "参数错误, 无法解析json")
+		apiresponse.Error(context, 400, "参数错误, 无法解析json")
 		logger.GlobalLogger.ERROR("参数错误: %s", err)
 		return
 	}
@@ -41,7 +41,7 @@ func (dc *LampController) LampOpenOrClose(context *gin.Context) {
 	// 通道
 	chanVal, err := root.Get("chan").Int64()
 	if err != nil {
-		ApiResponse.Error(context, 400, "参数错误, 无法读取通道")
+		apiresponse.Error(context, 400, "参数错误, 无法读取通道")
 		logger.GlobalLogger.ERROR("参数错误: %s", err)
 		return
 	}
@@ -56,7 +56,7 @@ func (dc *LampController) LampOpenOrClose(context *gin.Context) {
 		err := device.CreateDevice().SendHex(topic, "MQTT", agreement.NewUnisoundLamp().LampOnCmd(int(chanVal)))
 		if err != nil {
 			logger.GlobalLogger.ERROR("下发指令异常: %d", err)
-			ApiResponse.Error(context, 400, "下发指令异常")
+			apiresponse.Error(context, 400, "下发指令异常")
 			return
 		}
 	}
@@ -66,12 +66,12 @@ func (dc *LampController) LampOpenOrClose(context *gin.Context) {
 		err := device.CreateDevice().SendHex(topic, "MQTT", agreement.NewUnisoundLamp().LampOffCmd(int(chanVal)))
 		if err != nil {
 			logger.GlobalLogger.ERROR("下发指令异常: %s", err)
-			ApiResponse.Error(context, 400, "下发指令异常")
+			apiresponse.Error(context, 400, "下发指令异常")
 			return
 		}
 	}
 
-	ApiResponse.Success(context, "下发指令成功", nil)
+	apiresponse.Success(context, nil, "下发指令成功")
 
 }
 
@@ -86,7 +86,7 @@ func (dc *LampController) LampDimming(context *gin.Context) {
 
 	// 解析请求体
 	if root, err = sonic.GetFromString(string(RawData)); err != nil {
-		ApiResponse.Error(context, 400, "参数错误, 无法解析json")
+		apiresponse.Error(context, 400, "参数错误, 无法解析json")
 		logger.GlobalLogger.ERROR("参数错误: %s", err)
 		return
 	}
@@ -97,7 +97,7 @@ func (dc *LampController) LampDimming(context *gin.Context) {
 	// 亮度
 	brightness, err := root.Get("brightness").Int64()
 	if err != nil {
-		ApiResponse.Error(context, 400, "参数错误, 无法读取亮度")
+		apiresponse.Error(context, 400, "参数错误, 无法读取亮度")
 		logger.GlobalLogger.ERROR("参数错误: %s", err)
 		return
 	}
@@ -105,7 +105,7 @@ func (dc *LampController) LampDimming(context *gin.Context) {
 	// 通道
 	chanVal, err := root.Get("chan").Int64()
 	if err != nil {
-		ApiResponse.Error(context, 400, "参数错误, 无法读取通道")
+		apiresponse.Error(context, 400, "参数错误, 无法读取通道")
 		logger.GlobalLogger.ERROR("参数错误: %s", err)
 		return
 	}
@@ -118,12 +118,12 @@ func (dc *LampController) LampDimming(context *gin.Context) {
 	// 下发指令
 	err = device.CreateDevice().SendHex(topic, "MQTT", agreement.NewUnisoundLamp().LampBrightnessCmd(int(brightness), int(chanVal)))
 	if err != nil {
-		ApiResponse.Error(context, 400, "下发指令异常")
+		apiresponse.Error(context, 400, "下发指令异常")
 		logger.GlobalLogger.ERROR("下发指令异常: %s", err)
 		return
 	}
 
-	ApiResponse.Success(context, "下发指令成功", nil)
+	apiresponse.Success(context, nil, "下发指令成功")
 
 }
 
@@ -138,7 +138,7 @@ func (dc *LampController) LampStatus(context *gin.Context) {
 
 	// 解析请求体
 	if root, err = sonic.GetFromString(string(RawData)); err != nil {
-		ApiResponse.Error(context, 400, "参数错误, 无法解析json")
+		apiresponse.Error(context, 400, "参数错误, 无法解析json")
 		logger.GlobalLogger.ERROR("参数错误: %s", err)
 		return
 	}
@@ -178,7 +178,7 @@ func (dc *LampController) SetLocation(context *gin.Context) {
 
 	// 解析请求体
 	if root, err = sonic.GetFromString(string(RawData)); err != nil {
-		ApiResponse.Error(context, 400, "参数错误, 无法解析json")
+		apiresponse.Error(context, 400, "参数错误, 无法解析json")
 		logger.GlobalLogger.ERROR("参数错误: %s", err)
 		return
 	}

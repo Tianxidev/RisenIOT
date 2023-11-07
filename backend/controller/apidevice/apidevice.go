@@ -1,8 +1,8 @@
-package ApiDevice
+package apidevice
 
 import (
 	"RisenIOT/backend/agreement"
-	"RisenIOT/backend/controller/ApiResponse"
+	"RisenIOT/backend/controller/apiresponse"
 	"RisenIOT/backend/device"
 	"RisenIOT/backend/pkg/logger"
 	"fmt"
@@ -24,7 +24,7 @@ func (dc *Controller) ReceiveDataFromEmqxWebHook(context *gin.Context) {
 
 	// 解析请求体
 	if root, err = sonic.GetFromString(string(RawData)); err != nil {
-		ApiResponse.Error(context, 400, "参数错误, 无法解析json")
+		apiresponse.Error(context, 400, "参数错误, 无法解析json")
 		logger.GlobalLogger.ERROR("参数错误: %s", err)
 		return
 	}
@@ -38,7 +38,7 @@ func (dc *Controller) ReceiveDataFromEmqxWebHook(context *gin.Context) {
 	clientid, _ := root.Get("clientid").String()
 	logger.GlobalLogger.LOG("EMQX", "接收到设备 %s 发送到订阅 %s 的数据: %s", clientid, topic, data)
 
-	ApiResponse.Success(context, "接收成功", nil)
+	apiresponse.Success(context, nil, "接收成功")
 
 	return
 }

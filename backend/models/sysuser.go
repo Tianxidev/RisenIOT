@@ -1,0 +1,76 @@
+package models
+
+import (
+	"RisenIOT/backend/common/global"
+	"errors"
+	"golang.org/x/crypto/bcrypt"
+)
+
+// SysUserId 用户ID
+type SysUserId struct {
+	UserId int `gorm:"column:uid" gorm:"primary_key;"  json:"uid"`
+}
+
+// SysUsername 用户名
+type SysUsername struct {
+	Username string `gorm:"column:username" gorm:"size:64" json:"username"`
+}
+
+// SysPassword 密码
+type SysPassword struct {
+	Password string `gorm:"column:password" gorm:"size:128" json:"password"`
+}
+
+// LoginM 登录模型
+type LoginM struct {
+	SysUsername
+	SysPassword
+}
+
+// SysUser 用户表结构
+type SysUser struct {
+	SysUserId
+	LoginM
+}
+
+// TableName 表名
+func (SysUser) TableName() string {
+	return "sys_user"
+}
+
+// Encrypt 加密
+func (e *SysUser) Encrypt() (err error) {
+	if e.Password == "" {
+		return
+	}
+
+	var hash []byte
+	if hash, err = bcrypt.GenerateFromPassword([]byte(e.Password), bcrypt.DefaultCost); err != nil {
+		return
+	} else {
+		e.Password = string(hash)
+		return
+	}
+}
+
+// Insert 添加用户
+func (e SysUser) Insert() (id int, err error) {
+	if err = e.Encrypt(); err != nil {
+		return
+	}
+
+	// check 用户名
+	var count int64
+	global.Eloquent.Table(e.TableName()).Where("username = ?", e.Username).Count(&count)
+	if count > 0 {
+		err = errors.New("账户已存在！")
+		return
+	}
+
+	//添加数据
+	if err = global.Eloquent.Table(e.TableName()).Create(&e).Error; err != nil {
+		return
+	}
+	id = e.UserId
+	return
+}

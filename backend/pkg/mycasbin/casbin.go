@@ -1,10 +1,11 @@
-package casbin
+package mycasbin
 
 import (
 	"RisenIOT/backend/common/global"
 	"github.com/casbin/casbin/v2"
 	"github.com/casbin/casbin/v2/model"
 	gormAdapter "github.com/casbin/gorm-adapter/v3"
+	"log"
 )
 
 var Enforcer *casbin.Enforcer
@@ -32,25 +33,45 @@ m = (r.sub == p.sub || p.sub == "*") && keyMatch(r.obj,p.obj) && (r.act == p.act
 func Setup() {
 	var err error
 
-	//csvPath := "./config/rbac.csv"
-	//logger.GlobalLogger.INFO("加载路由控制表:" + csvPath)
-
-	//Apter, err := gormAdapter.NewAdapterByDBUsePrefix(global.Eloquent, "sys_")
+	// 创建 casbin 适配器
 	Apter, err := gormAdapter.NewAdapterByDB(global.Eloquent)
 	if err != nil {
 		panic(err)
 	}
+
+	// 创建模型
 	m, err := model.NewModelFromString(modelText)
 	if err != nil {
 		panic(err)
 	}
+
+	// 创建 casbin 实例
 	e, err := casbin.NewSyncedEnforcer(m, Apter)
 	if err != nil {
 		panic(err)
 	}
+
+	// 加载策略
 	err = e.LoadPolicy()
 	if err != nil {
 		panic(err)
 	}
+
 	global.CasbinEnforcer = e
+
+}
+
+// Casbin 获取casbin实例
+func Casbin() *casbin.SyncedEnforcer {
+	return global.CasbinEnforcer
+}
+
+// LoadPolicy 加载策略
+func LoadPolicy() (*casbin.SyncedEnforcer, error) {
+	if err := global.CasbinEnforcer.LoadPolicy(); err == nil {
+		return global.CasbinEnforcer, err
+	} else {
+		log.Printf("casbin rbac_model or policy init error, message: %v \r\n", err.Error())
+		return nil, err
+	}
 }
