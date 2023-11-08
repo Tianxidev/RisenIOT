@@ -18,8 +18,10 @@
             <tdesign-setting />
         </div>
         <footer class="copyright">
-            <p>&copy;&nbsp;{{ new Date().getFullYear() }}<a href="https://riseniot.tianxidev.wiki">RisenIOT</a>&nbsp;<span
-                    class="ml-1">暂无备案号</span></p>
+            <p>&copy;&nbsp;{{ new Date().getFullYear() }}
+                <a href="https://riseniot.tianxidev.wiki">RisenIOT</a>&nbsp;
+                <span class="ml-1">&nbsp;暂无备案号</span>
+            </p>
         </footer>
     </div>
 </template>

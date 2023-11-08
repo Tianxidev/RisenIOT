@@ -45,11 +45,11 @@
         </div>
     </t-form>
 </template>
-  
-<script setup lang="ts">
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
 
+<script setup lang="ts">
+import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import UserApi from './../../../api/user';
 
 const INITIAL_DATA = {
     phone: '',
@@ -75,6 +75,10 @@ const switchType = (val: string) => {
     type.value = val;
 };
 
+function show(){
+    this.$notify.warning({title: '请输入标题', content: '请输入内容'})
+}
+
 const router = useRouter();
 const loadingLogin = ref(false);
 const onSubmit = async ({ validateResult }) => {
@@ -84,13 +88,29 @@ const onSubmit = async ({ validateResult }) => {
     loadingLogin.value = true;
     if (validateResult === true) {
         console.log(formData.value);
+        if (type.value === 'password') {
+            if (formData.value.account == "" && formData.value.password == "") {
+                loadingLogin.value = false;
+                return;
+            }
+            let res = await UserApi.login(formData.value.account, formData.value.password);
+            if (res.code == 200) {
+                loadingLogin.value = false;
+                router.push({ path: '/home' });
+            } else {
+                show();
+                loadingLogin.value = false;
+            }
+
+        } else {
+            loadingLogin.value = false;
+        }
 
         loadingLogin.value = false;
     }
 };
 </script>
-  
+
 <style lang="less" scoped>
 @import url('../index.less');
 </style>
-  

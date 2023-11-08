@@ -24,7 +24,13 @@ export default defineConfig({
     // 允许跨域
     cors: true,
     // 自定义代理规则
-    proxy: {},
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8090',
+        changeOrigin: true,
+        // rewrite: (path) => path.replace(/^\/api/, ''),
+      },
+    },
   },
   build: {
     // 设置最终构建的浏览器兼容目标
