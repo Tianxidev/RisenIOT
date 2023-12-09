@@ -1,6 +1,6 @@
 package main
 
-import "RisenIOT/backend/core"
+import "RisenIOT/core"
 
 func main() {
 	core.Init()
