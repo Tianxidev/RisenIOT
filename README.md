@@ -23,6 +23,7 @@ npm run dev
 后端
 ```bash
 // Windows 平台
+go mod init RisenIOT
 go mod tidy
 go env -w CGO_ENABLED=0
 go env -w GOOS=windows
@@ -42,6 +43,8 @@ npm run build
 
 后端
 ```bash
+go mod init RisenIOT
+
 // Windows 平台
 go mod tidy
 go env -w CGO_ENABLED=0

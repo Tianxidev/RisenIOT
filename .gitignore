@@ -6,6 +6,7 @@
 ## golang
 vendor
 go.sum
+go.mod
 
 ## binary
 RisenIOT
