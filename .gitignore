@@ -16,7 +16,6 @@ RisenIOT
 ## log
 *.log
 *.log~
-yarn.lock
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -29,6 +28,11 @@ dist
 dist-ssr
 *.local
 .vite
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+test
+test_*
 
 # Editor directories and files
 .DS_Store
