@@ -19,3 +19,4 @@ node_modules
 go.sum
 .env.development
 config.yaml
+vendor/
