@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"backend/internal/router"
 	"context"
 	"strconv"
 
@@ -8,7 +9,6 @@ import (
 	"github.com/gogf/gf/v2/net/ghttp"
 	"github.com/gogf/gf/v2/os/gcmd"
 	"github.com/gogf/gf/v2/os/gcfg"
-	"backend/internal/controller/hello"
 )
 
 var (

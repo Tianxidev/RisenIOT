@@ -1,0 +1,19 @@
+server:
+  address: ":10001"
+  openapiPath: "/api.json"
+  swaggerPath: "/swagger"
+
+database:
+  logger:
+    path: "logs/sql"
+    level: "all"
+    stdout: true
+    ctxKeys: [ "RequestId" ]
+
+  default:
+    link: "mysql:xxxx:xxxx@tcp(xx.xx.xx.xx:3306)/npbsec?loc=Local"
+    debug: true
+
+logger:
+  level: "all"
+  stdout: true
