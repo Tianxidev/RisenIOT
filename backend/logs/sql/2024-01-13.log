@@ -1,0 +1,2 @@
+2024-01-13 21:50:18.101 [DEBU] {d47252ed5ceca917c83783691ddeb73b} [302 ms] [default] [npbsec] [rows:1  ] SHOW TABLES
+2024-01-13 21:50:18.165 [DEBU] {f48ed5ec5ceca917c73783690ffbd8e5} [ 62 ms] [default] [npbsec] [rows:5  ] SHOW FULL COLUMNS FROM `riseniot_user`
