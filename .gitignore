@@ -7,11 +7,15 @@ bin/
 gf
 main
 main.exe
+*.exe
+*.exe*
 output/
-manifest/output/
+manifest/
 temp/
 temp.yaml
 bin
 **/config/config.yaml
 node_modules
 go.sum
+.env.development
+config.yaml
