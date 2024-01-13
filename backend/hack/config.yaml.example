@@ -1,0 +1,20 @@
+
+# CLI tool, only in development environment.
+# https://goframe.org/pages/viewpage.action?pageId=3673173
+gfcli:
+  build:
+    name: "RisenIOT"
+    arch: "386,amd64"
+    system: "linux,windows"
+    mod: "none"
+    pack: ""
+    version: "v1.0.1"
+    extra: ""
+    varMap:
+      k1: v1
+      k2: v2
+  gen:
+    dao:
+      - link: "mysql:xxx:xxx@tcp(xx.xx.xx.xx:3306)/xxxx?loc=Local"
+        prefix: "riseniot_"
+        jsonCase: "CamelLower"
