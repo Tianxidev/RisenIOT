@@ -1,9 +1,12 @@
 package router
 
 import (
+	"backend/internal/controller/hello"
+	"backend/internal/controller/login"
 	"backend/internal/model"
 	"backend/internal/service"
 	"context"
+
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
 )
@@ -23,7 +26,10 @@ func (r *Router) BindController(ctx context.Context, router *ghttp.RouterGroup) 
 
 	// v1 版本路由
 	router.Group("/api/v1", func(group *ghttp.RouterGroup) {
-
+		group.Bind(
+			hello.NewV1(),
+			login.NewV1(),
+		)
 	})
 
 	// 未匹配到路由时的处理

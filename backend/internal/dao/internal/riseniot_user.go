@@ -20,20 +20,22 @@ type RiseniotUserDao struct {
 
 // RiseniotUserColumns defines and stores column names for table riseniot_user.
 type RiseniotUserColumns struct {
-	Uuid     string // 用户uuid
-	Username string // 用户名, 唯一索引
-	Password string // 密码
-	Nickname string // 昵称
-	Role     string // 用户角色
+	Uuid       string // 用户uuid
+	Username   string // 用户名, 唯一索引
+	Password   string // 密码
+	Nickname   string // 昵称
+	Role       string // 用户角色
+	CreateTime string // 创建时间
 }
 
 // riseniotUserColumns holds the columns for table riseniot_user.
 var riseniotUserColumns = RiseniotUserColumns{
-	Uuid:     "uuid",
-	Username: "username",
-	Password: "password",
-	Nickname: "nickname",
-	Role:     "role",
+	Uuid:       "uuid",
+	Username:   "username",
+	Password:   "password",
+	Nickname:   "nickname",
+	Role:       "role",
+	CreateTime: "create_time",
 }
 
 // NewRiseniotUserDao creates and returns a new DAO object for table data access.

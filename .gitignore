@@ -20,3 +20,4 @@ go.sum
 .env.development
 config.yaml
 vendor/
+logs/
