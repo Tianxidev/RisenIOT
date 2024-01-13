@@ -11,12 +11,12 @@ import (
 
 type (
 	IMiddleware interface {
-		// UnifiedResponseHandler 统一返回
-		UnifiedResponseHandler(r *ghttp.Request)
-		// Ctx 上下文对象
-		Ctx(r *ghttp.Request)
 		// CORS 同源策略
 		CORS(r *ghttp.Request)
+		// Ctx 上下文对象
+		Ctx(r *ghttp.Request)
+		// UnifiedResponseHandler 统一返回
+		UnifiedResponseHandler(r *ghttp.Request)
 	}
 )
 
