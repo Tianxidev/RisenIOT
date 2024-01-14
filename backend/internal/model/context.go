@@ -19,3 +19,11 @@ type DefaultHandlerResponse struct {
 	Message string      `json:"msg" dc:"Error message"`
 	Data    interface{} `json:"data"    dc:"Result data for certain request according API definition"`
 }
+
+// UserInfo 用户信息
+type UserInfo struct {
+	UUID     string `json:"uuid"`
+	Username string `json:"username"`
+	Nickname string `json:"nickname"`
+	Role     string `json:"role"`
+}

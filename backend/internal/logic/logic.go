@@ -6,5 +6,5 @@ package logic
 
 import (
 	_ "backend/internal/logic/middleware"
-	_ "backend/internal/logic/user_ctx"
+	_ "backend/internal/logic/user"
 )

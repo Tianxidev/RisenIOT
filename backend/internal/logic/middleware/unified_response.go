@@ -44,7 +44,7 @@ func (s *sMiddleware) UnifiedResponseHandler(r *ghttp.Request) {
 			r.SetError(err)
 		} else {
 			code = gcode.CodeOK
-			msg = service.UserCtx().Get(r.Context()).Message
+			msg = service.User().GetCtx(r.Context()).Message
 		}
 	}
 

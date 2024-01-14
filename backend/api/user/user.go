@@ -2,14 +2,15 @@
 // Code generated and maintained by GoFrame CLI tool. DO NOT EDIT.
 // =================================================================================
 
-package hello
+package user
 
 import (
 	"context"
 
-	"backend/api/hello/v1"
+	"backend/api/user/v1"
 )
 
-type IHelloV1 interface {
-	Hello(ctx context.Context, req *v1.HelloReq) (res *v1.HelloRes, err error)
+type IUserV1 interface {
+	UserInfo(ctx context.Context, req *v1.UserInfoReq) (res *v1.UserInfoRes, err error)
+	UserList(ctx context.Context, req *v1.UserListReq) (res *v1.UserListRes, err error)
 }

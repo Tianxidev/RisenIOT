@@ -10,6 +10,6 @@ import (
 // Ctx 上下文对象
 func (s *sMiddleware) Ctx(r *ghttp.Request) {
 	customCtx := &model.Context{}
-	service.UserCtx().Init(r, customCtx)
+	service.User().InitCtx(r, customCtx)
 	r.Middleware.Next()
 }
