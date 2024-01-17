@@ -13,9 +13,8 @@ import (
 )
 
 var (
-	Main = gcmd.Command{
-		Name:  "Web Service",
-		Usage: "web",
+	Web = &gcmd.Command{
+		Name:  "web",
 		Brief: "启动 web 服务",
 		Func: func(ctx context.Context, parser *gcmd.Parser) (err error) {
 
@@ -25,6 +24,8 @@ var (
 				s           = g.Server()
 				oai         = s.GetOpenApi()
 			)
+
+			g.Log().Info(ctx, "正在启动 web 服务")
 
 			// 设置配置文件
 			cfg.GetAdapter().(*gcfg.AdapterFile).SetFileName("config.yaml")

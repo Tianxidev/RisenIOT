@@ -30,8 +30,38 @@ func (r *Router) BindController(ctx context.Context, router *ghttp.RouterGroup) 
 	// v1 版本路由
 	router.Group("/api/v1", func(group *ghttp.RouterGroup) {
 
-		// 初始化 gtoken
-		tokenService := token.Init(ctx, r.LoginV1)
+		// 初始化 gtoken 服务
+		tokenService := token.Init(ctx, func(r *ghttp.Request) (string, interface{}) {
+
+			// 判断是否是POST请求
+			if r.Method != "POST" {
+				r.Response.WriteJson(gtoken.Fail("请求方式错误"))
+				g.Log().Notice(vContext, "用户访问登录接口, 但是请求方式不是POST: ", r.Method)
+				r.ExitAll()
+			}
+
+			// 获取请求参数
+			username := r.Get("username").String()
+			password := r.Get("password").String()
+
+			// 判断参数是否为空
+			if username == "" || password == "" {
+				r.Response.WriteJson(gtoken.Fail("用户名或密码不能为空"))
+				g.Log().Notice(vContext, "用户访问登录接口, 但是用户名或密码为空")
+				r.ExitAll()
+			}
+
+			// 验证用户信息
+			userInfo, err := service.User().UserLoginVerifyFn(vContext, username, password)
+			if err != nil {
+				g.Log().Notice(vContext, "查询用户异常", err)
+				r.Response.WriteJson(gtoken.Fail(err.Error()))
+				r.ExitAll()
+			}
+
+			// 返回用户信息
+			return userInfo.Username, userInfo
+		})
 
 		// 认证中间件配置
 		err := tokenService.Middleware(ctx, group)
@@ -58,35 +88,4 @@ func (_ *Router) DefaultHandler(r *ghttp.Request) {
 		Code:    404,
 		Message: "Not Found",
 	})
-}
-
-// LoginV1 V1版本登录
-func (_ *Router) LoginV1(r *ghttp.Request) (string, interface{}) {
-
-	// 判断是否是POST请求
-	if r.Method != "POST" {
-		r.Response.WriteJson(gtoken.Fail("请求方式错误"))
-		g.Log().Notice(vContext, "用户访问登录接口, 但是请求方式不是POST: ", r.Method)
-		r.ExitAll()
-	}
-
-	// 获取请求参数
-	username := r.Get("username").String()
-	password := r.Get("password").String()
-
-	// 判断参数是否为空
-	if username == "" || password == "" {
-		r.Response.WriteJson(gtoken.Fail("用户名或密码不能为空"))
-		g.Log().Notice(vContext, "用户访问登录接口, 但是用户名或密码为空")
-		r.ExitAll()
-	}
-
-	userInfo, err := service.User().UserLoginVerifyFn(vContext, username, password)
-	if err != nil {
-		g.Log().Notice(vContext, "查询用户异常", err)
-		r.Response.WriteJson(gtoken.Fail(err.Error()))
-		r.ExitAll()
-	}
-
-	return userInfo.Username, userInfo
 }

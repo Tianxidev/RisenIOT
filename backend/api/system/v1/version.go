@@ -9,6 +9,5 @@ type VersionReq struct {
 
 // VersionRes 获取系统版本 响应参数
 type VersionRes struct {
-	g.Meta  `mime:"application/json"`
 	Version string `json:"version"`
 }

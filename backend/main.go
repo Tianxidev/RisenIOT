@@ -12,5 +12,12 @@ import (
 )
 
 func main() {
-	cmd.Main.Run(gctx.GetInitCtx())
+
+	err := cmd.Main.AddCommand(cmd.All, cmd.Web, cmd.Gateway)
+	if err != nil {
+		panic(err)
+	}
+	cmd.Main.Run(gctx.New())
+
+	// cmd.Main.Run(gctx.GetInitCtx())
 }
