@@ -19,20 +19,11 @@ export default defineConfig(({ mode }) => {
       }
     },
     server: {
-      port: 5173,
+      port: 5175,
       host: "0.0.0.0",
       open: false,
       hmr: true,
       cors: true,
-
-      // 自定义代理规则
-      proxy: {
-        "/api/v1": {
-          target: env.VITE_PROXY_URL,
-          changeOrigin: true
-        },
-        "^/api/mock": env.VITE_PROXY_MOCK_URL
-      }
     },
     build: {
       // sourcemap: env.VITE_PROD_SOURCE_MAPS, // 生产环境是否生成 source map 文件

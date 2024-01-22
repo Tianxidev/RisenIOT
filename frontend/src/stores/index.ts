@@ -7,5 +7,3 @@ const store = createPinia();
 store.use(piniaPluginPersist);
 
 export default store;
-
-export * from './modules/useAppMainStore';

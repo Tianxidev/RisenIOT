@@ -1,9 +1,7 @@
 <script setup lang="ts">
 
 import { useToastTool } from "@/hooks/useToastTool";
-import { useAppMainStore } from "@/stores/index";
 import { onMounted } from "vue";
-import { VSonner } from "vuetify-sonner";
 
 onMounted(() => {
   useToastTool().info("欢迎");
@@ -11,10 +9,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <v-app :theme="useAppMainStore().theme">
-    <VSonner />
     <router-view />
-  </v-app>
 </template>
 
 <style scoped>

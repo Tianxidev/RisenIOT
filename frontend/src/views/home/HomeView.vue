@@ -4,7 +4,7 @@
 
 <template>
   <div class="container">
-    Home
+    Home11
   </div>
 </template>
 

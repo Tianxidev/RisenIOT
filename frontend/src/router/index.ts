@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from "vue-router";
 
 const routes: RouteRecordRaw[] = [];
-const modules = import.meta.glob("./modules/*.router.ts", { eager: true, import: "default" });
+const modules = import.meta.glob("./modules/*.router.ts", {eager: true, import: "default"});
 Object.keys(modules).forEach((key) => {
   const mod = modules[key] || {};
   const modList = Array.isArray(mod) ? mod : [mod];

@@ -1,14 +1,23 @@
+import BaseLayout from "@/layout/BaseLayout.vue";
+
 export default [
   {
     path: "/",
-    name: "bigdata",
-    meta: {
-      title: "可视化大屏",
-      icon: "mdi-alpha-s",
-      keepAlive: false,
-      visible: true,
-      sort: -1
-    },
-    component: () => import("@/views/home/HomeView.vue")
+    redirect: '/home',
+    component: BaseLayout,
+    children: [
+      {
+        path: '/home',
+        name: "home",
+        meta: {
+          title: '概览',
+          icon: 'mdi-alpha-s',
+          keepAlive: false,
+          visible: true,
+        },
+        component: () => import('@/views/home/HomeView.vue'),
+        children: [],
+      },
+    ],
   }
 ];
