@@ -9,6 +9,9 @@ import (
 	"backend/api/device/v1"
 )
 
+// DeviceDataReceive 设备数据接收
 func (c *ControllerV1) DeviceDataReceive(ctx context.Context, req *v1.DeviceDataReceiveReq) (res *v1.DeviceDataReceiveRes, err error) {
+
 	return nil, gerror.NewCode(gcode.CodeNotImplemented)
+
 }
