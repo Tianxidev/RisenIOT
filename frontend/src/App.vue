@@ -1,7 +1,13 @@
 <script setup lang="ts">
 
 import { useToastTool } from "@/hooks/useToastTool";
-import { onMounted } from "vue";
+import { onMounted, onBeforeMount } from "vue";
+import setIntroduction from "@/utils/setIconfont";
+
+onBeforeMount(() => {
+  setIntroduction.cssCdn();
+  setIntroduction.jsCdn();
+});
 
 onMounted(() => {
   useToastTool().info("欢迎");
@@ -9,7 +15,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <router-view />
+  <router-view />
 </template>
 
 <style scoped>
