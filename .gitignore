@@ -21,3 +21,4 @@ go.sum
 config.yaml
 vendor/
 logs/
+package-lock.json
