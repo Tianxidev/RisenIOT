@@ -1,10 +1,3 @@
-/*
-* @desc:操作日志模型对象
-* @company:云南奇讯科技有限公司
-* @Author: yixiaohu<yxh669@qq.com>
-* @Date:   2022/9/21 16:34
- */
-
 package model
 
 import (

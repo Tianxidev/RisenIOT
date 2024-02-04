@@ -1,13 +1,13 @@
-/*
-* @desc:后台操作日志业务处理
-* @company:云南奇讯科技有限公司
-* @Author: yixiaohu<yxh669@qq.com>
-* @Date:   2022/9/21 16:14
- */
-
 package sysOperLog
 
 import (
+	"backend/api/v1/system"
+	"backend/internal/consts"
+	"backend/internal/dao"
+	"backend/internal/model"
+	"backend/internal/model/do"
+	"backend/internal/model/entity"
+	"backend/internal/service"
 	"context"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
@@ -15,15 +15,7 @@ import (
 	"github.com/gogf/gf/v2/os/grpool"
 	"github.com/gogf/gf/v2/os/gtime"
 	"github.com/gogf/gf/v2/text/gstr"
-	"github.com/tiger1103/gfast/v3/api/v1/system"
-	"github.com/tiger1103/gfast/v3/internal/app/system/consts"
-	"github.com/tiger1103/gfast/v3/internal/app/system/dao"
-	"github.com/tiger1103/gfast/v3/internal/app/system/model"
-	"github.com/tiger1103/gfast/v3/internal/app/system/model/do"
-	"github.com/tiger1103/gfast/v3/internal/app/system/model/entity"
-	"github.com/tiger1103/gfast/v3/internal/app/system/service"
-	"github.com/tiger1103/gfast/v3/library/libUtils"
-	"github.com/tiger1103/gfast/v3/library/liberr"
+	"backend/library/liberr"
 )
 
 type sOperateLog struct {
@@ -34,7 +26,7 @@ func init() {
 	service.RegisterOperateLog(New())
 }
 
-func New() *sOperateLog {
+func New() service.IOperateLog {
 	return &sOperateLog{
 		Pool: grpool.New(100),
 	}
@@ -42,7 +34,7 @@ func New() *sOperateLog {
 
 // OperationLog 操作日志写入
 func (s *sOperateLog) OperationLog(r *ghttp.Request) {
-	userInfo := service.Context().GetLoginUser(r.GetCtx())
+	userInfo := service.UserCtx().GetLoginUser(r.GetCtx())
 	if userInfo == nil {
 		return
 	}
@@ -68,7 +60,7 @@ func (s *sOperateLog) OperationLog(r *ghttp.Request) {
 		Url:          url,
 		Params:       r.GetMap(),
 		Method:       r.Method,
-		ClientIp:     libUtils.GetClientIp(r.GetCtx()),
+		ClientIp:     "",
 		OperatorType: 1,
 	}
 	s.Invoke(gctx.New(), data)
@@ -103,7 +95,7 @@ func (s *sOperateLog) operationLogAdd(ctx context.Context, data *model.SysOperLo
 		OperName:      data.User.UserName,
 		DeptName:      dept.DeptName,
 		OperIp:        data.ClientIp,
-		OperLocation:  libUtils.GetCityByIp(data.ClientIp),
+		OperLocation:  "",
 		OperTime:      gtime.Now(),
 		OperParam:     data.Params,
 	}

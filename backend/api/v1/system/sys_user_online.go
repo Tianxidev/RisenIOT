@@ -8,14 +8,14 @@
 package system
 
 import (
+	commonApi "backend/api/v1/common"
+	"backend/internal/model/entity"
 	"github.com/gogf/gf/v2/frame/g"
-	commonApi "github.com/tiger1103/gfast/v3/api/v1/common"
-	"github.com/tiger1103/gfast/v3/internal/app/system/model/entity"
 )
 
 // SysUserOnlineSearchReq 列表搜索参数
 type SysUserOnlineSearchReq struct {
-	g.Meta   `path:"/online/list" tags:"在线用户管理" method:"get" summary:"列表"`
+	g.Meta   `path:"/system/online/list" tags:"在线用户管理" method:"get" summary:"列表"`
 	Username string `p:"userName"`
 	Ip       string `p:"ipaddr"`
 	commonApi.PageReq
@@ -30,7 +30,7 @@ type SysUserOnlineSearchRes struct {
 }
 
 type SysUserOnlineForceLogoutReq struct {
-	g.Meta `path:"/online/forceLogout" tags:"在线用户管理" method:"delete" summary:"强制用户退出登录"`
+	g.Meta `path:"/system/online/forceLogout" tags:"在线用户管理" method:"delete" summary:"强制用户退出登录"`
 	commonApi.Author
 	Ids []int `p:"ids" v:"required#ids不能为空"`
 }

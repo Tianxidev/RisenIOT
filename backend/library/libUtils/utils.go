@@ -1,13 +1,7 @@
-/*
-* @desc:工具
-* @company:云南奇讯科技有限公司
-* @Author: yixiaohu
-* @Date:   2022/3/4 22:16
- */
-
 package libUtils
 
 import (
+	"backend/internal/consts"
 	"context"
 	"fmt"
 	"github.com/gogf/gf/v2/crypto/gmd5"
@@ -18,7 +12,6 @@ import (
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
 	"github.com/gogf/gf/v2/text/gstr"
-	"github.com/tiger1103/gfast/v3/internal/app/common/consts"
 	"net"
 	"net/http"
 	"os"

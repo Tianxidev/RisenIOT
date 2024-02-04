@@ -1,25 +1,17 @@
-/*
-* @desc:字典数据管理
-* @company:云南奇讯科技有限公司
-* @Author: yixiaohu<yxh669@qq.com>
-* @Date:   2022/9/28 9:22
- */
-
 package sysDictData
 
 import (
+	"backend/api/v1/system"
+	"backend/internal/consts"
+	"backend/internal/dao"
+	"backend/internal/model"
+	"backend/internal/model/do"
+	"backend/internal/service"
 	"context"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/text/gstr"
 	"github.com/gogf/gf/v2/util/gconv"
-	"github.com/tiger1103/gfast/v3/api/v1/system"
-	"github.com/tiger1103/gfast/v3/internal/app/common/consts"
-	"github.com/tiger1103/gfast/v3/internal/app/common/dao"
-	"github.com/tiger1103/gfast/v3/internal/app/common/model"
-	"github.com/tiger1103/gfast/v3/internal/app/common/model/do"
-	"github.com/tiger1103/gfast/v3/internal/app/common/service"
-	systemConsts "github.com/tiger1103/gfast/v3/internal/app/system/consts"
-	"github.com/tiger1103/gfast/v3/library/liberr"
+	"backend/library/liberr"
 )
 
 func init() {
@@ -36,7 +28,7 @@ type sSysDictData struct {
 // GetDictWithDataByType 通过字典键类型获取选项
 func (s *sSysDictData) GetDictWithDataByType(ctx context.Context, req *system.GetDictReq) (dict *system.GetDictRes,
 	err error) {
-	cache := service.Cache()
+	cache := service.Cache().GCache()
 	cacheKey := consts.CacheSysDict + "_" + req.DictType
 	//从缓存获取
 	iDict := cache.GetOrSetFuncLock(ctx, cacheKey, func(ctx context.Context) (value interface{}, err error) {
@@ -99,7 +91,7 @@ func (s *sSysDictData) List(ctx context.Context, req *system.DictDataSearchReq) 
 			res.CurrentPage = req.PageNum
 		}
 		if req.PageSize == 0 {
-			req.PageSize = systemConsts.PageSize
+			req.PageSize = consts.PageSize
 		}
 		err = m.Page(req.PageNum, req.PageSize).Order(dao.SysDictData.Columns().DictSort + " asc," +
 			dao.SysDictData.Columns().DictCode + " asc").Scan(&res.List)
@@ -124,7 +116,7 @@ func (s *sSysDictData) Add(ctx context.Context, req *system.DictDataAddReq, user
 		})
 		liberr.ErrIsNil(ctx, err, "添加字典数据失败")
 		//清除缓存
-		service.Cache().RemoveByTag(ctx, consts.CacheSysDictTag)
+		service.Cache().GCache().RemoveByTag(ctx, consts.CacheSysDictTag)
 	})
 	return
 }
@@ -156,7 +148,7 @@ func (s *sSysDictData) Edit(ctx context.Context, req *system.DictDataEditReq, us
 		})
 		liberr.ErrIsNil(ctx, err, "修改字典数据失败")
 		//清除缓存
-		service.Cache().RemoveByTag(ctx, consts.CacheSysDictTag)
+		service.Cache().GCache().RemoveByTag(ctx, consts.CacheSysDictTag)
 	})
 	return
 }
@@ -167,7 +159,7 @@ func (s *sSysDictData) Delete(ctx context.Context, ids []int) (err error) {
 		_, err = dao.SysDictData.Ctx(ctx).Where(dao.SysDictData.Columns().DictCode+" in(?)", ids).Delete()
 		liberr.ErrIsNil(ctx, err, "删除字典数据失败")
 		//清除缓存
-		service.Cache().RemoveByTag(ctx, consts.CacheSysDictTag)
+		service.Cache().GCache().RemoveByTag(ctx, consts.CacheSysDictTag)
 	})
 	return
 }

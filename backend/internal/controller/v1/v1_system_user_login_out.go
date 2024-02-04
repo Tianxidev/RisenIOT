@@ -1,14 +1,17 @@
 package v1
 
 import (
+	"backend/internal/service"
 	"context"
-
-	"github.com/gogf/gf/v2/errors/gcode"
-	"github.com/gogf/gf/v2/errors/gerror"
+	"github.com/gogf/gf/v2/frame/g"
 
 	"backend/api/v1/system"
 )
 
 func (c *ControllerSystem) UserLoginOut(ctx context.Context, req *system.UserLoginOutReq) (res *system.UserLoginOutRes, err error) {
-	return nil, gerror.NewCode(gcode.CodeNotImplemented)
+	err = service.Token().Get().RemoveToken(ctx, service.Token().Get().GetRequestToken(g.RequestFromCtx(ctx)))
+	res = &system.UserLoginOutRes{
+		Ok: err == nil,
+	}
+	return
 }

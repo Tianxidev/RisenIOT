@@ -1,14 +1,13 @@
 package v1
 
 import (
+	"backend/internal/service"
 	"context"
-
-	"github.com/gogf/gf/v2/errors/gcode"
-	"github.com/gogf/gf/v2/errors/gerror"
 
 	"backend/api/v1/system"
 )
 
 func (c *ControllerSystem) RoleAdd(ctx context.Context, req *system.RoleAddReq) (res *system.RoleAddRes, err error) {
-	return nil, gerror.NewCode(gcode.CodeNotImplemented)
+	err = service.SysRole().AddRole(ctx, req)
+	return
 }

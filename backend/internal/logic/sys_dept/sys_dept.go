@@ -1,37 +1,29 @@
-/*
-* @desc:部门管理
-* @company:云南奇讯科技有限公司
-* @Author: yixiaohu<yxh669@qq.com>
-* @Date:   2022/9/26 15:14
- */
-
 package sysDept
 
 import (
+	"backend/api/v1/system"
+	"backend/internal/consts"
+	"backend/internal/dao"
+	"backend/internal/model"
+	"backend/internal/model/do"
+	"backend/internal/model/entity"
+	"backend/internal/service"
+	"backend/library/liberr"
 	"context"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/text/gstr"
 	"github.com/gogf/gf/v2/util/gconv"
-	"github.com/tiger1103/gfast/v3/api/v1/system"
-	commonService "github.com/tiger1103/gfast/v3/internal/app/common/service"
-	"github.com/tiger1103/gfast/v3/internal/app/system/consts"
-	"github.com/tiger1103/gfast/v3/internal/app/system/dao"
-	"github.com/tiger1103/gfast/v3/internal/app/system/model"
-	"github.com/tiger1103/gfast/v3/internal/app/system/model/do"
-	"github.com/tiger1103/gfast/v3/internal/app/system/model/entity"
-	"github.com/tiger1103/gfast/v3/internal/app/system/service"
-	"github.com/tiger1103/gfast/v3/library/liberr"
 )
+
+type sSysDept struct {
+}
 
 func init() {
 	service.RegisterSysDept(New())
 }
 
-func New() *sSysDept {
+func New() service.ISysDept {
 	return &sSysDept{}
-}
-
-type sSysDept struct {
 }
 
 func (s *sSysDept) GetList(ctx context.Context, req *system.DeptSearchReq) (list []*entity.SysDept, err error) {
@@ -57,7 +49,7 @@ func (s *sSysDept) GetList(ctx context.Context, req *system.DeptSearchReq) (list
 
 func (s *sSysDept) GetFromCache(ctx context.Context) (list []*entity.SysDept, err error) {
 	err = g.Try(ctx, func(ctx context.Context) {
-		cache := commonService.Cache()
+		cache := service.Cache().GCache()
 		//从缓存获取
 		iList := cache.GetOrSetFuncLock(ctx, consts.CacheSysDept, func(ctx context.Context) (value interface{}, err error) {
 			err = dao.SysDept.Ctx(ctx).Scan(&list)
@@ -84,11 +76,11 @@ func (s *sSysDept) Add(ctx context.Context, req *system.DeptAddReq) (err error) 
 			Phone:     req.Phone,
 			Email:     req.Email,
 			Status:    req.Status,
-			CreatedBy: service.Context().GetUserId(ctx),
+			CreatedBy: service.UserCtx().GetUserId(ctx),
 		})
 		liberr.ErrIsNil(ctx, err, "添加部门失败")
 		// 删除缓存
-		commonService.Cache().Remove(ctx, consts.CacheSysDept)
+		service.Cache().GCache().Remove(ctx, consts.CacheSysDept)
 	})
 	return
 }
@@ -104,11 +96,11 @@ func (s *sSysDept) Edit(ctx context.Context, req *system.DeptEditReq) (err error
 			Phone:     req.Phone,
 			Email:     req.Email,
 			Status:    req.Status,
-			UpdatedBy: service.Context().GetUserId(ctx),
+			UpdatedBy: service.UserCtx().GetUserId(ctx),
 		})
 		liberr.ErrIsNil(ctx, err, "修改部门失败")
 		// 删除缓存
-		commonService.Cache().Remove(ctx, consts.CacheSysDept)
+		service.Cache().GCache().Remove(ctx, consts.CacheSysDept)
 	})
 	return
 }
@@ -121,13 +113,13 @@ func (s *sSysDept) Delete(ctx context.Context, id uint64) (err error) {
 		children := s.FindSonByParentId(list, id)
 		ids := make([]uint64, 0, len(list))
 		for _, v := range children {
-			ids = append(ids, v.DeptId)
+			ids = append(ids, uint64(v.DeptId))
 		}
 		ids = append(ids, id)
 		_, err = dao.SysDept.Ctx(ctx).Where(dao.SysDept.Columns().DeptId+" in (?)", ids).Delete()
 		liberr.ErrIsNil(ctx, err, "删除部门失败")
 		// 删除缓存
-		commonService.Cache().Remove(ctx, consts.CacheSysDept)
+		service.Cache().GCache().Remove(ctx, consts.CacheSysDept)
 	})
 	return
 }
@@ -135,9 +127,9 @@ func (s *sSysDept) Delete(ctx context.Context, id uint64) (err error) {
 func (s *sSysDept) FindSonByParentId(deptList []*entity.SysDept, deptId uint64) []*entity.SysDept {
 	children := make([]*entity.SysDept, 0, len(deptList))
 	for _, v := range deptList {
-		if v.ParentId == deptId {
+		if uint64(v.ParentId) == deptId {
 			children = append(children, v)
-			fChildren := s.FindSonByParentId(deptList, v.DeptId)
+			fChildren := s.FindSonByParentId(deptList, uint64(v.DeptId))
 			children = append(children, fChildren...)
 		}
 	}
@@ -148,11 +140,11 @@ func (s *sSysDept) FindSonByParentId(deptList []*entity.SysDept, deptId uint64) 
 func (s *sSysDept) GetListTree(pid uint64, list []*entity.SysDept) (deptTree []*model.SysDeptTreeRes) {
 	deptTree = make([]*model.SysDeptTreeRes, 0, len(list))
 	for _, v := range list {
-		if v.ParentId == pid {
+		if uint64(v.ParentId) == pid {
 			t := &model.SysDeptTreeRes{
 				SysDept: v,
 			}
-			child := s.GetListTree(v.DeptId, list)
+			child := s.GetListTree(uint64(v.DeptId), list)
 			if len(child) > 0 {
 				t.Children = child
 			}
@@ -170,7 +162,7 @@ func (s *sSysDept) GetByDeptId(ctx context.Context, deptId uint64) (dept *entity
 		return
 	}
 	for _, v := range depts {
-		if v.DeptId == deptId {
+		if uint64(v.DeptId) == deptId {
 			dept = v
 			break
 		}

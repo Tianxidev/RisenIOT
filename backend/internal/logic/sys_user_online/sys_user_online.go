@@ -1,34 +1,26 @@
-/*
-* @desc:用户在线状态处理
-* @company:云南奇讯科技有限公司
-* @Author: yixiaohu<yxh669@qq.com>
-* @Date:   2023/1/10 14:50
- */
-
 package sysUserOnline
 
 import (
+	"backend/api/v1/common"
+	"backend/api/v1/system"
+	"backend/internal/consts"
+	"backend/internal/dao"
+	"backend/internal/model"
+	"backend/internal/model/do"
+	"backend/internal/model/entity"
+	"backend/internal/service"
 	"context"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/grpool"
 	"github.com/gogf/gf/v2/os/gtime"
-	"github.com/mssola/user_agent"
-	"github.com/tiger1103/gfast/v3/api/v1/common"
-	"github.com/tiger1103/gfast/v3/api/v1/system"
-	"github.com/tiger1103/gfast/v3/internal/app/system/consts"
-	"github.com/tiger1103/gfast/v3/internal/app/system/dao"
-	"github.com/tiger1103/gfast/v3/internal/app/system/model"
-	"github.com/tiger1103/gfast/v3/internal/app/system/model/do"
-	"github.com/tiger1103/gfast/v3/internal/app/system/model/entity"
-	"github.com/tiger1103/gfast/v3/internal/app/system/service"
-	"github.com/tiger1103/gfast/v3/library/liberr"
+	"backend/library/liberr"
 )
 
 func init() {
 	service.RegisterSysUserOnline(New())
 }
 
-func New() *sSysUserOnline {
+func New() service.ISysUserOnline {
 	return &sSysUserOnline{
 		Pool: grpool.New(100),
 	}
@@ -48,9 +40,11 @@ func (s *sSysUserOnline) Invoke(ctx context.Context, params *model.SysUserOnline
 // SaveOnline 保存用户在线状态
 func (s *sSysUserOnline) SaveOnline(ctx context.Context, params *model.SysUserOnlineParams) {
 	err := g.Try(ctx, func(ctx context.Context) {
-		ua := user_agent.New(params.UserAgent)
-		browser, _ := ua.Browser()
-		os := ua.OS()
+		//ua := user_agent.New(params.UserAgent)
+		//ua := ""
+		//browser, _ := ua.Browser()
+		//browser, _ := ua.Browser()
+		//os := ua.OS()
 		var (
 			info *entity.SysUserOnline
 			data = &do.SysUserOnline{
@@ -59,8 +53,8 @@ func (s *sSysUserOnline) SaveOnline(ctx context.Context, params *model.SysUserOn
 				CreateTime: gtime.Now(),
 				UserName:   params.Username,
 				Ip:         params.Ip,
-				Explorer:   browser,
-				Os:         os,
+				Explorer:   "", // 浏览器
+				Os:         "", // 操作系统
 			}
 		)
 
@@ -150,7 +144,7 @@ func (s *sSysUserOnline) GetOnlineListPage(ctx context.Context, req *system.SysU
 
 func (s *sSysUserOnline) UserIsOnline(ctx context.Context, token string) bool {
 	err := g.Try(ctx, func(ctx context.Context) {
-		_, _, err := service.GfToken().GetTokenData(ctx, token)
+		_, _, err := service.Token().Get().GetTokenData(ctx, token)
 		liberr.ErrIsNil(ctx, err)
 	})
 	return err == nil
@@ -169,7 +163,7 @@ func (s *sSysUserOnline) ForceLogout(ctx context.Context, ids []int) (err error)
 		_, err = dao.SysUserOnline.Ctx(ctx).Where(dao.SysUserOnline.Columns().Id+" in(?)", ids).Delete()
 		liberr.ErrIsNil(ctx, err)
 		for _, v := range onlineList {
-			err = service.GfToken().RemoveToken(ctx, v.Token)
+			err = service.Token().Get().RemoveToken(ctx, v.Token)
 			liberr.ErrIsNil(ctx, err)
 		}
 	})

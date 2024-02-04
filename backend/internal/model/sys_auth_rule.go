@@ -1,10 +1,3 @@
-/*
-* @desc:菜单model
-* @company:云南奇讯科技有限公司
-* @Author: yixiaohu
-* @Date:   2022/3/11 14:53
- */
-
 package model
 
 type SysAuthRuleInfoRes struct {

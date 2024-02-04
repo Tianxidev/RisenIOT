@@ -8,13 +8,13 @@
 package system
 
 import (
+	commonApi "backend/api/v1/common"
+	"backend/internal/model/entity"
 	"github.com/gogf/gf/v2/frame/g"
-	commonApi "github.com/tiger1103/gfast/v3/api/v1/common"
-	"github.com/tiger1103/gfast/v3/internal/app/system/model/entity"
 )
 
 type PostSearchReq struct {
-	g.Meta   `path:"/post/list" tags:"岗位管理" method:"get" summary:"岗位列表"`
+	g.Meta   `path:"/system/post/list" tags:"岗位管理" method:"get" summary:"岗位列表"`
 	PostCode string `p:"postCode"` //岗位编码
 	PostName string `p:"postName"` //岗位名称
 	Status   string `p:"status"`   //状态
@@ -28,7 +28,7 @@ type PostSearchRes struct {
 }
 
 type PostAddReq struct {
-	g.Meta   `path:"/post/add" tags:"岗位管理" method:"post" summary:"添加岗位"`
+	g.Meta   `path:"/system/post/add" tags:"岗位管理" method:"post" summary:"添加岗位"`
 	PostCode string `p:"postCode" v:"required#岗位编码不能为空"`
 	PostName string `p:"postName" v:"required#岗位名称不能为空"`
 	PostSort int    `p:"postSort" v:"required#岗位排序不能为空"`
@@ -40,7 +40,7 @@ type PostAddRes struct {
 }
 
 type PostEditReq struct {
-	g.Meta   `path:"/post/edit" tags:"岗位管理" method:"put" summary:"修改岗位"`
+	g.Meta   `path:"/system/post/edit" tags:"岗位管理" method:"put" summary:"修改岗位"`
 	PostId   int64  `p:"postId" v:"required#id必须"`
 	PostCode string `p:"postCode" v:"required#岗位编码不能为空"`
 	PostName string `p:"postName" v:"required#岗位名称不能为空"`
@@ -53,7 +53,7 @@ type PostEditRes struct {
 }
 
 type PostDeleteReq struct {
-	g.Meta `path:"/post/delete" tags:"岗位管理" method:"delete" summary:"删除岗位"`
+	g.Meta `path:"/system/post/delete" tags:"岗位管理" method:"delete" summary:"删除岗位"`
 	Ids    []int `p:"ids"`
 }
 

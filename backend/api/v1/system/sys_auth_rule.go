@@ -1,21 +1,14 @@
-/*
-* @desc:菜单api
-* @company:云南奇讯科技有限公司
-* @Author: yixiaohu<yxh669@qq.com>
-* @Date:   2022/3/18 10:27
- */
-
 package system
 
 import (
+	commonApi "backend/api/v1/common"
+	"backend/internal/model"
+	"backend/internal/model/entity"
 	"github.com/gogf/gf/v2/frame/g"
-	commonApi "github.com/tiger1103/gfast/v3/api/v1/common"
-	"github.com/tiger1103/gfast/v3/internal/app/system/model"
-	"github.com/tiger1103/gfast/v3/internal/app/system/model/entity"
 )
 
 type RuleSearchReq struct {
-	g.Meta `path:"/menu/list" tags:"菜单管理" method:"get" summary:"菜单列表"`
+	g.Meta `path:"/system/menu/list" tags:"菜单管理" method:"get" summary:"菜单列表"`
 	commonApi.Author
 	Title     string `p:"menuName" `
 	Component string `p:"component"`
@@ -23,15 +16,11 @@ type RuleSearchReq struct {
 
 type RuleSearchRes struct {
 	g.Meta `mime:"application/json"`
-}
-
-type RuleListRes struct {
-	g.Meta `mime:"application/json"`
 	Rules  []*model.SysAuthRuleTreeRes `json:"rules"`
 }
 
 type RuleAddReq struct {
-	g.Meta `path:"/menu/add" tags:"菜单管理" method:"post" summary:"添加菜单"`
+	g.Meta `path:"/system/menu/add" tags:"菜单管理" method:"post" summary:"添加菜单"`
 	commonApi.Author
 	MenuType  uint   `p:"menuType"  v:"min:0|max:2#菜单类型最小值为:min|菜单类型最大值为:max"`
 	Pid       uint   `p:"parentId"  v:"min:0"`
@@ -57,7 +46,7 @@ type RuleAddRes struct {
 }
 
 type RuleGetParamsReq struct {
-	g.Meta `path:"/menu/getParams" tags:"菜单管理" method:"get" summary:"获取添加、编辑菜单相关参数"`
+	g.Meta `path:"/system/menu/getParams" tags:"菜单管理" method:"get" summary:"获取添加、编辑菜单相关参数"`
 	commonApi.Author
 }
 
@@ -68,7 +57,7 @@ type RuleGetParamsRes struct {
 }
 
 type RuleInfoReq struct {
-	g.Meta `path:"/menu/get" tags:"菜单管理" method:"get" summary:"获取菜单信息"`
+	g.Meta `path:"/system/menu/get" tags:"菜单管理" method:"get" summary:"获取菜单信息"`
 	commonApi.Author
 	Id uint `p:"required#菜单id必须"`
 }
@@ -80,7 +69,7 @@ type RuleInfoRes struct {
 }
 
 type RuleUpdateReq struct {
-	g.Meta `path:"/menu/update" tags:"菜单管理" method:"put" summary:"修改菜单"`
+	g.Meta `path:"/system/menu/update" tags:"菜单管理" method:"put" summary:"修改菜单"`
 	commonApi.Author
 	Id        uint   `p:"id" v:"required#id必须"`
 	MenuType  uint   `p:"menuType"  v:"min:0|max:2#菜单类型最小值为:min|菜单类型最大值为:max"`
@@ -107,7 +96,7 @@ type RuleUpdateRes struct {
 }
 
 type RuleDeleteReq struct {
-	g.Meta `path:"/menu/delete" tags:"菜单管理" method:"delete" summary:"删除菜单"`
+	g.Meta `path:"/system/menu/delete" tags:"菜单管理" method:"delete" summary:"删除菜单"`
 	commonApi.Author
 	Ids []int `p:"ids" v:"required#菜单id必须"`
 }

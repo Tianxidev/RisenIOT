@@ -1,36 +1,28 @@
-/*
-* @desc:角色管理
-* @company:云南奇讯科技有限公司
-* @Author: yixiaohu<yxh669@qq.com>
-* @Date:   2022/9/26 15:54
- */
-
 package sysRole
 
 import (
+	"backend/api/v1/system"
+	"backend/internal/consts"
+	"backend/internal/dao"
+	"backend/internal/model/do"
+	"backend/internal/model/entity"
+	"backend/internal/service"
 	"context"
 	"github.com/gogf/gf/v2/database/gdb"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/util/gconv"
-	"github.com/tiger1103/gfast/v3/api/v1/system"
-	commonService "github.com/tiger1103/gfast/v3/internal/app/common/service"
-	"github.com/tiger1103/gfast/v3/internal/app/system/consts"
-	"github.com/tiger1103/gfast/v3/internal/app/system/dao"
-	"github.com/tiger1103/gfast/v3/internal/app/system/model/do"
-	"github.com/tiger1103/gfast/v3/internal/app/system/model/entity"
-	"github.com/tiger1103/gfast/v3/internal/app/system/service"
-	"github.com/tiger1103/gfast/v3/library/liberr"
+	"backend/library/liberr"
 )
+
+type sSysRole struct {
+}
 
 func init() {
 	service.RegisterSysRole(New())
 }
 
-func New() *sSysRole {
+func New() service.ISysRole {
 	return &sSysRole{}
-}
-
-type sSysRole struct {
 }
 
 func (s *sSysRole) GetRoleListSearch(ctx context.Context, req *system.RoleListReq) (res *system.RoleListRes, err error) {
@@ -60,9 +52,9 @@ func (s *sSysRole) GetRoleListSearch(ctx context.Context, req *system.RoleListRe
 
 // GetRoleList 获取角色列表
 func (s *sSysRole) GetRoleList(ctx context.Context) (list []*entity.SysRole, err error) {
-	cache := commonService.Cache()
+	cache := service.Cache()
 	//从缓存获取
-	iList := cache.GetOrSetFuncLock(ctx, consts.CacheSysRole, s.getRoleListFromDb, 0, consts.CacheSysAuthTag)
+	iList := cache.GCache().GetOrSetFuncLock(ctx, consts.CacheSysRole, s.getRoleListFromDb, 0, consts.CacheSysAuthTag)
 	if iList != nil {
 		err = gconv.Struct(iList, &list)
 	}
@@ -86,7 +78,7 @@ func (s *sSysRole) getRoleListFromDb(ctx context.Context) (value interface{}, er
 // AddRoleRule 添加角色权限
 func (s *sSysRole) AddRoleRule(ctx context.Context, ruleIds []uint, roleId int64) (err error) {
 	err = g.Try(ctx, func(ctx context.Context) {
-		enforcer, e := commonService.CasbinEnforcer(ctx)
+		enforcer, e := service.AdapterCasbin().CasbinEnforcer(ctx)
 		liberr.ErrIsNil(ctx, e)
 		ruleIdsStr := gconv.Strings(ruleIds)
 		for _, v := range ruleIdsStr {
@@ -100,7 +92,7 @@ func (s *sSysRole) AddRoleRule(ctx context.Context, ruleIds []uint, roleId int64
 // DelRoleRule 删除角色权限
 func (s *sSysRole) DelRoleRule(ctx context.Context, roleId int64) (err error) {
 	err = g.Try(ctx, func(ctx context.Context) {
-		enforcer, e := commonService.CasbinEnforcer(ctx)
+		enforcer, e := service.AdapterCasbin().CasbinEnforcer(ctx)
 		liberr.ErrIsNil(ctx, e)
 		_, err = enforcer.RemoveFilteredPolicy(0, gconv.String(roleId))
 		liberr.ErrIsNil(ctx, e)
@@ -117,7 +109,7 @@ func (s *sSysRole) AddRole(ctx context.Context, req *system.RoleAddReq) (err err
 			e = s.AddRoleRule(ctx, req.MenuIds, roleId)
 			liberr.ErrIsNil(ctx, e)
 			//清除缓存
-			commonService.Cache().Remove(ctx, consts.CacheSysRole)
+			service.Cache().GCache().Remove(ctx, consts.CacheSysRole)
 		})
 		return err
 	})
@@ -135,7 +127,7 @@ func (s *sSysRole) Get(ctx context.Context, id uint) (res *entity.SysRole, err e
 // GetFilteredNamedPolicy 获取角色关联的菜单规则
 func (s *sSysRole) GetFilteredNamedPolicy(ctx context.Context, id uint) (gpSlice []int, err error) {
 	err = g.Try(ctx, func(ctx context.Context) {
-		enforcer, e := commonService.CasbinEnforcer(ctx)
+		enforcer, e := service.AdapterCasbin().CasbinEnforcer(ctx)
 		liberr.ErrIsNil(ctx, e)
 		gp := enforcer.GetFilteredNamedPolicy("p", 0, gconv.String(id))
 		gpSlice = make([]int, len(gp))
@@ -164,7 +156,7 @@ func (s *sSysRole) EditRole(ctx context.Context, req *system.RoleEditReq) (err e
 			e = s.AddRoleRule(ctx, req.MenuIds, req.Id)
 			liberr.ErrIsNil(ctx, e)
 			//清除缓存
-			commonService.Cache().Remove(ctx, consts.CacheSysRole)
+			service.Cache().GCache().Remove(ctx, consts.CacheSysRole)
 		})
 		return err
 	})
@@ -183,7 +175,7 @@ func (s *sSysRole) DeleteByIds(ctx context.Context, ids []int64) (err error) {
 				liberr.ErrIsNil(ctx, err)
 			}
 			//清除缓存
-			commonService.Cache().Remove(ctx, consts.CacheSysRole)
+			service.Cache().GCache().Remove(ctx, consts.CacheSysRole)
 		})
 		return err
 	})

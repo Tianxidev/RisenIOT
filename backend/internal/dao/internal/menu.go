@@ -20,16 +20,28 @@ type MenuDao struct {
 
 // MenuColumns defines and stores column names for table menu.
 type MenuColumns struct {
-	Id     string // 菜单唯一ID
-	Label  string // 权限名称
-	Router string // 路由
+	Id         string // 菜单唯一ID
+	Label      string // 权限名称
+	Path       string // 路径
+	Component  string // 组件或页面
+	Redirect   string // 重定向
+	ParentId   string // 父路由ID
+	Hidden     string // 是否隐藏
+	Icon       string // 图标名称
+	ParentName string // 顶级父路由名称
 }
 
 // menuColumns holds the columns for table menu.
 var menuColumns = MenuColumns{
-	Id:     "id",
-	Label:  "label",
-	Router: "router",
+	Id:         "id",
+	Label:      "label",
+	Path:       "path",
+	Component:  "component",
+	Redirect:   "redirect",
+	ParentId:   "parent_id",
+	Hidden:     "hidden",
+	Icon:       "icon",
+	ParentName: "parent_name",
 }
 
 // NewMenuDao creates and returns a new DAO object for table data access.

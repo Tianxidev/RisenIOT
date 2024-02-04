@@ -1,15 +1,8 @@
-/*
-* @desc:用户模型对象
-* @company:云南奇讯科技有限公司
-* @Author: yixiaohu
-* @Date:   2022/3/7 11:47
- */
-
 package model
 
 import (
+	"backend/internal/model/entity"
 	"github.com/gogf/gf/v2/util/gmeta"
-	"github.com/tiger1103/gfast/v3/internal/app/system/model/entity"
 )
 
 // LoginUserRes 登录返回

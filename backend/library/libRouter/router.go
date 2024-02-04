@@ -1,10 +1,3 @@
-/*
-* @desc:路由处理
-* @company:云南奇讯科技有限公司
-* @Author: yixiaohu<yxh669@qq.com>
-* @Date:   2022/11/16 11:09
- */
-
 package libRouter
 
 import (

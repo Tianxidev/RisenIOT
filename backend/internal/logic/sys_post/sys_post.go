@@ -1,30 +1,23 @@
-/*
-* @desc:岗位管理
-* @company:云南奇讯科技有限公司
-* @Author: yixiaohu<yxh669@qq.com>
-* @Date:   2022/9/26 15:28
- */
-
 package sysPost
 
 import (
+	"backend/api/v1/system"
+	"backend/internal/consts"
+	"backend/internal/dao"
+	"backend/internal/model/do"
+	"backend/internal/model/entity"
+	"backend/internal/service"
 	"context"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/util/gconv"
-	"github.com/tiger1103/gfast/v3/api/v1/system"
-	"github.com/tiger1103/gfast/v3/internal/app/system/consts"
-	"github.com/tiger1103/gfast/v3/internal/app/system/dao"
-	"github.com/tiger1103/gfast/v3/internal/app/system/model/do"
-	"github.com/tiger1103/gfast/v3/internal/app/system/model/entity"
-	"github.com/tiger1103/gfast/v3/internal/app/system/service"
-	"github.com/tiger1103/gfast/v3/library/liberr"
+	"backend/library/liberr"
 )
 
 func init() {
 	service.RegisterSysPost(New())
 }
 
-func New() *sSysPost {
+func New() service.ISysPost {
 	return &sSysPost{}
 }
 
@@ -70,7 +63,7 @@ func (s *sSysPost) Add(ctx context.Context, req *system.PostAddReq) (err error) 
 			PostSort:  req.PostSort,
 			Status:    req.Status,
 			Remark:    req.Remark,
-			CreatedBy: service.Context().GetUserId(ctx),
+			CreatedBy: service.UserCtx().GetUserId(ctx),
 		})
 		liberr.ErrIsNil(ctx, err, "添加岗位失败")
 	})
@@ -85,7 +78,7 @@ func (s *sSysPost) Edit(ctx context.Context, req *system.PostEditReq) (err error
 			PostSort:  req.PostSort,
 			Status:    req.Status,
 			Remark:    req.Remark,
-			UpdatedBy: service.Context().GetUserId(ctx),
+			UpdatedBy: service.UserCtx().GetUserId(ctx),
 		})
 		liberr.ErrIsNil(ctx, err, "修改岗位失败")
 	})

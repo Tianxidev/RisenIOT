@@ -1,18 +1,16 @@
-/*
-* @desc:验证码处理
-* @company:云南奇讯科技有限公司
-* @Author: yixiaohu<yxh669@qq.com>
-* @Date:   2022/9/28 9:01
- */
-
 package captcha
 
 import (
+	"backend/internal/service"
 	"context"
 	"github.com/gogf/gf/v2/text/gstr"
 	"github.com/mojocn/base64Captcha"
-	"github.com/tiger1103/gfast/v3/internal/app/common/service"
 )
+
+type sCaptcha struct {
+	driver *base64Captcha.DriverString
+	store  base64Captcha.Store
+}
 
 func init() {
 	service.RegisterCaptcha(New())
@@ -31,11 +29,6 @@ func New() *sCaptcha {
 		},
 		store: base64Captcha.DefaultMemStore,
 	}
-}
-
-type sCaptcha struct {
-	driver *base64Captcha.DriverString
-	store  base64Captcha.Store
 }
 
 var (

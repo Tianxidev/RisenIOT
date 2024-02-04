@@ -1,21 +1,14 @@
-/*
-* @desc:xxxx功能描述
-* @company:云南奇讯科技有限公司
-* @Author: yixiaohu<yxh669@qq.com>
-* @Date:   2022/11/3 10:04
- */
-
 package system
 
 import (
+	commonApi "backend/api/v1/common"
+	"backend/internal/model"
+	"backend/internal/model/entity"
 	"github.com/gogf/gf/v2/frame/g"
-	commonApi "github.com/tiger1103/gfast/v3/api/v1/common"
-	"github.com/tiger1103/gfast/v3/internal/app/system/model"
-	"github.com/tiger1103/gfast/v3/internal/app/system/model/entity"
 )
 
 type PersonalInfoReq struct {
-	g.Meta `path:"/personal/getPersonalInfo" tags:"用户管理" method:"get" summary:"登录用户信息"`
+	g.Meta `path:"/system/personal/getPersonalInfo" tags:"用户管理" method:"get" summary:"登录用户信息"`
 	commonApi.Author
 }
 
@@ -40,7 +33,7 @@ type SetPersonalReq struct {
 
 // PersonalEditReq 修改个人
 type PersonalEditReq struct {
-	g.Meta `path:"/personal/edit" tags:"用户管理" method:"put" summary:"修改个人资料"`
+	g.Meta `path:"/system/personal/edit" tags:"用户管理" method:"put" summary:"修改个人资料"`
 	*SetPersonalReq
 	commonApi.Author
 }
@@ -52,7 +45,7 @@ type PersonalEditRes struct {
 }
 
 type PersonalResetPwdReq struct {
-	g.Meta   `path:"/personal/resetPwd" tags:"用户管理" method:"put" summary:"重置个人密码"`
+	g.Meta   `path:"/system/personal/resetPwd" tags:"用户管理" method:"put" summary:"重置个人密码"`
 	Password string `p:"password" v:"required|password#密码不能为空|密码以字母开头，只能包含字母、数字和下划线，长度在6~18之间"`
 	commonApi.Author
 }

@@ -8,32 +8,31 @@
 package sysDictType
 
 import (
+	"backend/api/v1/system"
+	"backend/internal/consts"
+	"backend/internal/dao"
+	"backend/internal/model"
+	"backend/internal/model/do"
+	"backend/internal/model/entity"
+	"backend/internal/service"
+	"backend/library/liberr"
 	"context"
 	"github.com/gogf/gf/v2/container/garray"
 	"github.com/gogf/gf/v2/database/gdb"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/util/gconv"
-	"github.com/tiger1103/gfast/v3/api/v1/system"
-	"github.com/tiger1103/gfast/v3/internal/app/common/consts"
-	"github.com/tiger1103/gfast/v3/internal/app/common/dao"
-	"github.com/tiger1103/gfast/v3/internal/app/common/model"
-	"github.com/tiger1103/gfast/v3/internal/app/common/model/do"
-	"github.com/tiger1103/gfast/v3/internal/app/common/model/entity"
-	"github.com/tiger1103/gfast/v3/internal/app/common/service"
-	systemConsts "github.com/tiger1103/gfast/v3/internal/app/system/consts"
-	"github.com/tiger1103/gfast/v3/library/liberr"
 )
+
+type sSysDictType struct {
+}
 
 func init() {
 	service.RegisterSysDictType(New())
 }
 
-func New() *sSysDictType {
+func New() service.ISysDictType {
 	return &sSysDictType{}
-}
-
-type sSysDictType struct {
 }
 
 // List 字典类型列表
@@ -57,7 +56,7 @@ func (s *sSysDictType) List(ctx context.Context, req *system.DictTypeSearchReq) 
 		}
 		res.CurrentPage = req.PageNum
 		if req.PageSize == 0 {
-			req.PageSize = systemConsts.PageSize
+			req.PageSize = consts.PageSize
 		}
 		err = m.Fields(model.SysDictTypeInfoRes{}).Page(req.PageNum, req.PageSize).
 			Order(dao.SysDictType.Columns().DictId + " asc").Scan(&res.DictTypeList)
@@ -80,7 +79,7 @@ func (s *sSysDictType) Add(ctx context.Context, req *system.DictTypeAddReq, user
 		})
 		liberr.ErrIsNil(ctx, err, "添加字典类型失败")
 		//清除缓存
-		service.Cache().RemoveByTag(ctx, consts.CacheSysDictTag)
+		service.Cache().GCache().RemoveByTag(ctx, consts.CacheSysDictTag)
 	})
 	return
 }
@@ -109,7 +108,7 @@ func (s *sSysDictType) Edit(ctx context.Context, req *system.DictTypeEditReq, us
 				Where(dao.SysDictData.Columns().DictType, dictType.DictType).Update()
 			liberr.ErrIsNil(ctx, e, "修改字典数据失败")
 			//清除缓存
-			service.Cache().RemoveByTag(ctx, consts.CacheSysDictTag)
+			service.Cache().GCache().RemoveByTag(ctx, consts.CacheSysDictTag)
 		})
 		return err
 	})
@@ -160,7 +159,7 @@ func (s *sSysDictType) Delete(ctx context.Context, dictIds []int) (err error) {
 				liberr.ErrIsNil(ctx, err, "删除字典数据失败")
 			}
 			//清除缓存
-			service.Cache().RemoveByTag(ctx, consts.CacheSysDictTag)
+			service.Cache().GCache().RemoveByTag(ctx, consts.CacheSysDictTag)
 		})
 		return err
 	})
@@ -171,7 +170,7 @@ func (s *sSysDictType) Delete(ctx context.Context, dictIds []int) (err error) {
 func (s *sSysDictType) GetAllDictType(ctx context.Context) (list []*entity.SysDictType, err error) {
 	cache := service.Cache()
 	//从缓存获取
-	data := cache.Get(ctx, consts.CacheSysDict+"_dict_type_all")
+	data := cache.GCache().Get(ctx, consts.CacheSysDict+"_dict_type_all")
 	if !data.IsNil() {
 		err = data.Structs(&list)
 		return
@@ -180,7 +179,7 @@ func (s *sSysDictType) GetAllDictType(ctx context.Context) (list []*entity.SysDi
 		err = dao.SysDictType.Ctx(ctx).Where("status", 1).Order("dict_id ASC").Scan(&list)
 		liberr.ErrIsNil(ctx, err, "获取字典类型数据出错")
 		//缓存
-		cache.Set(ctx, consts.CacheSysDict+"_dict_type_all", list, 0, consts.CacheSysDictTag)
+		cache.GCache().Set(ctx, consts.CacheSysDict+"_dict_type_all", list, 0, consts.CacheSysDictTag)
 	})
 	return
 }

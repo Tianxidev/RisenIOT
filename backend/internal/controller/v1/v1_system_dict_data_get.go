@@ -1,14 +1,13 @@
 package v1
 
 import (
+	"backend/internal/service"
 	"context"
-
-	"github.com/gogf/gf/v2/errors/gcode"
-	"github.com/gogf/gf/v2/errors/gerror"
 
 	"backend/api/v1/system"
 )
 
 func (c *ControllerSystem) DictDataGet(ctx context.Context, req *system.DictDataGetReq) (res *system.DictDataGetRes, err error) {
-	return nil, gerror.NewCode(gcode.CodeNotImplemented)
+	res, err = service.SysDictData().Get(ctx, req.DictCode)
+	return
 }

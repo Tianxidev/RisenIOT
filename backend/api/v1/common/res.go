@@ -1,10 +1,3 @@
-/*
-* @desc:返回响应公共参数
-* @company:云南奇讯科技有限公司
-* @Author: yixiaohu<yxh669@qq.com>
-* @Date:   2022/10/27 16:30
- */
-
 package common
 
 import "github.com/gogf/gf/v2/frame/g"

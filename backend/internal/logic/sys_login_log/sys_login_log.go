@@ -1,37 +1,30 @@
-/*
-* @desc:登录日志
-* @company:云南奇讯科技有限公司
-* @Author: yixiaohu<yxh669@qq.com>
-* @Date:   2022/9/26 15:20
- */
-
 package sysLoginLog
 
 import (
+	"backend/api/v1/system"
+	"backend/internal/consts"
+	"backend/internal/dao"
+	"backend/internal/model"
+	"backend/internal/service"
 	"context"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/grpool"
 	"github.com/gogf/gf/v2/util/gconv"
-	"github.com/tiger1103/gfast/v3/api/v1/system"
-	"github.com/tiger1103/gfast/v3/internal/app/system/consts"
-	"github.com/tiger1103/gfast/v3/internal/app/system/dao"
-	"github.com/tiger1103/gfast/v3/internal/app/system/model"
-	"github.com/tiger1103/gfast/v3/internal/app/system/service"
-	"github.com/tiger1103/gfast/v3/library/liberr"
+	"backend/library/liberr"
 )
+
+type sSysLoginLog struct {
+	Pool *grpool.Pool
+}
 
 func init() {
 	service.RegisterSysLoginLog(New())
 }
 
-func New() *sSysLoginLog {
+func New() service.ISysLoginLog {
 	return &sSysLoginLog{
 		Pool: grpool.New(100),
 	}
-}
-
-type sSysLoginLog struct {
-	Pool *grpool.Pool
 }
 
 func (s *sSysLoginLog) Invoke(ctx context.Context, data *model.LoginLogParams) {

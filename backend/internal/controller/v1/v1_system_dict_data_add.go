@@ -8,6 +8,6 @@ import (
 )
 
 func (c *ControllerSystem) DictDataAdd(ctx context.Context, req *system.DictDataAddReq) (res *system.DictDataAddRes, err error) {
-	err = service.SysDictData().Add(ctx, req, service.Context().GetUserId(ctx))
+	err = service.SysDictData().Add(ctx, req, service.UserCtx().GetUserId(ctx))
 	return
 }

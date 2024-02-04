@@ -8,6 +8,8 @@ import (
 	"backend/internal/model/do"
 	"backend/internal/model/entity"
 	"backend/internal/service"
+	"backend/library/libUtils"
+	"backend/library/liberr"
 	"context"
 	"fmt"
 	"github.com/gogf/gf/v2/container/gset"
@@ -19,8 +21,6 @@ import (
 	"github.com/gogf/gf/v2/util/gconv"
 	"github.com/gogf/gf/v2/util/grand"
 	"github.com/mssola/user_agent"
-	"github.com/tiger1103/gfast/v3/library/libUtils"
-	"github.com/tiger1103/gfast/v3/library/liberr"
 )
 
 type sSysUser struct {
@@ -129,6 +129,7 @@ func (s *sSysUser) GetAdminRules(ctx context.Context, userId uint64) (menuList [
 			}
 			return true
 		})
+
 		//获取用户菜单数据
 		allRoles, err := service.SysRole().GetRoleList(ctx)
 		if err != nil {

@@ -1,14 +1,18 @@
 package v1
 
 import (
+	"backend/internal/service"
 	"context"
-
-	"github.com/gogf/gf/v2/errors/gcode"
-	"github.com/gogf/gf/v2/errors/gerror"
 
 	"backend/api/v1/system"
 )
 
 func (c *ControllerSystem) RoleGet(ctx context.Context, req *system.RoleGetReq) (res *system.RoleGetRes, err error) {
-	return nil, gerror.NewCode(gcode.CodeNotImplemented)
+	res = new(system.RoleGetRes)
+	res.Role, err = service.SysRole().Get(ctx, req.Id)
+	if err != nil {
+		return
+	}
+	res.MenuIds, err = service.SysRole().GetFilteredNamedPolicy(ctx, req.Id)
+	return
 }

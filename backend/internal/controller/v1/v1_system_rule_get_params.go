@@ -1,14 +1,18 @@
 package v1
 
 import (
+	"backend/internal/service"
 	"context"
-
-	"github.com/gogf/gf/v2/errors/gcode"
-	"github.com/gogf/gf/v2/errors/gerror"
 
 	"backend/api/v1/system"
 )
 
 func (c *ControllerSystem) RuleGetParams(ctx context.Context, req *system.RuleGetParamsReq) (res *system.RuleGetParamsRes, err error) {
-	return nil, gerror.NewCode(gcode.CodeNotImplemented)
+	res = new(system.RuleGetParamsRes)
+	res.Roles, err = service.SysRole().GetRoleList(ctx)
+	if err != nil {
+		return
+	}
+	res.Menus, err = service.SysAuthRule().GetIsMenuList(ctx)
+	return
 }

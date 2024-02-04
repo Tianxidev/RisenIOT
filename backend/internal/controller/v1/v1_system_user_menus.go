@@ -1,14 +1,23 @@
 package v1
 
 import (
+	"backend/internal/model"
+	"backend/internal/service"
 	"context"
-
-	"github.com/gogf/gf/v2/errors/gcode"
-	"github.com/gogf/gf/v2/errors/gerror"
 
 	"backend/api/v1/system"
 )
 
 func (c *ControllerSystem) UserMenus(ctx context.Context, req *system.UserMenusReq) (res *system.UserMenusRes, err error) {
-	return nil, gerror.NewCode(gcode.CodeNotImplemented)
+	var (
+		permissions []string
+		menuList    []*model.UserMenus
+	)
+	userId := service.UserCtx().GetUserId(ctx)
+	menuList, permissions, err = service.SysUser().GetAdminRules(ctx, userId)
+	res = &system.UserMenusRes{
+		MenuList:    menuList,
+		Permissions: permissions,
+	}
+	return
 }

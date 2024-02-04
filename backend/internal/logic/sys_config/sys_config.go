@@ -1,37 +1,29 @@
-/*
-* @desc:配置参数管理
-* @company:云南奇讯科技有限公司
-* @Author: yixiaohu<yxh669@qq.com>
-* @Date:   2022/9/28 9:13
- */
-
 package sysConfig
 
 import (
+	"backend/api/v1/system"
+	"backend/internal/consts"
+	"backend/internal/dao"
+	"backend/internal/model/do"
+	"backend/internal/model/entity"
+	"backend/internal/service"
+	"backend/library/liberr"
 	"context"
 	"errors"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/util/gconv"
-	"github.com/tiger1103/gfast/v3/api/v1/system"
-	"github.com/tiger1103/gfast/v3/internal/app/common/consts"
-	"github.com/tiger1103/gfast/v3/internal/app/common/dao"
-	"github.com/tiger1103/gfast/v3/internal/app/common/model/do"
-	"github.com/tiger1103/gfast/v3/internal/app/common/model/entity"
-	"github.com/tiger1103/gfast/v3/internal/app/common/service"
-	systemConsts "github.com/tiger1103/gfast/v3/internal/app/system/consts"
-	"github.com/tiger1103/gfast/v3/library/liberr"
 )
+
+type sSysConfig struct {
+}
 
 func init() {
 	service.RegisterSysConfig(New())
 }
 
-func New() *sSysConfig {
+func New() service.ISysConfig {
 	return &sSysConfig{}
-}
-
-type sSysConfig struct {
 }
 
 // List 系统参数列表
@@ -54,16 +46,16 @@ func (s *sSysConfig) List(ctx context.Context, req *system.ConfigSearchReq) (res
 			}
 		}
 		res.Total, err = m.Count()
-		liberr.ErrIsNil(ctx, err, "获取数据失败")
+		g.Log().Error(ctx, err, "获取数据失败")
 		if req.PageNum == 0 {
 			req.PageNum = 1
 		}
 		res.CurrentPage = req.PageNum
 		if req.PageSize == 0 {
-			req.PageSize = systemConsts.PageSize
+			req.PageSize = consts.PageSize
 		}
 		err = m.Page(req.PageNum, req.PageSize).Order("config_id asc").Scan(&res.List)
-		liberr.ErrIsNil(ctx, err, "获取数据失败")
+		g.Log().Error(ctx, err, "获取数据失败")
 	})
 	return
 }
@@ -82,7 +74,7 @@ func (s *sSysConfig) Add(ctx context.Context, req *system.ConfigAddReq, userId u
 		})
 		liberr.ErrIsNil(ctx, err, "添加系统参数失败")
 		//清除缓存
-		service.Cache().RemoveByTag(ctx, consts.CacheSysConfigTag)
+		service.Cache().GCache().RemoveByTag(ctx, consts.CacheSysConfigTag)
 	})
 	return
 }
@@ -129,7 +121,7 @@ func (s *sSysConfig) Edit(ctx context.Context, req *system.ConfigEditReq, userId
 		})
 		liberr.ErrIsNil(ctx, err, "修改系统参数失败")
 		//清除缓存
-		service.Cache().RemoveByTag(ctx, consts.CacheSysConfigTag)
+		service.Cache().GCache().RemoveByTag(ctx, consts.CacheSysConfigTag)
 	})
 	return
 }
@@ -140,7 +132,7 @@ func (s *sSysConfig) Delete(ctx context.Context, ids []int) (err error) {
 		_, err = dao.SysConfig.Ctx(ctx).Delete(dao.SysConfig.Columns().ConfigId+" in (?)", ids)
 		liberr.ErrIsNil(ctx, err, "删除失败")
 		//清除缓存
-		service.Cache().RemoveByTag(ctx, consts.CacheSysConfigTag)
+		service.Cache().GCache().RemoveByTag(ctx, consts.CacheSysConfigTag)
 	})
 	return
 }
@@ -152,7 +144,7 @@ func (s *sSysConfig) GetConfigByKey(ctx context.Context, key string) (config *en
 		return
 	}
 	cache := service.Cache()
-	cf := cache.Get(ctx, consts.CacheSysConfigTag+key)
+	cf := cache.GCache().Get(ctx, consts.CacheSysConfigTag+key)
 	if cf != nil && !cf.IsEmpty() {
 		err = gconv.Struct(cf, &config)
 		return
@@ -162,7 +154,7 @@ func (s *sSysConfig) GetConfigByKey(ctx context.Context, key string) (config *en
 		return
 	}
 	if config != nil {
-		cache.Set(ctx, consts.CacheSysConfigTag+key, config, 0, consts.CacheSysConfigTag)
+		cache.GCache().Set(ctx, consts.CacheSysConfigTag+key, config, 0, consts.CacheSysConfigTag)
 	}
 	return
 }

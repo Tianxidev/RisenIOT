@@ -1,14 +1,14 @@
 package v1
 
 import (
+	"backend/internal/service"
 	"context"
-
-	"github.com/gogf/gf/v2/errors/gcode"
-	"github.com/gogf/gf/v2/errors/gerror"
 
 	"backend/api/v1/system"
 )
 
 func (c *ControllerSystem) SysOperLogGet(ctx context.Context, req *system.SysOperLogGetReq) (res *system.SysOperLogGetRes, err error) {
-	return nil, gerror.NewCode(gcode.CodeNotImplemented)
+	res = new(system.SysOperLogGetRes)
+	res.SysOperLogInfoRes, err = service.OperateLog().GetByOperId(ctx, req.OperId)
+	return
 }
