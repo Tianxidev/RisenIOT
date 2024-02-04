@@ -1,0 +1,13 @@
+package v1
+
+import (
+	"backend/internal/service"
+	"context"
+
+	"backend/api/v1/system"
+)
+
+func (c *ControllerSystem) DictDataSearch(ctx context.Context, req *system.DictDataSearchReq) (res *system.DictDataSearchRes, err error) {
+	res, err = service.SysDictData().List(ctx, req)
+	return
+}
