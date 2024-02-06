@@ -8,11 +8,23 @@ import (
 	"context"
 
 	"backend/api/v1/common"
+	"backend/api/v1/device"
 	"backend/api/v1/system"
 )
 
 type IV1Common interface {
 	Captcha(ctx context.Context, req *common.CaptchaReq) (res *common.CaptchaRes, err error)
+}
+
+type IV1Device interface {
+	DataGet(ctx context.Context, req *device.DataGetReq) (res *device.DataGetRes, err error)
+	DataAdd(ctx context.Context, req *device.DataAddReq) (res *device.DataAddRes, err error)
+	InfoSearch(ctx context.Context, req *device.InfoSearchReq) (res *device.InfoSearchRes, err error)
+	InfoGet(ctx context.Context, req *device.InfoGetReq) (res *device.InfoGetRes, err error)
+	InfoAdd(ctx context.Context, req *device.InfoAddReq) (res *device.InfoAddRes, err error)
+	InfoEdit(ctx context.Context, req *device.InfoEditReq) (res *device.InfoEditRes, err error)
+	InfoDelete(ctx context.Context, req *device.InfoDeleteReq) (res *device.InfoDeleteRes, err error)
+	KindSearch(ctx context.Context, req *device.KindSearchReq) (res *device.KindSearchRes, err error)
 }
 
 type IV1System interface {

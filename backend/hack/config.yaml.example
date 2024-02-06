@@ -16,5 +16,4 @@ gfcli:
   gen:
     dao:
       - link: "mysql:xxx:xxx@tcp(xx.xx.xx.xx:3306)/xxxx?loc=Local"
-        prefix: "riseniot_"
         jsonCase: "CamelLower"

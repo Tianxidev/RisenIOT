@@ -11,6 +11,7 @@ type Context struct {
 	Message string         // 消息内容
 	Session *ghttp.Session // 当前Session管理对象
 	Data    g.Map          // 自定KV变量，业务模块根据需要设置，不固定
+	User    *ContextUser   // 当前登录用户信息
 }
 
 // DefaultHandlerResponse 统一返回对象
@@ -20,10 +21,6 @@ type DefaultHandlerResponse struct {
 	Data    interface{} `json:"data"    dc:"Result data for certain request according API definition"`
 }
 
-// UserInfo 用户信息
-type UserInfo struct {
-	UUID     string `json:"uuid"`
-	Username string `json:"username"`
-	Nickname string `json:"nickname"`
-	Role     string `json:"role"`
+type ContextUser struct {
+	*LoginUserRes
 }

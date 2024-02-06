@@ -26,10 +26,7 @@ var (
 			)
 
 			g.Log().Info(ctx, "正在启动 web 服务")
-
-			// 设置配置文件
 			cfg.GetAdapter().(*gcfg.AdapterFile).SetFileName("config.yaml")
-
 			serviceName, _ := cfg.Get(ctx, "server.name")
 
 			oai.Info.Title = serviceName.String()

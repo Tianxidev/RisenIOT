@@ -3,31 +3,30 @@ package middleware
 import (
 	"backend/internal/model"
 	"backend/internal/service"
-	"net/http"
-
 	"github.com/gogf/gf/v2/errors/gcode"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/net/ghttp"
+	"github.com/gogf/gf/v2/text/gstr"
+	"net/http"
 )
 
 // UnifiedResponseHandler 统一返回
 func (s *sMiddleware) UnifiedResponseHandler(r *ghttp.Request) {
 	r.Middleware.Next()
 
-	if r.Response.BufferLength() > 0 {
-		return
-	}
 	var (
 		msg  string
 		err  = r.GetError()
 		res  = r.GetHandlerResponse()
 		code = gerror.Code(err)
 	)
+
 	if err != nil {
+		r.Response.ClearBuffer()
 		if code == gcode.CodeNil {
 			code = gcode.CodeInternalError
 		}
-		msg = err.Error()
+		msg = gstr.Replace(err.Error(), "exception recovered: ", "")
 	} else {
 		if r.Response.Status > 0 && r.Response.Status != http.StatusOK {
 			msg = http.StatusText(r.Response.Status)
@@ -44,7 +43,7 @@ func (s *sMiddleware) UnifiedResponseHandler(r *ghttp.Request) {
 			r.SetError(err)
 		} else {
 			code = gcode.CodeOK
-			msg = service.User().GetCtx(r.Context()).Message
+			msg = service.UserCtx().GetCtx(r.Context()).Message
 		}
 	}
 

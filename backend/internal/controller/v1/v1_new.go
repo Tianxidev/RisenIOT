@@ -19,3 +19,9 @@ type ControllerSystem struct{}
 func NewSystem() v1.IV1System {
 	return &ControllerSystem{}
 }
+
+type ControllerDevice struct{}
+
+func NewDevice() v1.IV1Device {
+	return &ControllerDevice{}
+}
