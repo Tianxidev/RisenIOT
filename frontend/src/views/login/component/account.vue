@@ -3,7 +3,7 @@
     <el-form-item class="login-animation1" prop="username">
       <el-input
           type="text"
-          :placeholder="$t('message.account.accountPlaceholder1')"
+          placeholder="请输入用户名"
           v-model="ruleForm.username"
           clearable autocomplete="off">
         <template #prefix>
@@ -14,7 +14,7 @@
     <el-form-item class="login-animation2" prop="password">
       <el-input
           :type="isShowPassword ? 'text' : 'password'"
-          :placeholder="$t('message.account.accountPlaceholder2')"
+          placeholder="请输入密码"
           v-model="ruleForm.password"
           autocomplete="off"
           @keyup.enter="onSignIn"
@@ -34,7 +34,7 @@
     </el-form-item>
     <el-form-item class="login-animation4">
       <el-button type="primary" class="login-content-submit" round @click="onSignIn" :loading="loading.signIn">
-        <span>{{ $t('message.account.accountBtnText') }}</span>
+        <span>登录</span>
       </el-button>
     </el-form-item>
   </el-form>

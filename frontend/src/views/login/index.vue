@@ -5,25 +5,22 @@
         <div class="login-content-main">
           <div class="login-icon-group">
             <div class="login-icon-group-title">
-              <div class="login-icon-group-title-text font25">{{ getThemeConfig.globalViceTitle }}</div>
+              <div class="login-icon-group-title-text">{{ getThemeConfig.globalViceTitle }}</div>
             </div>
           </div>
-          <div v-if="!isScan">
-            <el-tabs v-model="tabsActiveName">
-              <el-tab-pane :label="$t('message.label.one1')" name="account">
-                <Account />
-              </el-tab-pane>
-              <el-tab-pane :label="$t('message.label.two2')" name="mobile">
-                <Mobile />
-              </el-tab-pane>
-              <div class="font12 mt30 login-animation4 login-msg">* 温馨提示：建议使用谷歌、Microsoft Edge，版本 79.0.1072.62 及以上浏览器，360浏览器请使用极速模式</div>
-            </el-tabs>
-          </div>
-          <Scan v-if="isScan" />
-          <div class="login-content-main-sacn" @click="isScan = !isScan">
-            <i class="iconfont" :class="isScan ? 'icon-diannao1' : 'icon-barcode-qr'"></i>
-            <div class="login-content-main-sacn-delta"></div>
-          </div>
+          <el-tabs v-model="tabsActiveName" style="height: 350px;">
+            <el-tab-pane label="账号密码登录" name="account">
+              <Account />
+            </el-tab-pane>
+            <el-tab-pane label="手机号登录" name="mobile">
+              <Mobile />
+            </el-tab-pane>
+            <el-tab-pane label="二维码登录" name="qrcode">
+              <Scan />
+            </el-tab-pane>
+            <div class="font12 mt30 login-animation4 login-msg">* 温馨提示：建议使用谷歌、Microsoft Edge，版本 79.0.1072.62
+              及以上浏览器，360浏览器请使用极速模式</div>
+          </el-tabs>
         </div>
       </div>
     </div>
@@ -50,34 +47,32 @@ import Scan from '/@/views/login/component/scan.vue';
 
 // 定义接口来定义对象的类型
 interface LoginState {
-	tabsActiveName: string;
-	isScan: boolean;
+  tabsActiveName: string;
 }
 
 export default defineComponent({
-	name: 'loginIndex',
-	components: { Account, Mobile, Scan },
-	setup() {
-		const storesThemeConfig = useThemeConfig();
-		const { themeConfig } = storeToRefs(storesThemeConfig);
-		const state = reactive<LoginState>({
-			tabsActiveName: 'account',
-			isScan: false,
-		});
-		// 获取布局配置信息
-		const getThemeConfig = computed(() => {
-			return themeConfig.value;
-		});
-		// 页面加载时
-		onMounted(() => {
-			NextLoading.done();
-		});
-		return {
-			loginIconTwo,
-			getThemeConfig,
-			...toRefs(state),
-		};
-	},
+  name: 'loginIndex',
+  components: { Account, Mobile, Scan },
+  setup() {
+    const storesThemeConfig = useThemeConfig();
+    const { themeConfig } = storeToRefs(storesThemeConfig);
+    const state = reactive<LoginState>({
+      tabsActiveName: 'account',
+    });
+    // 获取布局配置信息
+    const getThemeConfig = computed(() => {
+      return themeConfig.value;
+    });
+    // 页面加载时
+    onMounted(() => {
+      NextLoading.done();
+    });
+    return {
+      loginIconTwo,
+      getThemeConfig,
+      ...toRefs(state),
+    };
+  },
 });
 </script>
 
@@ -89,22 +84,22 @@ export default defineComponent({
   position: relative;
   color: #1c2518;
   background-color: #f8f8f8;
+
   .login-icon-group {
     width: 100%;
     height: 100%;
     position: relative;
+
     .login-icon-group-title {
       display: flex;
       align-items: center;
+
       img {
         width: 80px;
         height: 70px;
       }
-      &-text {
-        padding-left: 5px;
-        color: var(--el-color-primary);
-      }
     }
+
     &-icon {
       width: 60%;
       height: 70%;
@@ -113,6 +108,7 @@ export default defineComponent({
       bottom: 0;
     }
   }
+
   .login-content-out {
     width: 100%;
     height: 100%;
@@ -121,9 +117,10 @@ export default defineComponent({
     justify-content: center;
     align-items: center;
   }
+
   .login-content {
-    width: 500px;
-    padding: 20px;
+    width: 600px;
+    padding: 10px;
     margin: auto;
     background-color: #ffffff;
     border: 2px solid #003422;
@@ -131,9 +128,11 @@ export default defineComponent({
     overflow: hidden;
     z-index: 1;
     position: relative;
+
     .login-content-main {
       margin: 0 auto;
-      width: 80%;
+      width: calc(100% - 30px);
+
       .login-content-title {
         color: var(--el-text-color-primary);
         font-weight: 500;
@@ -147,47 +146,30 @@ export default defineComponent({
         transition: all 0.3s ease;
       }
     }
-    .login-content-main-sacn {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      width: 10px;
-      height: 10px;
-      cursor: pointer;
-      transition: all ease 0.3s;
-      color: var(--el-text-color-primary);
-      &-delta {
-        position: absolute;
-        width: 35px;
-        height: 70px;
-        z-index: 2;
-        top: 2px;
-        right: 21px;
-        transform: rotate(-45deg);
-      }
-      &:hover {
-        opacity: 1;
-        transition: all ease 0.3s;
-        color: var(--el-color-primary) !important;
-      }
-      i {
-        width: 47px;
-        height: 50px;
-        display: inline-block;
-        font-size: 48px;
-        position: absolute;
-        right: 2px;
-        top: -1px;
-      }
-    }
+
   }
-  .login-footer{
+
+  .login-icon-group-title-text {
+    font-size: 50px;
+    font-weight: 500;
+    width: 100%;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    -webkit-text-stroke: 1.3px #000000;
+    color: transparent;
+
+  }
+
+  .login-footer {
     position: absolute;
     bottom: 5px;
     width: 100%;
+
     &-content {
       width: 100%;
       display: flex;
+
       &-warp {
         margin: auto;
         color: #000000;
@@ -196,5 +178,4 @@ export default defineComponent({
       }
     }
   }
-}
-</style>
+}</style>

@@ -1,7 +1,6 @@
 <template>
 	<div class="login-scan-container">
 		<div ref="qrcodeRef"></div>
-		<div class="font12 mt20 login-msg">{{ $t('message.scan.text') }}</div>
 	</div>
 </template>
 
@@ -17,9 +16,9 @@ export default defineComponent({
 		const initQrcode = () => {
 			(qrcodeRef.value as HTMLElement).innerHTML = '';
 			new QRCode(qrcodeRef.value, {
-				text: `https://qm.qq.com/cgi-bin/qm/qr?k=CDO9yYdygFMKdQihlUXj4-Y0RDEhPTsh&authKey=vw/uQT5H4L/Kb0zT1gj7dd0PVtUDm9RdWqz4cztJb/QmPaSdyS/yeRHhjZaUj43v&noverify=0`,
-				width: 260,
-				height: 260,
+				text: `暂未支持二维码登录`,
+				width: 160,
+				height: 160,
 				colorDark: '#000000',
 				colorLight: '#ffffff',
 			});

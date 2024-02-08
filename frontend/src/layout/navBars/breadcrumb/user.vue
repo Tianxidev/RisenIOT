@@ -1,38 +1,5 @@
 <template>
   <div class="layout-navbars-breadcrumb-user pr15" :style="{ flex: layoutUserFlexNum }">
-    <el-dropdown :show-timeout="70" :hide-timeout="50" trigger="click" @command="onComponentSizeChange">
-      <div class="layout-navbars-breadcrumb-user-icon">
-        <i class="iconfont icon-ziti" :title="$t('message.user.title0')"></i>
-      </div>
-      <template #dropdown>
-        <el-dropdown-menu>
-          <el-dropdown-item command="large" :disabled="disabledSize === 'large'">{{
-              $t('message.user.dropdownLarge')
-            }}
-          </el-dropdown-item>
-          <el-dropdown-item command="default" :disabled="disabledSize === 'default'">
-            {{ $t('message.user.dropdownDefault') }}
-          </el-dropdown-item>
-          <el-dropdown-item command="small" :disabled="disabledSize === 'small'">{{
-              $t('message.user.dropdownSmall')
-            }}
-          </el-dropdown-item>
-        </el-dropdown-menu>
-      </template>
-    </el-dropdown>
-    <el-dropdown :show-timeout="70" :hide-timeout="50" trigger="click" @command="onLanguageChange">
-      <div class="layout-navbars-breadcrumb-user-icon">
-        <i class="iconfont" :class="disabledI18n === 'en' ? 'icon-fuhao-yingwen' : 'icon-fuhao-zhongwen'"
-           :title="$t('message.user.title1')"></i>
-      </div>
-      <template #dropdown>
-        <el-dropdown-menu>
-          <el-dropdown-item command="zh-cn" :disabled="disabledI18n === 'zh-cn'">简体中文</el-dropdown-item>
-          <el-dropdown-item command="en" :disabled="disabledI18n === 'en'">English</el-dropdown-item>
-          <el-dropdown-item command="zh-tw" :disabled="disabledI18n === 'zh-tw'">繁體中文</el-dropdown-item>
-        </el-dropdown-menu>
-      </template>
-    </el-dropdown>
     <div class="layout-navbars-breadcrumb-user-icon" @click="onSearchClick">
       <el-icon :title="$t('message.user.title2')">
         <ele-Search/>
@@ -89,7 +56,6 @@ import { useI18n } from 'vue-i18n';
 import { storeToRefs } from 'pinia';
 import { useUserInfo } from '/@/stores/userInfo';
 import { useThemeConfig } from '/@/stores/themeConfig';
-import other from '/@/utils/other';
 import { Session, Local } from '/@/utils/storage';
 import UserNews from '/@/layout/navBars/breadcrumb/userNews.vue';
 import Search from '/@/layout/navBars/breadcrumb/search.vue';
@@ -188,23 +154,7 @@ export default defineComponent({
     const onSearchClick = () => {
       searchRef.value.openSearch();
     };
-    // 组件大小改变
-    const onComponentSizeChange = (size: string) => {
-      Local.remove('themeConfig');
-      themeConfig.value.globalComponentSize = size;
-      Local.set('themeConfig', themeConfig.value);
-      initComponentSize();
-      window.location.reload();
-    };
-    // 语言切换
-    const onLanguageChange = (lang: string) => {
-      Local.remove('themeConfig');
-      themeConfig.value.globalI18n = lang;
-      Local.set('themeConfig', themeConfig.value);
-      proxy.$i18n.locale = lang;
-      initI18n();
-      other.useTitle();
-    };
+
     // 设置 element plus 组件的国际化
     const setI18nConfig = (locale: string) => {
       proxy.mittBus.emit('getI18nConfig', proxy.i18n.global.messages.value[locale]);
@@ -252,8 +202,6 @@ export default defineComponent({
       onHandleCommandClick,
       onScreenfullClick: onScreenFullClick,
       onSearchClick,
-      onComponentSizeChange,
-      onLanguageChange,
       removeCacheClick,
       searchRef,
       layoutUserFlexNum,
