@@ -1,38 +1,66 @@
-import vue from "@vitejs/plugin-vue";
-import { fileURLToPath, URL } from "node:url";
-import { visualizer } from "rollup-plugin-visualizer";
-import { defineConfig, loadEnv } from "vite";
-import vuetify from "vite-plugin-vuetify";
+import vue from '@vitejs/plugin-vue';
+import { resolve } from 'path';
+import { defineConfig, loadEnv, ConfigEnv } from 'vite';
+import vueSetupExtend from 'vite-plugin-vue-setup-extend-plus';
+import viteCompression from 'vite-plugin-compression';
+import { buildConfig } from './src/utils/build';
 
-// https://vitejs.dev/config/
-export default defineConfig(({ mode }) => {
-  const env: Record<string, string> = loadEnv(mode, process.cwd(), "");
+const pathResolve = (dir: string) => {
+	return resolve(__dirname, '.', dir);
+};
 
-  return {
-    plugins: [
-      vue(),
-      vuetify()
-    ],
-    resolve: {
-      alias: {
-        "@": fileURLToPath(new URL("./src", import.meta.url))
-      }
-    },
-    server: {
-      port: 5175,
-      host: "0.0.0.0",
-      open: false,
-      hmr: true,
-      cors: true,
-    },
-    build: {
-      // sourcemap: env.VITE_PROD_SOURCE_MAPS, // 生产环境是否生成 source map 文件
-      chunkSizeWarningLimit: 2000, // 忽略chunk大小警告的限制
-      rollupOptions: {
-        plugins: [
-          visualizer() // 查看打包体积
-        ]
-      }
-    }
-  };
+const alias: Record<string, string> = {
+	'/@': pathResolve('./src/'),
+	'vue-i18n': 'vue-i18n/dist/vue-i18n.cjs.js',
+};
+
+const viteConfig = defineConfig((mode: ConfigEnv) => {
+	const env = loadEnv(mode.mode, process.cwd());
+	return {
+		plugins: [vue(), vueSetupExtend(), viteCompression()],
+		root: process.cwd(),
+		resolve: { alias },
+		base: mode.command === 'serve' ? './' : env.VITE_PUBLIC_PATH,
+		optimizeDeps: { exclude: ['vue-demi'] },
+		server: {
+			host: '0.0.0.0',
+			port: env.VITE_PORT as unknown as number,
+			open: JSON.parse(env.VITE_OPEN),
+			hmr: true,
+			proxy: {
+				'/gitee': {
+					target: 'https://gitee.com',
+					ws: true,
+					changeOrigin: true,
+					rewrite: (path) => path.replace(/^\/gitee/, ''),
+				},
+			},
+		},
+		build: {
+			outDir: 'dist',
+			chunkSizeWarningLimit: 1500,
+			rollupOptions: {
+				output: {
+					chunkFileNames: 'assets/js/[name]-[hash].js',
+					entryFileNames: 'assets/js/[name]-[hash].js',
+					assetFileNames: 'assets/[ext]/[name]-[hash].[ext]',
+					manualChunks(id) {
+						if (id.includes('node_modules')) {
+							return id.toString().match(/\/node_modules\/(?!.pnpm)(?<moduleName>[^\/]*)\//)?.groups!.moduleName ?? 'vender';
+						}
+					},
+				},
+				...(JSON.parse(env.VITE_OPEN_CDN) ? { external: buildConfig.external } : {}),
+			},
+		},
+		css: { preprocessorOptions: { css: { charset: false } } },
+		define: {
+			__VUE_I18N_LEGACY_API__: JSON.stringify(false),
+			__VUE_I18N_FULL_INSTALL__: JSON.stringify(false),
+			__INTLIFY_PROD_DEVTOOLS__: JSON.stringify(false),
+			__NEXT_VERSION__: JSON.stringify(process.env.npm_package_version),
+			__NEXT_NAME__: JSON.stringify(process.env.npm_package_name),
+		},
+	};
 });
+export default viteConfig;
