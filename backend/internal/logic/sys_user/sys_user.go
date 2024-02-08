@@ -51,7 +51,7 @@ func (s *sSysUser) GetAdminUserByUsernamePassword(ctx context.Context, req *syst
 	err = g.Try(ctx, func(ctx context.Context) {
 		user, err = s.GetUserByUsername(ctx, req.Username)
 		liberr.ErrIsNil(ctx, err)
-		liberr.ValueIsNil(user, "账号密码错误")
+		liberr.ValueIsNil(ctx, user, "账号密码不能为空")
 		//验证密码
 		if libUtils.EncryptPassword(req.Password, user.UserSalt) != user.UserPassword {
 			liberr.ErrIsNil(ctx, gerror.New("账号密码错误"))

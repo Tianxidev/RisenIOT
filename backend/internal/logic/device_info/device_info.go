@@ -99,14 +99,15 @@ func (s *sDeviceInfo) Auth(ctx context.Context, sn, pwd string) (status bool, er
 	return true, nil
 }
 
-func (s *sDeviceInfo) GetAllInfo(ctx context.Context, id int, sn string) (info *model.DeviceAllInfo, err error) {
+// Info 获取设备所有信息
+func (s *sDeviceInfo) Info(ctx context.Context, id int, sn string) (info *model.DeviceAllInfo, err error) {
 	info = &model.DeviceAllInfo{}
 	if id == 0 && len(sn) < 1 {
 		err = gerror.New("参数错误")
 		return
 	}
 
-	g.Log().Printf(ctx, "id:%v, sn:%v", id, sn)
+	g.Log().Printf(ctx, "设备ID:%v, 设备SN:%v", id, sn)
 
 	at := dao.SysDeviceInfo.Table()
 	ac := dao.SysDeviceInfo.Columns()
@@ -117,7 +118,7 @@ func (s *sDeviceInfo) GetAllInfo(ctx context.Context, id int, sn string) (info *
 		//err = dao.SysDeviceInfo.Ctx(ctx).LeftJoin(dao.SysDeviceStatus.Table(), dao.SysDeviceStatus.Table()+"."+dao.SysDeviceStatus.Columns().DeviceId+"="+dao.SysDeviceInfo.Table()+"."+dao.SysDeviceInfo.Columns().Id).Where(dao.SysDeviceInfo.Columns().Id, id).Scan(&info.Info)
 
 		m := dao.SysDeviceInfo.Ctx(ctx).LeftJoin(bt, bt+"."+bc.DeviceId+"="+at+"."+ac.Id).Where(at+"."+ac.Id, id)
-		err = m.Fields(bt + ".*").Scan(&info.Info)
+		err = m.Fields(at + ".*").Scan(&info.Info)
 		liberr.ErrIsNil(ctx, err, "不存在该设备信息")
 
 	} else if len(sn) > 0 {

@@ -2,10 +2,11 @@ package router
 
 import (
 	v1 "backend/internal/controller/v1"
-	"backend/internal/model"
 	"backend/internal/service"
 	"backend/library/libRouter"
 	"context"
+	"github.com/gogf/gf/v2/errors/gcode"
+	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
 )
@@ -28,7 +29,7 @@ func (r *Router) BindController(ctx context.Context, router *ghttp.RouterGroup) 
 	// v1 版本路由
 	router.Group("/api/v1", func(group *ghttp.RouterGroup) {
 
-		err := service.Token().Get().Middleware(group)
+		err := service.Token().Middleware(group)
 		if err != nil {
 			g.Log().Error(ctx, "访问控制中间件异常", err)
 			return
@@ -53,11 +54,5 @@ func (r *Router) BindController(ctx context.Context, router *ghttp.RouterGroup) 
 
 // DefaultHandler 未匹配到路由时的处理 (统一返回 404)
 func (_ *Router) DefaultHandler(r *ghttp.Request) {
-	g.Log().Notice(vContext, "用户访问未注册的路由: ", r.URL.Path)
-
-	// 未匹配到路由时，统一返回: {"code":404,"message":"404 Not Found"}
-	r.Response.WriteJson(model.DefaultHandlerResponse{
-		Code:    404,
-		Message: "Not Found",
-	})
+	panic(gerror.NewCode(gcode.New(404, "", nil), "错误的请求方法或地址"))
 }

@@ -47,6 +47,9 @@ func (s *sMiddleware) UnifiedResponseHandler(r *ghttp.Request) {
 		}
 	}
 
+	// 设置响应码
+	r.Response.WriteHeader(http.StatusOK)
+
 	// 统一返回对象
 	r.Response.WriteJson(model.DefaultHandlerResponse{
 		Code:    code.Code(),

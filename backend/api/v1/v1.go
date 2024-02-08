@@ -17,14 +17,36 @@ type IV1Common interface {
 }
 
 type IV1Device interface {
+	CategoryDataSearch(ctx context.Context, req *device.CategoryDataSearchReq) (res *device.CategoryDataSearchRes, err error)
+	CategoryDataRecent(ctx context.Context, req *device.CategoryDataRecentReq) (res *device.CategoryDataRecentRes, err error)
+	CategoryDataHistory(ctx context.Context, req *device.CategoryDataHistoryReq) (res *device.CategoryDataHistoryRes, err error)
+	CategoryDataGet(ctx context.Context, req *device.CategoryDataGetReq) (res *device.CategoryDataGetRes, err error)
+	CategoryDataAdd(ctx context.Context, req *device.CategoryDataAddReq) (res *device.CategoryDataAddRes, err error)
+	CategoryDataEdit(ctx context.Context, req *device.CategoryDataEditReq) (res *device.CategoryDataEditRes, err error)
+	CategoryDataDelete(ctx context.Context, req *device.CategoryDataDeleteReq) (res *device.CategoryDataDeleteRes, err error)
+	CategorySearch(ctx context.Context, req *device.CategorySearchReq) (res *device.CategorySearchRes, err error)
+	CategoryGet(ctx context.Context, req *device.CategoryGetReq) (res *device.CategoryGetRes, err error)
+	CategoryAdd(ctx context.Context, req *device.CategoryAddReq) (res *device.CategoryAddRes, err error)
+	CategoryEdit(ctx context.Context, req *device.CategoryEditReq) (res *device.CategoryEditRes, err error)
+	CategoryDelete(ctx context.Context, req *device.CategoryDeleteReq) (res *device.CategoryDeleteRes, err error)
 	DataGet(ctx context.Context, req *device.DataGetReq) (res *device.DataGetRes, err error)
 	DataAdd(ctx context.Context, req *device.DataAddReq) (res *device.DataAddRes, err error)
+	GatewayList(ctx context.Context, req *device.GatewayListReq) (res *device.GatewayListRes, err error)
+	GatewayAdd(ctx context.Context, req *device.GatewayAddReq) (res *device.GatewayAddRes, err error)
+	GatewayEdit(ctx context.Context, req *device.GatewayEditReq) (res *device.GatewayEditRes, err error)
+	GatewayDel(ctx context.Context, req *device.GatewayDelReq) (res *device.GatewayDelRes, err error)
 	InfoSearch(ctx context.Context, req *device.InfoSearchReq) (res *device.InfoSearchRes, err error)
 	InfoGet(ctx context.Context, req *device.InfoGetReq) (res *device.InfoGetRes, err error)
 	InfoAdd(ctx context.Context, req *device.InfoAddReq) (res *device.InfoAddRes, err error)
 	InfoEdit(ctx context.Context, req *device.InfoEditReq) (res *device.InfoEditRes, err error)
 	InfoDelete(ctx context.Context, req *device.InfoDeleteReq) (res *device.InfoDeleteRes, err error)
 	KindSearch(ctx context.Context, req *device.KindSearchReq) (res *device.KindSearchRes, err error)
+	StatusSearch(ctx context.Context, req *device.StatusSearchReq) (res *device.StatusSearchRes, err error)
+	StatusGet(ctx context.Context, req *device.StatusGetReq) (res *device.StatusGetRes, err error)
+	StatusAdd(ctx context.Context, req *device.StatusAddReq) (res *device.StatusAddRes, err error)
+	StatusEdit(ctx context.Context, req *device.StatusEditReq) (res *device.StatusEditRes, err error)
+	StatusStatus(ctx context.Context, req *device.StatusStatusReq) (res *device.StatusStatusRes, err error)
+	StatusDelete(ctx context.Context, req *device.StatusDeleteReq) (res *device.StatusDeleteRes, err error)
 }
 
 type IV1System interface {

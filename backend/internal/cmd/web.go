@@ -25,6 +25,9 @@ var (
 				oai         = s.GetOpenApi()
 			)
 
+			// 设置日志异步输出
+			g.Log().SetAsync(true)
+
 			g.Log().Info(ctx, "正在启动 web 服务")
 			cfg.GetAdapter().(*gcfg.AdapterFile).SetFileName("config.yaml")
 			serviceName, _ := cfg.Get(ctx, "server.name")

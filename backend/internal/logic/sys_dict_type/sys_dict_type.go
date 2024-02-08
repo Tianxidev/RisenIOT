@@ -1,10 +1,3 @@
-/*
-* @desc:字典类型管理
-* @company:云南奇讯科技有限公司
-* @Author: yixiaohu<yxh669@qq.com>
-* @Date:   2022/9/28 9:26
- */
-
 package sysDictType
 
 import (
@@ -93,8 +86,8 @@ func (s *sSysDictType) Edit(ctx context.Context, req *system.DictTypeEditReq, us
 			dictType := (*entity.SysDictType)(nil)
 			e := dao.SysDictType.Ctx(ctx).Fields(dao.SysDictType.Columns().DictType).WherePri(req.DictId).Scan(&dictType)
 			liberr.ErrIsNil(ctx, e, "获取字典类型失败")
-			liberr.ValueIsNil(dictType, "字典类型不存在")
-			//修改字典类型
+			liberr.ValueIsNil(ctx, dictType, "字典类型不存在")
+			// 修改字典类型
 			_, e = dao.SysDictType.Ctx(ctx).TX(tx).WherePri(req.DictId).Update(do.SysDictType{
 				DictName: req.DictName,
 				DictType: req.DictType,
@@ -103,11 +96,11 @@ func (s *sSysDictType) Edit(ctx context.Context, req *system.DictTypeEditReq, us
 				Remark:   req.Remark,
 			})
 			liberr.ErrIsNil(ctx, e, "修改字典类型失败")
-			//修改字典数据
+			// 修改字典数据
 			_, e = dao.SysDictData.Ctx(ctx).TX(tx).Data(do.SysDictData{DictType: req.DictType}).
 				Where(dao.SysDictData.Columns().DictType, dictType.DictType).Update()
 			liberr.ErrIsNil(ctx, e, "修改字典数据失败")
-			//清除缓存
+			// 清除缓存
 			service.Cache().GCache().RemoveByTag(ctx, consts.CacheSysDictTag)
 		})
 		return err

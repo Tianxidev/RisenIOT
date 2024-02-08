@@ -2,8 +2,10 @@ package dataCodec
 
 import (
 	"backend/api/v1/device"
+	"backend/internal/consts"
 	"backend/internal/model"
 	"backend/internal/service"
+	"backend/library/liberr"
 	"context"
 	"github.com/gogf/gf/v2/encoding/gjson"
 	"github.com/gogf/gf/v2/errors/gerror"
@@ -13,46 +15,30 @@ import (
 )
 
 // HttpDecode http解码
-func (s *sDataCodec) HttpDecode(ctx context.Context, dataContent interface{}) (dmesg *model.DeviceDecodeMsg, err error) {
+func (s *sDataCodec) HttpDecode(ctx context.Context, dataContent interface{}) (decodeMsg *model.DeviceDecodeMsg, err error) {
 	var msgCon *device.DataAddReq
-	if nil == dataContent {
-		return nil, gerror.Newf("device parse dataContent is nil, dataContent:%v", dataContent)
-	}
+	decodeMsg = &model.DeviceDecodeMsg{}
 
-	dmesg = &model.DeviceDecodeMsg{}
+	liberr.ValueIsNil(ctx, dataContent, "解析设备数据为空")
+	liberr.ErrIsNil(ctx, g.Try(ctx, func(ctx context.Context) {
+		msgCon, _ = dataContent.(*device.DataAddReq)
+	}), "interface to type err")
 
-	// g.Log().Print(ctx, "dataContent:", dataContent)
-	msgCon, ok := dataContent.(*device.DataAddReq)
+	g.Log().Print(ctx, "msgCon:", msgCon)
 
-	if !ok {
-		g.Log().Printf(ctx, "interface to type err")
-		return nil, gerror.Newf("param errror")
-	}
+	// 获取设备信息
+	decodeMsg.DeviceInfo, err = service.DeviceInfo().Info(ctx, msgCon.DeviceId, msgCon.DeviceSn)
+	liberr.ErrIsNil(ctx, err, "获取设备信息异常")
+	liberr.ValueIsNil(ctx, decodeMsg.DeviceInfo, "不存在该设备")
 
-	// g.Log().Print(ctx, "msgCon:", msgCon)
-
-	dmesg.DeviceInfo, err = service.DeviceInfo().GetAllInfo(ctx, msgCon.DeviceId, msgCon.DeviceSn)
-	if err != nil {
-		g.Log().Errorf(ctx, "get deviceinfo err:%v, info:%v", err, dmesg.DeviceInfo)
-		return
-	}
-
-	if dmesg.DeviceInfo == nil {
-		g.Log().Debug(ctx, "get deviceInfo failed")
-		return nil, gerror.New("get deviceInfo failed")
-	}
-
-	if msgCon.Property != nil && len(dmesg.DeviceInfo.CategoryList) > 0 {
+	// 判断上报数据类型
+	if msgCon.Property != nil && len(decodeMsg.DeviceInfo.CategoryList) > 0 {
 		jsonContent := gjson.New(msgCon.Property)
-
-		// g.Log().Print(ctx, "parse param :", jsonContent)
-
-		for _, category := range dmesg.DeviceInfo.CategoryList {
-			// g.Log().Print(ctx, "get param time:", jsonContent.Get("Time"), jsonContent.Get("time"))
+		g.Log().Print(ctx, "反序列化设备数据:", jsonContent)
+		for _, category := range decodeMsg.DeviceInfo.CategoryList {
 			var dtime *gtime.Time
 
 			if nil == dtime {
-				// dtime = gtime.Now()
 				dtime = gtime.NewFromStr(msgCon.Time)
 			}
 
@@ -60,34 +46,82 @@ func (s *sDataCodec) HttpDecode(ctx context.Context, dataContent interface{}) (d
 				dtime = gtime.Now()
 			}
 
-			// dmesg.dataList[index].Time = dtime
-			// index = index + 1
-			pdata := &model.DeviceData{
+			// 构建设备数据模型
+			decodeMsg.DataList = append(decodeMsg.DataList, &model.DeviceData{
 				CategoryId: category.Id,
 				Name:       category.Mark,
 				Type:       category.DataType,
 				Ratio:      category.Ratio,
 				Data:       jsonContent.Get(category.Mark),
 				Time:       dtime,
-			}
-			dmesg.DataList = append(dmesg.DataList, pdata)
+			})
 		}
 
 	}
 
+	// 判断上报事件不为空
 	if msgCon.Event != nil {
 		jsonContent := gconv.MapStrStr(msgCon.Event)
-		// dmesg.eventList = make([]*DeviceEvent, len(jsonContent))
+		g.Log().Print(ctx, "反序列化设备事件:", jsonContent)
 		for key, value := range jsonContent {
-			pevent := &model.DeviceEvent{
+			prevent := &model.DeviceEvent{
 				Name: key,
 				Data: value,
 			}
-			dmesg.EventList = append(dmesg.EventList, pevent)
+			decodeMsg.EventList = append(decodeMsg.EventList, prevent)
 		}
 	}
+	return decodeMsg, nil
+}
 
-	g.Log().Print(ctx, "encode device indo:", dmesg.DataList, dmesg.EventList)
-	return dmesg, nil
+// Save 保存数据
+func (s *sDataCodec) Save(ctx context.Context, decodeMsg *model.DeviceDecodeMsg) (err error) {
+	if nil == decodeMsg {
+		return gerror.New("param is null")
+	}
+	req := &device.CategoryDataAddReq{}
+	for _, data := range decodeMsg.DataList {
+		req.CategoryId = data.CategoryId
+		req.DeviceId = decodeMsg.DeviceInfo.Info.Id
+		req.CreatedAt = data.Time
+		switch data.Type {
+		case consts.CategoryDataTypeBit:
+			fallthrough
+		case consts.CategoryDataTypeByte:
+			fallthrough
+		case consts.CategoryDataTypeShort:
+			fallthrough
+		case consts.CategoryDataTypeUnShort:
+			fallthrough
+		case consts.CategoryDataTypeInt:
+			fallthrough
+		case consts.CategoryDataTypeUnInt:
+			req.DataInt = gconv.Uint(data.Data)
+			if data.Ratio != "" && len(data.Ratio) > 0 {
+				req.DataInt = gconv.Uint(gconv.Float64(req.DataInt) * gconv.Float64(data.Ratio))
+			}
+			g.Log().Print(ctx, "save int", req.DataDouble, data.Data)
+		case consts.CategoryDataTypeFloat:
+			fallthrough
+		case consts.CategoryDataTypeDouble:
+			req.DataDouble = gconv.Float64(data.Data)
 
+			if data.Ratio != "" && len(data.Ratio) > 0 {
+				req.DataDouble = gconv.Float64(req.DataDouble) * gconv.Float64(data.Ratio)
+			}
+			g.Log().Print(ctx, "save float", req.DataDouble, data.Data)
+		default:
+			req.DataStr = gconv.String(data.Data)
+			g.Log().Print(ctx, "save string", req.DataDouble, data.Data)
+		}
+
+		// 写入数据库
+		err = service.DeviceCategoryData().Add(ctx, req)
+		liberr.ErrIsNil(ctx, err, "save device data err")
+	}
+
+	// 更新设备状态
+	err = service.DeviceStatus().ChangeStatus(ctx, decodeMsg.DeviceInfo.Info.Id, consts.DeviceStatusOnLine)
+	liberr.ErrIsNil(ctx, err, "更新设备状态失败")
+	return
 }

@@ -22,6 +22,9 @@ var (
 		Func: func(ctx context.Context, parser *gcmd.Parser) (err error) {
 			fmt.Println("正在启动所有服务")
 
+			// 设置日志异步输出
+			g.Log().SetAsync(true)
+
 			// 启动网关服务
 			go func() {
 				err := Gateway.Func(ctx, parser)
