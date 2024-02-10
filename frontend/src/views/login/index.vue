@@ -83,7 +83,7 @@ export default defineComponent({
   height: 100%;
   position: relative;
   color: #1c2518;
-  background-color: #f8f8f8;
+  background-color: #f7f7f7;
 
   .login-icon-group {
     width: 100%;

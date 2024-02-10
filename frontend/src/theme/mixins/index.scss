@@ -37,7 +37,7 @@
 @mixin scrollBar {
 	// 滚动条凹槽的颜色，还可以设置边框属性
 	&::-webkit-scrollbar-track-piece {
-		background-color: #f8f8f8;
+		background-color: #f7f7f7;
 	}
 	// 滚动条的宽度
 	&::-webkit-scrollbar {

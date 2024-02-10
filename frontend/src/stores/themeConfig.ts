@@ -36,9 +36,9 @@ export const useThemeConfig = defineStore('themeConfig', {
 			// 是否开启顶栏背景颜色渐变
 			isTopBarColorGradual: false,
 			// 默认菜单导航背景颜色
-			menuBar: '#354E67',
+			menuBar: '#ffffff',
 			// 默认菜单导航字体颜色
-			menuBarColor: '#eaeaea',
+			menuBarColor: '#000000',
 			// 是否开启菜单背景颜色渐变
 			isMenuBarColorGradual: false,
 			// 默认分栏菜单背景颜色
@@ -54,7 +54,7 @@ export const useThemeConfig = defineStore('themeConfig', {
 			// 是否开启菜单水平折叠效果
 			isCollapse: false,
 			// 是否开启菜单手风琴效果
-			isUniqueOpened: false,
+			isUniqueOpened: true,
 			// 是否开启固定 Header
 			isFixedHeader: true,
 			// 初始化变量，用于更新菜单 el-scrollbar 的高度，请勿删除
@@ -78,7 +78,7 @@ export const useThemeConfig = defineStore('themeConfig', {
 			// 是否开启 Tagsview
 			isTagsview: true,
 			// 是否开启 Breadcrumb 图标
-			isBreadcrumbIcon: false,
+			isBreadcrumbIcon: true,
 			// 是否开启 Tagsview 图标
 			isTagsviewIcon: false,
 			// 是否开启 TagsView 缓存
@@ -103,11 +103,11 @@ export const useThemeConfig = defineStore('themeConfig', {
 			 */
 			// Tagsview 风格：可选值"<tags-style-one|tags-style-four|tags-style-five>"，默认 tags-style-five
 			// 定义的值与 `/src/layout/navBars/tagsView/tagsView.vue` 中的 class 同名
-			tagsStyle: 'tags-style-four',
+			tagsStyle: 'tags-style-one',
 			// 主页面切换动画：可选值"<slide-right|slide-left|opacitys>"，默认 slide-right
-			animation: 'slide-right',
+			animation: 'opacitys',
 			// 分栏高亮风格：可选值"<columns-round|columns-card>"，默认 columns-round
-			columnsAsideStyle: 'columns-round',
+			columnsAsideStyle: 'columns-card',
 			// 分栏布局风格：可选值"<columns-horizontal|columns-vertical>"，默认 columns-horizontal
 			columnsAsideLayout: 'columns-vertical',
 
@@ -117,7 +117,7 @@ export const useThemeConfig = defineStore('themeConfig', {
 			 * 中的 `initSetLayoutChange(设置布局切换，重置主题样式)` 方法
 			 */
 			// 布局切换：可选值"<defaults|classic|transverse|columns>"，默认 defaults
-			layout: 'transverse',
+			layout: 'classic',
 
 			/**
 			 * 后端控制路由

@@ -82,6 +82,7 @@
 .el-sub-menu__title {
 	color: var(--next-bg-menuBarColor);
 }
+
 // 修复点击左侧菜单折叠再展开时，宽度不跟随问题
 .el-menu--collapse {
 	width: 64px !important;
@@ -110,6 +111,17 @@
 .el-sub-menu.is-active.is-opened .el-sub-menu__title {
 	background-color: unset !important;
 }
+
+// 导航菜单加上左侧边框
+.el-menu-item.is-active {
+	border-left: 2px solid #0070FF;
+}
+
+// 鼠标 hover 时
+.el-menu-item:hover {
+	background-color: rgba(0, 0, 0, 0.04);
+}
+
 // 子级菜单背景颜色
 // .el-menu--inline {
 // 	background: var(--next-bg-menuBar-light-1);

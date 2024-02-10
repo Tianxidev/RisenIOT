@@ -8,7 +8,7 @@ let config = {
   table: {
     columns: [
       {type: 'selection', minWidth: 40},
-      {label: '类型ID', prop: 'id', minWidth: 100, align: 'center'},
+      {label: '设备ID', prop: 'id', minWidth: 100, align: 'center'},
       {label: '设备名称', prop: 'name', minWidth: 100, align: 'center'},
       {label: '设备分组', prop: 'group', minWidth: 100, align: 'center'},
       {label: '设备SN', prop: 'sn', minWidth: 100, align: 'center'},
@@ -50,17 +50,25 @@ const tableDataFn = (params: any) => {
   });
 };
 
+
+const onEdit = (scope: any) => {
+  console.log(scope);
+};
+
 </script>
 
 <template>
   <div class="device-model-container">
     <el-card shadow="hover">
       <div class="device-model-search mb15">
-        设备类型
+        <el-button type="info">添加设备</el-button>
       </div>
       <div class="device-model-search mb15">
         <TableView style="height: 100%" :dataFn="tableDataFn" :config="config">
-
+          <template #operate="row">
+            <el-button type="text" size="mini" @click="onEdit(row.scope)">编辑</el-button>
+            <el-button type="text" size="mini">删除</el-button>
+          </template>
         </TableView>
       </div>
     </el-card>
