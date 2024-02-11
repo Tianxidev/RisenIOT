@@ -70,8 +70,8 @@
 				<el-table-column label="操作"  width="240">
 					<template #default="scope">
 						<el-button v-if="scope.row.menuType!==2" size="small" text type="primary" @click="onOpenAddMenu(scope.row)" v-auth="'api/v1/system/menu/add'">新增</el-button>
-						<el-button size="small" text type="primary" @click="onOpenEditMenu(scope.row)" v-auth="'api/v1/system/menu/update'">修改</el-button>
-						<el-button size="small" text type="primary" @click="onTabelRowDel(scope.row)" v-auth="'api/v1/system/menu/delete'">删除</el-button>
+						<el-button size="small" link type="primary" @click="onOpenEditMenu(scope.row)" v-auth="'api/v1/system/menu/update'">修改</el-button>
+						<el-button size="small" link type="primary" @click="onTabelRowDel(scope.row)" v-auth="'api/v1/system/menu/delete'">删除</el-button>
 					</template>
 				</el-table-column>
 			</el-table>
@@ -85,9 +85,10 @@ import {ref, toRefs, reactive, onBeforeMount, defineComponent, getCurrentInstanc
 import { ElMessageBox, ElMessage } from 'element-plus';
 import EditMenu from '/@/views/system/menu/component/editMenu.vue';
 import {delMenu, getMenuList} from "/@/api/system/menu";
+import SvgIcon from "/@/components/svgIcon/index.vue";
 export default defineComponent({
 	name: 'apiV1SystemAuthMenuList',
-	components: { EditMenu },
+	components: {SvgIcon, EditMenu },
 	setup() {
 		const editMenuRef = ref();
 		const state = reactive({

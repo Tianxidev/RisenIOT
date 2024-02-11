@@ -613,7 +613,6 @@ export default defineComponent({
   &-ul {
     list-style: none;
     margin: 0;
-    padding: 0;
     height: 34px;
     display: flex;
     align-items: center;
@@ -671,6 +670,26 @@ export default defineComponent({
       transition: border-color 3s ease;
     }
   }
+
+  // 风格1
+  .tags-style-one {
+    .layout-navbars-tagsview-ul-li {
+      margin-right: 0 !important;
+      border: none !important;
+      position: relative;
+      border-radius: 3px !important;
+      .layout-icon-active {
+        display: none;
+      }
+      .layout-icon-three {
+        display: block;
+      }
+      &:hover {
+        background: none !important;
+      }
+    }
+  }
+
   // 风格4
   .tags-style-four {
     .layout-navbars-tagsview-ul-li {
@@ -697,8 +716,7 @@ export default defineComponent({
   .tags-style-five {
     align-items: flex-end;
     .tags-style-five-svg {
-      -webkit-mask-box-image: url("data:image/svg+xml,%3Csvg width='68' height='34' viewBox='0 0 68 34' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='m27,0c-7.99582,0 -11.95105,0.00205 -12,12l0,6c0,8.284 -0.48549,16.49691 -8.76949,16.49691l54.37857,-0.11145c-8.284,0 -8.60908,-8.10146 -8.60908,-16.38546l0,-6c0.11145,-12.08445 -4.38441,-12 -12,-12l-13,0z' fill='%23409eff'/%3E%3C/svg%3E")
-      12 27 15;
+      -webkit-mask-box-image: url("data:image/svg+xml,%3Csvg width='68' height='34' viewBox='0 0 68 34' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='m27,0c-7.99582,0 -11.95105,0.00205 -12,12l0,6c0,8.284 -0.48549,16.49691 -8.76949,16.49691l54.37857,-0.11145c-8.284,0 -8.60908,-8.10146 -8.60908,-16.38546l0,-6c0.11145,-12.08445 -4.38441,-12 -12,-12l-13,0z' fill='%23409eff'/%3E%3C/svg%3E") 12 27 15;
     }
     .layout-navbars-tagsview-ul-li {
       padding: 0 5px;

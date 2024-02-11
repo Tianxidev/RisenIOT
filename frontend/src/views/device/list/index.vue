@@ -3,6 +3,10 @@
 import TableView from "/@/components/table/TableView.vue";
 import { ElMessage } from "element-plus";
 import { DeviceList } from "/@/api/system/device";
+import { ref } from "vue";
+
+const editMenuRef = ref();
+const acType = ref('add')
 
 let config = {
   table: {
@@ -55,19 +59,25 @@ const onEdit = (scope: any) => {
   console.log(scope);
 };
 
+// 添加设备
+const onAdd = (row?:any) => {
+  acType.value = 'add'
+  editMenuRef.value.openDialog(row);
+};
+
 </script>
 
 <template>
   <div class="device-model-container">
     <el-card shadow="hover">
       <div class="device-model-search mb15">
-        <el-button type="info">添加设备</el-button>
+        <el-button type="info" @click="onAdd">添加设备</el-button>
       </div>
       <div class="device-model-search mb15">
         <TableView style="height: 100%" :dataFn="tableDataFn" :config="config">
           <template #operate="row">
-            <el-button type="text" size="mini" @click="onEdit(row.scope)">编辑</el-button>
-            <el-button type="text" size="mini">删除</el-button>
+            <el-button link type="primary" @click="onEdit(row.scope)">编辑</el-button>
+            <el-button link type="primary">删除</el-button>
           </template>
         </TableView>
       </div>

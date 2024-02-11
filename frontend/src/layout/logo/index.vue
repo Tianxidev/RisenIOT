@@ -21,11 +21,13 @@ export default defineComponent({
 			let { isCollapse, layout } = themeConfig.value;
 			return !isCollapse || layout === 'classic' || document.body.clientWidth < 1000;
 		});
+
 		// logo 点击实现菜单展开/收起
 		const onThemeConfigChange = () => {
 			if (themeConfig.value.layout === 'transverse') return false;
 			themeConfig.value.isCollapse = !themeConfig.value.isCollapse;
 		};
+
 		return {
 			setShowLogo,
 			themeConfig,
