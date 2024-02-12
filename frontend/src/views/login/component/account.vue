@@ -41,27 +41,19 @@
 </template>
 
 <script lang="ts">
-import {
-  toRefs,
-  reactive,
-  defineComponent,
-  computed,
-  onMounted,
-  getCurrentInstance,
-  ref, unref
-} from 'vue';
+import { computed, defineComponent, getCurrentInstance, onMounted, reactive, ref, toRefs, unref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { useI18n } from 'vue-i18n';
 import Cookies from 'js-cookie';
 import { storeToRefs } from 'pinia';
 import { useThemeConfig } from '/@/stores/themeConfig';
-import { initFrontEndControlRoutes } from '/@/router/frontEnd';
 import { initBackEndControlRoutes } from '/@/router/backEnd';
 import { Session } from '/@/utils/storage';
 import { formatAxis } from '/@/utils/formatTime';
 import { NextLoading } from '/@/utils/loading';
-import {login,captcha} from "/@/api/login";
+import { LoginApi } from "/@/api/login";
+
 export default defineComponent({
 	name: 'loginAccount',
 	setup() {
@@ -75,9 +67,8 @@ export default defineComponent({
 		const state = reactive({
 			isShowPassword: false,
 			ruleForm: {
-        username: 'demo',
-				password: '123456',
-        verifyKey:''
+        username: '',
+				password: '',
 			},
       formRules:{
         username: [
@@ -109,9 +100,18 @@ export default defineComponent({
       formWrap.validate((valid: boolean) => {
         if(valid){
           state.loading.signIn = true;
-          login(state.ruleForm).then(async (res:any)=>{
+
+          // 请求登录
+          LoginApi(state.ruleForm).then(async (res:any)=>{
+
+            // 检查响应状态码是否正确
+            if(res.code != 0){
+              state.loading.signIn = false;
+              return
+            }
+
+            // 获取用户信息
             const userInfo = res.data.userInfo
-            userInfo.avatar = proxy.getUpFileUrl(userInfo.avatar)
             // 存储 token 到浏览器缓存
             Session.set('token', res.data.token);
             // 存储用户信息到浏览器缓存
@@ -122,17 +122,10 @@ export default defineComponent({
             Session.set('permissions',res.data.permissions)
             // 模拟数据，对接接口时，记得删除多余代码及对应依赖的引入。用于 `/src/stores/userInfo.ts` 中不同用户登录判断（模拟数据）
             Cookies.set('username', state.ruleForm.username);
-            if (!themeConfig.value.isRequestRoutes) {
-              // 前端控制路由，2、请注意执行顺序
-              await initFrontEndControlRoutes();
-              signInSuccess();
-            } else {
-              // 模拟后端控制路由，isRequestRoutes 为 true，则开启后端控制路由
-              // 添加完动态路由，再进行 router 跳转，否则可能报错 No match found for location with path "/"
-              await initBackEndControlRoutes();
-              // 执行完 initBackEndControlRoutes，再执行 signInSuccess
-              signInSuccess();
-            }
+            // 添加完动态路由，再进行 router 跳转，否则可能报错 No match found for location with path "/"
+            await initBackEndControlRoutes();
+            // 执行完 initBackEndControlRoutes，再执行 signInSuccess
+            signInSuccess();
           }).catch(()=>{
             state.loading.signIn = false;
           })

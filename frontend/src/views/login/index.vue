@@ -1,40 +1,3 @@
-<template>
-  <div class="login-container">
-    <div class="login-content-out">
-      <div class="login-content">
-        <div class="login-content-main">
-          <div class="login-icon-group">
-            <div class="login-icon-group-title">
-              <div class="login-icon-group-title-text">{{ getThemeConfig.globalViceTitle }}</div>
-            </div>
-          </div>
-          <el-tabs v-model="tabsActiveName" style="height: 350px;">
-            <el-tab-pane label="账号密码登录" name="account">
-              <Account />
-            </el-tab-pane>
-            <el-tab-pane label="手机号登录" name="mobile">
-              <Mobile />
-            </el-tab-pane>
-            <el-tab-pane label="二维码登录" name="qrcode">
-              <Scan />
-            </el-tab-pane>
-            <div class="font12 mt30 login-animation4 login-msg">* 温馨提示：建议使用谷歌、Microsoft Edge，版本 79.0.1072.62
-              及以上浏览器，360浏览器请使用极速模式</div>
-          </el-tabs>
-        </div>
-      </div>
-    </div>
-    <div class="login-footer">
-      <div class="login-footer-content mt15">
-        <div class="login-footer-content-warp">
-          <div>Copyright &copy; 2024 riseniot.tianxidev.wiki All Rights Reserved.</div>
-          <div class="mt5">RisenIOT · 物联网云平台</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script lang="ts">
 import { toRefs, reactive, computed, defineComponent, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
@@ -75,6 +38,44 @@ export default defineComponent({
   },
 });
 </script>
+<template>
+  <div class="login-container">
+    <div class="login-content-out">
+      <div class="login-content">
+        <div class="login-content-main">
+          <div class="login-icon-group">
+            <div class="login-icon-group-title">
+              <div class="login-icon-group-title-text">{{ getThemeConfig.globalViceTitle }}</div>
+            </div>
+          </div>
+          <el-tabs v-model="tabsActiveName" style="height: 350px;">
+            <el-tab-pane label="账号密码登录" name="account">
+              <Account />
+            </el-tab-pane>
+            <el-tab-pane label="手机号登录" name="mobile">
+              <Mobile />
+            </el-tab-pane>
+            <el-tab-pane label="二维码登录" name="qrcode">
+              <Scan />
+            </el-tab-pane>
+            <div class="font12 mt30 login-animation4 login-msg">* 温馨提示：建议使用谷歌、Microsoft Edge，版本 79.0.1072.62
+              及以上浏览器，360浏览器请使用极速模式</div>
+          </el-tabs>
+        </div>
+      </div>
+    </div>
+    <div class="login-footer">
+      <div class="login-footer-content mt15">
+        <div class="login-footer-content-warp">
+          <div>Copyright &copy; 2024 riseniot.tianxidev.wiki All Rights Reserved.</div>
+          <div class="mt5">RisenIOT · 物联网云平台</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+
 
 
 <style scoped lang="scss">
