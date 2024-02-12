@@ -66,7 +66,7 @@ func (s *sDeviceKind) List(ctx context.Context, req *device.KindSearchReq) (tota
 	if req.Id != 0 {
 		m = m.Where(dao.SysDeviceKind.Columns().Id+" = ?", req.Id)
 	}
-	g.Log().Printf(ctx, "req param:%v \n", req)
+
 	err = g.Try(ctx, func(ctx context.Context) {
 		total, err = m.Count()
 		liberr.ErrIsNil(ctx, err, "获取DeviceKind列表失败")

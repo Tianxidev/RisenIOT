@@ -1,6 +1,7 @@
 // 字体图标 url
 const cssCdnUrlList: Array<string> = [
 	import.meta.env.BASE_URL+'at.alicdn.com/t/font_2298093_y6u00apwst.css',
+	'https://at.alicdn.com/t/c/font_4435155_d69que0d7j.css',
 	import.meta.env.BASE_URL+'netdna.bootstrapcdn.com/css/font-awesome.min.css',
 ];
 // 第三方 js url

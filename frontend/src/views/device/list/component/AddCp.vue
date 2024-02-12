@@ -7,7 +7,6 @@ const {proxy} = getCurrentInstance() as any;
 const props = {
   acType: {
     type: String,
-    default: () => 'add'
   },
   row: {
     type: Object,
@@ -17,6 +16,7 @@ const props = {
   },
 };
 
+// 组件状态
 const state = reactive({
   loading: false,
   isShowDialog: false,
@@ -68,7 +68,10 @@ const closeDialog = () => {
 
 // 打开菜单
 const openDialog = (row: any) => {
-
+  if (row) {
+    state.ruleForm = row;
+  }
+  state.isShowDialog = true;
 }
 
 // 取消
@@ -76,7 +79,7 @@ const onCancel = () => {
   closeDialog();
 };
 
-// 新增
+// 提交
 const onSubmit = () => {
 
 }
@@ -85,8 +88,8 @@ const onSubmit = () => {
 
 <template>
   <div class="device-add-dialog-container">
-    <el-dialog :title="(props.acType==='add'?'新增':'修改')+'菜单'" v-model="state.isShowDialog">
-
+    <el-dialog title="新增" v-model="state.isShowDialog">
+      sdsd
     </el-dialog>
   </div>
 </template>
