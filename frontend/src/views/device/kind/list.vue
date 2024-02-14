@@ -8,7 +8,7 @@ let config = {
   table: {
     columns: [
       {type: 'selection', minWidth: 40},
-      {label: 'ID', prop: 'id', minWidth: 100, align: 'center'},
+      {label: '产品ID', prop: 'id', minWidth: 100, align: 'center'},
       {label: '产品名称', prop: 'name', minWidth: 100, align: 'center'},
       {label: '产品标记', prop: 'mark', minWidth: 100, align: 'center'},
       {label: '操作超时时间', prop: 'timeOut', minWidth: 100, align: 'center'},

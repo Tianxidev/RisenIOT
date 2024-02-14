@@ -6,18 +6,21 @@ const homeThree = [
     icon: 'iconfont iconfont-Http-get',
     label: 'HTTP Gateway',
     value: 'HTTP 数据解析网关',
+    remark: '点击配置',
     iconColor: '#F72B3F',
   },
   {
     icon: 'iconfont iconfont-MQTT',
     label: 'MQTT Gateway',
     value: 'MQTT 数据解析网关',
+    remark: '点击配置',
     iconColor: '#F72B3F',
   },
   {
     icon: 'iconfont iconfont-haikangshipinjiankongxitong',
     label: 'HIK Gateway',
     value: '海康威视 SDAP 被动设备发现网关',
+    remark: '点击配置',
     iconColor: '#F72B3F',
   },
 ]
@@ -38,6 +41,7 @@ const homeThree = [
                   <span class="label">{{ v.label }}</span>
                 </div>
                 <div class="mt10">{{ v.value }}</div>
+                <div class="remark">{{ v.remark }}</div>
               </div>
             </div>
           </div>
@@ -85,10 +89,11 @@ $gatewayNavLength: 8;
 
 .gateway-monitor {
   height: 100%;
+  width: 100%;
 
   .flex-warp-item {
     width: 25%;
-    height: 111px;
+    height: 120px;
     display: flex;
 
     .flex-warp-item-box {
@@ -110,6 +115,7 @@ $gatewayNavLength: 8;
         display: flex;
         flex-direction: column;
         margin: auto;
+        padding-top: 10px;
 
         .title {
           display: flex;
@@ -142,5 +148,11 @@ $gatewayNavLength: 8;
       }
     }
   }
+}
+
+.remark {
+  color: #070e94;
+  font-size: 11px;
+  margin: 10px 0;
 }
 </style>
