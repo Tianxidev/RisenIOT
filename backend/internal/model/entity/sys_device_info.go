@@ -27,4 +27,5 @@ type SysDeviceInfo struct {
 	UpTime             *gtime.Time `json:"upTime"             ` // 上线时间
 	DownTime           *gtime.Time `json:"downTime"           ` // 离线时间
 	LastDataUpdateTime *gtime.Time `json:"lastDataUpdateTime" ` // 最新一次数据更新时间
+	CreateBy           int         `json:"createBy"           ` // 创建人ID
 }

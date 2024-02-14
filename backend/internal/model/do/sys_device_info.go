@@ -29,4 +29,5 @@ type SysDeviceInfo struct {
 	UpTime             *gtime.Time // 上线时间
 	DownTime           *gtime.Time // 离线时间
 	LastDataUpdateTime *gtime.Time // 最新一次数据更新时间
+	CreateBy           interface{} // 创建人ID
 }

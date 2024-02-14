@@ -11,7 +11,9 @@ import (
 	"context"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/os/gtime"
 	"github.com/gogf/gf/v2/util/gconv"
+	"github.com/gogf/gf/v2/util/guid"
 )
 
 type sDeviceInfo struct {
@@ -99,7 +101,6 @@ func (s *sDeviceInfo) Auth(ctx context.Context, sn, pwd string) (status bool, er
 	return true, nil
 }
 
-// Info 获取设备所有信息
 func (s *sDeviceInfo) Info(ctx context.Context, id int, sn string) (info *model.DeviceAllInfo, err error) {
 	info = &model.DeviceAllInfo{}
 	if id == 0 && len(sn) < 1 {
@@ -148,5 +149,42 @@ func (s *sDeviceInfo) Info(ctx context.Context, id int, sn string) (info *model.
 		liberr.ErrIsNil(ctx, err, "获取设备类别列表失败, kindId:"+gconv.String(info.Info.Kind))
 		return
 	}
+	return
+}
+
+// Add 添加设备信息
+func (s *sDeviceInfo) Add(ctx context.Context, req *device.InfoAddReq) (err error) {
+	m := dao.SysDeviceInfo.Ctx(ctx)
+
+	// 判断设备SN是否为空, 如果为空则随机生成一个SN
+	if req.Sn == "" {
+		req.Sn = guid.S([]byte(gconv.String(gtime.TimestampNano())))
+	}
+
+	// 判断设备密码是否为空, 如果为空则随机生成一个密码
+	if req.Pwd == "" {
+		req.Pwd = guid.S([]byte(gconv.String(gtime.TimestampNano())))
+	}
+
+	// 根据当前用户ID和设备名称查询是否存在相同的设备名称
+	count, err := m.Where("create_by=? and name=?", int(service.UserCtx().GetUserId(ctx)), req.Name).Count()
+	liberr.ErrIsNil(ctx, err, "查询设备信息失败")
+	liberr.ValueIsTrue(ctx, count > 0, "已存在同名设备, 请更换设备名称")
+
+	deviceInfo := &entity.SysDeviceInfo{
+		Name:     req.Name,
+		Group:    req.Group,
+		Sn:       req.Sn,
+		Pwd:      req.Pwd,
+		Kind:     req.Kind,
+		Monitor:  req.Monitor,
+		Status:   1,
+		TimeOut:  30,
+		CreateBy: int(service.UserCtx().GetUserId(ctx)),
+	}
+
+	// 写入数据库
+	_, err = dao.SysDeviceInfo.Ctx(ctx).Data(deviceInfo).Insert()
+	liberr.ErrIsNil(ctx, err, "添加设备信息失败")
 	return
 }

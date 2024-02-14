@@ -37,6 +37,7 @@ type SysDeviceInfoColumns struct {
 	UpTime             string // 上线时间
 	DownTime           string // 离线时间
 	LastDataUpdateTime string // 最新一次数据更新时间
+	CreateBy           string // 创建人ID
 }
 
 // sysDeviceInfoColumns holds the columns for table sys_device_info.
@@ -58,6 +59,7 @@ var sysDeviceInfoColumns = SysDeviceInfoColumns{
 	UpTime:             "up_time",
 	DownTime:           "down_time",
 	LastDataUpdateTime: "last_data_update_time",
+	CreateBy:           "create_by",
 }
 
 // NewSysDeviceInfoDao creates and returns a new DAO object for table data access.

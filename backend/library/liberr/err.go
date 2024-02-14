@@ -24,3 +24,19 @@ func ValueIsNil(ctx context.Context, value interface{}, msg string) {
 		panic(msg)
 	}
 }
+
+// ValueIsTrue 判断值是否为真
+func ValueIsTrue(ctx context.Context, value bool, msg string) {
+	if value {
+		g.Log().Error(ctx, msg)
+		panic(msg)
+	}
+}
+
+// ValueIsFalse 判断值是否为假
+func ValueIsFalse(ctx context.Context, value bool, msg string) {
+	if !value {
+		g.Log().Error(ctx, msg)
+		panic(msg)
+	}
+}

@@ -44,8 +44,8 @@ type InfoGetRes struct {
 type InfoAddReq struct {
 	g.Meta   `path:"/device/info/add" tags:"设备信息" method:"post" summary:"添加设备信息"`
 	Name     string `p:"name" v:"required#设备名称不能为空"`
-	Group    int    `p:"group" v:"required#设备组不能为空"`
-	Sn       string `p:"sn" v:"required#SN不能为空"`
+	Group    int    `p:"group"`
+	Sn       string `p:"sn"`
 	Pwd      string `p:"pwd" `
 	Kind     int    `p:"kind" v:"required#设备类别不能为空"`
 	Logo     string `p:"logo" `
