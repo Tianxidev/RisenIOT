@@ -8,7 +8,6 @@ import (
 	"backend/api/v1/device"
 )
 
-// KindSearch 获取设备种类列表
 func (c *ControllerDevice) KindSearch(ctx context.Context, req *device.KindSearchReq) (res *device.KindSearchRes, err error) {
 	res = &device.KindSearchRes{}
 	if req.PageNum == 0 {

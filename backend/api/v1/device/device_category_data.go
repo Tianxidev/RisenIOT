@@ -10,14 +10,14 @@ import (
 // CategoryDataSearchReq 分页请求参数
 type CategoryDataSearchReq struct {
 	g.Meta     `path:"/device/category/data/list" tags:"设备数据" method:"get" summary:"设备数据列表"`
-	CategoryId int     `p:"categoryId"` //数据类别主键
-	DeviceId   int     `p:"deviceId"`   //设备主键
-	DataInt    string  `p:"dataInt"`    //int型数据
-	DataStr    string  `p:"dataStr"`    //字符串型数据
-	DataDouble float64 `p:"dataDouble"` //double型数据
-	BeginTime  string  `p:"beginTime"`  //开始时间
-	EndTime    string  `p:"endTime"`    //结束时间
-	Top        int     `p:"top"`        //最新的多少个
+	CategoryId int     `p:"categoryId"` // 数据类别主键
+	DeviceId   int     `p:"deviceId"`   // 设备主键
+	DataInt    string  `p:"dataInt"`    // int型数据
+	DataStr    string  `p:"dataStr"`    // 字符串型数据
+	DataDouble float64 `p:"dataDouble"` // double型数据
+	BeginTime  string  `p:"beginTime"`  // 开始时间
+	EndTime    string  `p:"endTime"`    // 结束时间
+	Top        int     `p:"top"`        // 最新的多少个
 	commonApi.PageReq
 }
 
@@ -29,10 +29,10 @@ type CategoryDataSearchRes struct {
 
 type CategoryDataRecentReq struct {
 	g.Meta     `path:"/device/category/data/recent" tags:"设备数据" method:"get" summary:"设备最近数据列表"`
-	CategoryId int    `p:"categoryId"` //数据类别主键
-	DeviceId   int    `p:"deviceId"`   //设备主键
-	BeginTime  string `p:"beginTime"`  //开始时间
-	EndTime    string `p:"endTime"`    //结束时间
+	CategoryId int    `p:"categoryId"` // 数据类别主键
+	DeviceId   int    `p:"deviceId"`   // 设备主键
+	BeginTime  string `p:"beginTime"`  // 开始时间
+	EndTime    string `p:"endTime"`    // 结束时间
 	commonApi.PageReq
 }
 
@@ -50,10 +50,10 @@ type CategoryDataRecentRes struct {
 
 type CategoryDataHistoryReq struct {
 	g.Meta     `path:"/device/category/data/history" tags:"设备数据" method:"get" summary:"设备历史数据列表"`
-	CategoryId int    `p:"categoryId"` //数据类别主键
-	DeviceId   int    `p:"deviceId"`   //设备主键
-	BeginTime  string `p:"beginTime"`  //开始时间
-	EndTime    string `p:"endTime"`    //结束时间
+	CategoryId int    `p:"categoryId"` // 数据类别主键
+	DeviceId   int    `p:"deviceId"`   // 设备主键
+	BeginTime  string `p:"beginTime"`  // 开始时间
+	EndTime    string `p:"endTime"`    // 结束时间
 	commonApi.PageReq
 }
 

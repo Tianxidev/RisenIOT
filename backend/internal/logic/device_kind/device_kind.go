@@ -23,7 +23,6 @@ func New() service.IDeviceKind {
 	return &sDeviceKind{}
 }
 
-// Get 通过id获取
 func (s *sDeviceKind) Get(ctx context.Context, id int) (info *entity.SysDeviceKind, err error) {
 	if id == 0 {
 		err = gerror.New("参数错误")
@@ -39,7 +38,6 @@ func (s *sDeviceKind) Get(ctx context.Context, id int) (info *entity.SysDeviceKi
 	return
 }
 
-// List 获取设备种类列表
 func (s *sDeviceKind) List(ctx context.Context, req *device.KindSearchReq) (total, page int, list []*entity.SysDeviceKind, err error) {
 	if req.PageNum == 0 {
 		req.PageNum = 1
@@ -69,7 +67,7 @@ func (s *sDeviceKind) List(ctx context.Context, req *device.KindSearchReq) (tota
 
 	err = g.Try(ctx, func(ctx context.Context) {
 		total, err = m.Count()
-		liberr.ErrIsNil(ctx, err, "获取DeviceKind列表失败")
+		liberr.ErrIsNil(ctx, err, "获取产品类型列表失败")
 		if err != nil {
 			g.Log().Error(ctx, err)
 			err = gerror.New("获取总行数失败")
@@ -82,7 +80,7 @@ func (s *sDeviceKind) List(ctx context.Context, req *device.KindSearchReq) (tota
 		err = m.Page(page, req.PageSize).Order(order).Scan(&list)
 		if err != nil {
 			g.Log().Error(ctx, err)
-			err = gerror.New("获取数据失败")
+			err = gerror.New("获取产品类型数据失败")
 		}
 	})
 	return

@@ -13,9 +13,9 @@ import (
 
 type (
 	IDeviceKind interface {
-		// Get 通过id获取
+		// Get 通过id获取设备品牌信息
 		Get(ctx context.Context, id int) (info *entity.SysDeviceKind, err error)
-		// List 获取设备种类列表
+		// List 获取设备品牌列表
 		List(ctx context.Context, req *device.KindSearchReq) (total, page int, list []*entity.SysDeviceKind, err error)
 	}
 )

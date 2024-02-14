@@ -54,7 +54,7 @@ var (
 			})
 
 			// 关闭路由信息打印
-			//s.SetDumpRouterMap(false)
+			s.SetDumpRouterMap(false)
 			s.SetPort(defaultPort)
 			s.Run()
 			return nil

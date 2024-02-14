@@ -13,9 +13,9 @@ import (
 type (
 	IDataCodec interface {
 		// HttpDecode http解码
-		HttpDecode(ctx context.Context, dataContent interface{}) (dmesg *model.DeviceDecodeMsg, err error)
+		HttpDecode(ctx context.Context, dataContent interface{}) (decodeMsg *model.DeviceDecodeMsg, err error)
 		// Save 保存数据
-		Save(ctx context.Context, msg *model.DeviceDecodeMsg) (err error)
+		Save(ctx context.Context, decodeMsg *model.DeviceDecodeMsg) (err error)
 	}
 )
 

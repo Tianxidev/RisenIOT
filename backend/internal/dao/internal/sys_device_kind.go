@@ -20,9 +20,9 @@ type SysDeviceKindDao struct {
 
 // SysDeviceKindColumns defines and stores column names for table sys_device_kind.
 type SysDeviceKindColumns struct {
-	Id        string //
-	Name      string //
-	Mark      string //
+	Id        string // 产品类型ID
+	Name      string // 产品名称
+	Mark      string // 产品标记
 	TimeOut   string //
 	CreatedAt string //
 	UpdatedAt string //

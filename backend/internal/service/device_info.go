@@ -17,6 +17,7 @@ type (
 		// List 获取设备信息列表
 		List(ctx context.Context, req *device.InfoSearchReq) (total, page int, list []*entity.SysDeviceInfo, err error)
 		Auth(ctx context.Context, sn, pwd string) (status bool, err error)
+		// Info 获取设备所有信息
 		Info(ctx context.Context, id int, sn string) (info *model.DeviceAllInfo, err error)
 	}
 )

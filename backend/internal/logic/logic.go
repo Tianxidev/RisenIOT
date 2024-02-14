@@ -10,6 +10,7 @@ import (
 	_ "backend/internal/logic/data_codec"
 	_ "backend/internal/logic/device_category_data"
 	_ "backend/internal/logic/device_categoty"
+	_ "backend/internal/logic/device_group"
 	_ "backend/internal/logic/device_info"
 	_ "backend/internal/logic/device_kind"
 	_ "backend/internal/logic/device_status"

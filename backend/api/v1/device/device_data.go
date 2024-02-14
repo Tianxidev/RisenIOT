@@ -14,7 +14,6 @@ type DataGetRes struct {
 	g.MapStrStr
 }
 
-// DataAddReq 添加操作请求参数
 type DataAddReq struct {
 	g.Meta    `path:"/device/data/add" tags:"设备数据API" method:"post" summary:"添加设备数据"`
 	DeviceId  int         `p:"deviceId" `

@@ -6,13 +6,14 @@ package do
 
 import (
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/os/gtime"
 )
 
 // SysDeviceCategory is the golang structure of table sys_device_category for DAO operations like Where/Data.
 type SysDeviceCategory struct {
 	g.Meta    `orm:"table:sys_device_category, do:true"`
 	Id        interface{} //
-	KindId    interface{} // 类型ID
+	KindId    interface{} // 产品类型ID
 	Name      interface{} //
 	Mark      interface{} //
 	DataType  interface{} // 数据类型
@@ -22,6 +23,6 @@ type SysDeviceCategory struct {
 	Format    interface{} //
 	HomeShow  interface{} //
 	Remark    interface{} //
-	CreatedAt interface{} //
-	UpdatedAt interface{} //
+	CreatedAt *gtime.Time //
+	UpdatedAt *gtime.Time //
 }

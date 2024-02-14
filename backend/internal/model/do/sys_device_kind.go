@@ -12,9 +12,9 @@ import (
 // SysDeviceKind is the golang structure of table sys_device_kind for DAO operations like Where/Data.
 type SysDeviceKind struct {
 	g.Meta    `orm:"table:sys_device_kind, do:true"`
-	Id        interface{} //
-	Name      interface{} //
-	Mark      interface{} //
+	Id        interface{} // 产品类型ID
+	Name      interface{} // 产品名称
+	Mark      interface{} // 产品标记
 	TimeOut   interface{} //
 	CreatedAt *gtime.Time //
 	UpdatedAt *gtime.Time //

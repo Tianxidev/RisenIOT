@@ -6,6 +6,7 @@ package do
 
 import (
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/os/gtime"
 )
 
 // SysDeviceStatus is the golang structure of table sys_device_status for DAO operations like Where/Data.
@@ -17,5 +18,5 @@ type SysDeviceStatus struct {
 	TimeOut            interface{} //
 	UpTime             interface{} //
 	DownTime           interface{} //
-	LastDataUpdateTime interface{} //
+	LastDataUpdateTime *gtime.Time //
 }
