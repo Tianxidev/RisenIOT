@@ -1,7 +1,8 @@
 declare module 'vform3-builds' {
 
     export interface VFormRender {
-        getFormData: Function,
+        getFormData: ()=> Promise,
+        resetForm: ()=>{},
         loadOptions: (options) => {},
     }
 

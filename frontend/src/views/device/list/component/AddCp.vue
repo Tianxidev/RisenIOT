@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import {reactive, ref} from "vue";
+import {getCurrentInstance, reactive, ref} from "vue";
 import formAdd from './formAdd.json'
 import {ElMessage} from "element-plus";
 import {type VFormRender} from 'vform3-builds';
 import {DeviceAdd, DeviceKindList} from "/@/api/system/device";
-import { ItemLabel } from "./interface"
+import {ItemLabel} from "./interface"
+
+const { proxy } = <any>getCurrentInstance();
 
 const formJson = reactive(formAdd)
 const formData = reactive({})
@@ -50,10 +52,14 @@ DeviceKindList().then(res => {
 
 const submitForm = () => {
   vFormRef.value?.getFormData().then((data: any) => {
-    // alert(JSON.stringify(data))
-
     DeviceAdd(data).then(res => {
-      alert(res)
+      if (res.code != 0) {
+        ElMessage.error(res.msg)
+      }
+      proxy.mittBus.emit('renderTable', {});
+      vFormRef.value?.resetForm();
+      ElMessage.success(res.msg);
+      closeDialog();
     })
 
   }).catch((e: any) => {
