@@ -25,17 +25,14 @@
     <div class="layout-navbars-breadcrumb-user-icon mr10" @click="onScreenfullClick">
       <i
           class="iconfont"
-          :title="isScreenfull ? $t('message.user.title6') : $t('message.user.title5')"
+          :title="isScreenfull ? '退出全屏' : '全屏'"
           :class="!isScreenfull ? 'icon-fullscreen' : 'icon-tuichuquanping'"
       ></i>
     </div>
-    <el-dropdown :show-timeout="70" :hide-timeout="50" @command="onHandleCommandClick">
+    <el-dropdown trigger="click" :show-timeout="70" :hide-timeout="50" @command="onHandleCommandClick">
 			<span class="layout-navbars-breadcrumb-user-link">
-				{{ userInfos.userName === '' ? 'common' : userInfos.userName }}
-				<el-icon class="el-icon--right">
-					<ele-ArrowDown/>
-				</el-icon>
-			</span>
+				「&nbsp;{{ userInfos.userName === '' ? 'common' : userInfos.userName }}&nbsp;」
+			</span>d
       <template #dropdown>
         <el-dropdown-menu>
           <el-dropdown-item command="/personal">个人中心</el-dropdown-item>
@@ -263,5 +260,9 @@ export default defineComponent({
   :deep(.el-badge__content.is-fixed) {
     top: 12px;
   }
+}
+
+.layout-navbars-breadcrumb-user-link {
+  margin-right: 10px;
 }
 </style>

@@ -8,10 +8,10 @@ let config = {
   table: {
     columns: [
       {type: 'selection', minWidth: 40},
-      {label: '类型ID', prop: 'id', minWidth: 100, align: 'center'},
-      {label: '类型名称', prop: 'name', minWidth: 100, align: 'center'},
-      {label: '类型标记', prop: 'mark', minWidth: 100, align: 'center'},
-      {label: '类型操作超时时间', prop: 'timeOut', minWidth: 100, align: 'center'},
+      {label: 'ID', prop: 'id', minWidth: 100, align: 'center'},
+      {label: '产品名称', prop: 'name', minWidth: 100, align: 'center'},
+      {label: '产品标记', prop: 'mark', minWidth: 100, align: 'center'},
+      {label: '操作超时时间', prop: 'timeOut', minWidth: 100, align: 'center'},
       {label: '创建时间', prop: 'createdAt', minWidth: 100, align: 'center'},
       {label: '更新时间', prop: 'updatedAt', minWidth: 100, align: 'center'},
       {label: '操作', prop: 'operate', slot: true, minWidth: 100, align: 'center'},

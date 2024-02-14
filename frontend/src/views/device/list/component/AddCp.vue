@@ -1,99 +1,87 @@
 <script setup lang="ts">
-import { getCurrentInstance, reactive, ref } from "vue";
+import {reactive, ref} from "vue";
+import formAdd from './formAdd.json'
+import {ElMessage} from "element-plus";
+import {type VFormRender} from 'vform3-builds';
+import {DeviceAdd, DeviceKindList} from "/@/api/system/device";
+import { ItemLabel } from "./interface"
 
-const ruleFormRef = ref<HTMLElement | null>(null);
-const {proxy} = getCurrentInstance() as any;
+const formJson = reactive(formAdd)
+const formData = reactive({})
+const optionData = reactive({
+  kind: [] as ItemLabel[],
+})
+const vFormRef = ref<VFormRender | null>(null);
 
-const props = {
-  acType: {
-    type: String,
-  },
-  row: {
-    type: Object,
-    default: () => {
-      return {};
-    },
-  },
-};
-
-// 组件状态
 const state = reactive({
   loading: false,
   isShowDialog: false,
-  roles: [],
-  ruleForm: {
-    id: undefined,
-    pid: 0, // 上级菜单
-    menuType: '0', // 菜单类型
-    menuName: '', // 菜单名称
-    name: '', // 接口规则
-    component: '', // 组件路径
-    isLink: 0, // 是否外链
-    menuSort: 0, // 菜单排序
-    path: '', // 路由路径
-    redirect: '', // 路由重定向，有子集 children 时
-    icon: '', // 菜单图标
-    roles: [], // 权限标识，取角色管理
-    isHide: '0', // 是否隐藏
-    isKeepAlive: 1, // 是否缓存
-    isAffix: 0, // 是否固定
-    linkUrl: '', // 外链/内嵌时链接地址（http:xxx.com），开启外链条件，`1、isLink:true 2、链接地址不为空`
-    isIframe: 0, // 是否内嵌，开启条件，`1、isIframe:true 2、链接地址不为空`
-  },
-  // 表单校验
-  rules: {
-    parentId: [
-      {required: true, message: "父菜单不能为空", trigger: "blur"},
-    ],
-    name: [
-      {required: true, message: "接口规则不能为空", trigger: "blur"},
-    ],
-    path: [
-      {required: true, message: "路由地址不能为空", trigger: "blur"},
-    ],
-    menuName: [
-      {required: true, message: "菜单名称不能为空", trigger: "blur"},
-    ],
-    menuType: [
-      {required: true, message: "菜单类型不能为空", trigger: "blur"},
-    ],
-  },
-  menuData: [], // 上级菜单数据
+  row: null,
 });
 
-// 关闭弹窗
 const closeDialog = () => {
   state.isShowDialog = false;
 };
 
-// 打开菜单
 const openDialog = (row: any) => {
   if (row) {
-    state.ruleForm = row;
+    state.row = row;
   }
   state.isShowDialog = true;
 }
 
-// 取消
 const onCancel = () => {
   closeDialog();
 };
 
-// 提交
 const onSubmit = () => {
 
 }
+
+DeviceKindList().then(res => {
+  const data = res.data;
+  data?.list.forEach((item: any) => {
+    optionData.kind.push({
+      label: item.name,
+      value: item.id
+    })
+  })
+})
+
+const submitForm = () => {
+  vFormRef.value?.getFormData().then((data: any) => {
+    // alert(JSON.stringify(data))
+
+    DeviceAdd(data).then(res => {
+      alert(res)
+    })
+
+  }).catch((e: any) => {
+    ElMessage.error(e)
+  })
+}
+
+
+defineExpose({
+  name: "AddCp",
+  openDialog,
+  onCancel,
+  onSubmit,
+})
 
 </script>
 
 <template>
   <div class="device-add-dialog-container">
-    <el-dialog title="新增" v-model="state.isShowDialog">
-      sdsd
+    <el-dialog title="添加设备" v-model="state.isShowDialog">
+      <v-form-render :form-json="formJson" :form-data="formData" :option-data="optionData" ref="vFormRef"/>
+      <el-button type="primary" class="submit" @click="submitForm">提交</el-button>
     </el-dialog>
   </div>
 </template>
 
 <style scoped lang="scss">
-
+.submit {
+  margin-top: 20px;
+}
 </style>

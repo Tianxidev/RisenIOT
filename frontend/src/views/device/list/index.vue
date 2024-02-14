@@ -2,13 +2,16 @@
 
 import TableView from "/@/components/table/TableView.vue";
 import { ElMessage } from "element-plus";
-import { DeviceList } from "/@/api/system/device";
-import { ref } from "vue";
+import {DeviceKindList, DeviceList} from "/@/api/system/device";
+import {reactive, ref} from "vue";
 import AddCp from "./component/AddCp.vue";
+import { ItemLabel } from "./component/interface"
+import {selectDictLabel} from "/@/utils/dict";
+const AddCpRef = ref<InstanceType<typeof AddCp>>()
 
-const AddCpRef = ref();
-
-const acType = ref('add')
+const state = reactive({
+  kind: [] as ItemLabel[],
+})
 
 let config = {
   table: {
@@ -16,6 +19,7 @@ let config = {
       {type: 'selection', minWidth: 40},
       {label: '设备ID', prop: 'id', minWidth: 100, align: 'center'},
       {label: '设备名称', prop: 'name', minWidth: 100, align: 'center'},
+      {label: '产品类型', prop: 'kind', slot: true, minWidth: 100, align: 'center'},
       {label: '设备分组', prop: 'group', minWidth: 100, align: 'center'},
       {label: '设备SN', prop: 'sn', minWidth: 100, align: 'center'},
       {label: '在线状态', prop: 'monitor', slot: true, minWidth: 100, align: 'center'},
@@ -52,6 +56,17 @@ const tableDataFn = (params: any) => {
   });
 };
 
+DeviceKindList().then(res => {
+  const data = res.data;
+  data?.list.forEach((item: any) => {
+    state.kind.push({
+      label: item.name,
+      value: item.id
+    })
+  })
+})
+
+
 
 const onEdit = (scope: any) => {
   // console.log(scope);
@@ -59,8 +74,7 @@ const onEdit = (scope: any) => {
 
 // 添加设备
 const onAdd = (row?: any) => {
-  acType.value = 'add'
-  AddCpRef.value.openDialog(row);
+  AddCpRef.value?.openDialog(row);
 };
 
 </script>
@@ -74,13 +88,17 @@ const onAdd = (row?: any) => {
       </div>
       <div class="device-model-search mb15">
         <TableView style="height: 100%" :dataFn="tableDataFn" :config="config">
-          <template #operate="row">
-            <el-button link type="primary" @click="onEdit(row.scope)">编辑</el-button>
-            <el-button link type="primary">删除</el-button>
+          <template #kind="row">
+            <el-tag type="info">{{ selectDictLabel(state.kind, row.scope.kind) }}</el-tag>
           </template>
           <template #monitor="row">
-            <el-tag type="success" v-if="row.scope.monitor === 1">在线</el-tag>
+            <el-tag type="success" v-if="row.scope['monitor'] === 1">在线</el-tag>
             <el-tag type="info" v-else>离线</el-tag>
+          </template>
+          <template #operate="row">
+            <el-button link type="primary" @click="onEdit(row.scope)">查看</el-button>
+            <el-button link type="primary" @click="onEdit(row.scope)">编辑</el-button>
+            <el-button link type="primary">删除</el-button>
           </template>
         </TableView>
       </div>
