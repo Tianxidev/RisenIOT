@@ -103,3 +103,43 @@ export function DeviceGroupList(params?: any): Promise<any> {
         method: 'get',
     })
 }
+
+/**
+ * 删除设备分组
+ * @param ids 设备分组 ID 列表
+ * @return Promise
+ */
+export function DeviceGroupDel(ids: number[]): Promise<any> {
+    return request({
+        url: appendQuery('/api/v1/device/group/delete', {
+            ids: ids,
+        }),
+        method: 'delete',
+    })
+}
+
+/**
+ * 添加设备分组
+ * @param params 设备分组参数
+ * @return Promise
+ */
+export function DeviceGroupAdd(params?:any): Promise<any>{
+    return request({
+        url: appendQuery('/api/v1/device/group/add', {}),
+        method: 'post',
+        data: params,
+    })
+}
+
+/**
+ * 编辑设备分组
+ * @param params 编辑设备分组参数
+ * @return Promise
+ */
+export function DeviceGroupEdit(params?:any): Promise<any>{
+    return request({
+        url: appendQuery('/api/v1/device/group/edit', {}),
+        method: 'put',
+        data: params,
+    })
+}

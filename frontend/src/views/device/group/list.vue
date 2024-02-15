@@ -1,8 +1,15 @@
 <script setup lang="ts">
 
 import TableView from "/@/components/table/TableView.vue";
-import {ElMessage} from "element-plus";
-import {DeviceGroupList} from "/@/api/system/device";
+import {ElMessage, ElMessageBox} from "element-plus";
+import {DeviceGroupDel, DeviceGroupList} from "/@/api/system/device";
+import {getCurrentInstance, ref} from "vue";
+import AddCp from "./component/AddCp.vue";
+import EditCp from "./component/EditCp.vue";
+
+const {proxy} = <any>getCurrentInstance();
+const AddCpRef = ref<InstanceType<typeof AddCp>>();
+const EditCpRef = ref<InstanceType<typeof EditCp>>();
 
 let config = {
   table: {
@@ -41,20 +48,52 @@ const tableDataFn = (params: any) => {
   });
 };
 
+// 添加
+const onAdd = () => {
+  AddCpRef.value?.openDialog();
+};
+
+// 编辑
+const onEdit = (row?:any) => {
+  EditCpRef.value?.openDialog(row);
+}
+
+// 删除
+const onDel = (row?:any) => {
+  ElMessageBox.confirm("确定要删除吗?", '提示', {
+    confirmButtonText: '确认',
+    cancelButtonText: '取消',
+    type: 'warning',
+  }).then(() => {
+    DeviceGroupDel([row.id]).then((res) => {
+      if (res.code != 0) {
+        ElMessage.error(res.msg)
+      }
+      proxy.mittBus.emit('renderTable', {});
+      ElMessage.success(res.msg);
+    });
+  });
+}
+
 </script>
 
 <template>
   <div class="device-model-container">
     <el-card shadow="hover">
       <div class="device-model-search mb15">
-        <el-button type="info">添加分组</el-button>
+        <el-button type="info" @click="onAdd">添加分组</el-button>
       </div>
       <div class="device-model-search mb15">
         <TableView style="height: 100%" :dataFn="tableDataFn" :config="config">
-
+          <template #operate="row">
+            <el-button link type="primary" @click="onEdit(row.scope)">编辑</el-button>
+            <el-button link type="primary" @click="onDel(row.scope)">删除</el-button>
+          </template>
         </TableView>
       </div>
     </el-card>
+    <AddCp ref="AddCpRef"></AddCp>
+    <EditCp ref="EditCpRef"></EditCp>
   </div>
 </template>
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {getCurrentInstance, reactive, ref} from "vue";
-import {DeviceInfoEdit} from "/@/api/system/device";
+import {DeviceGroupEdit} from "/@/api/system/device";
 import {ElMessage} from "element-plus";
 import {VFormRender} from "vform3-builds";
 import formEdit from "./formEdit.json"
@@ -10,8 +10,7 @@ const formJson = reactive(formEdit)
 const formData = reactive({
   id: null,
   name: null,
-  mark: null,
-  timeOut: null,
+  remarks: null,
 })
 const vFormRef = ref<VFormRender | null>(null);
 const optionData = reactive({})
@@ -28,15 +27,14 @@ const openDialog = (row?: any) => {
   if (row) {
     formData.id = row.id;
     formData.name = row.name;
-    formData.mark = row.mark;
-    formData.timeOut = row.timeOut;
+    formData.remarks = row.remarks;
   }
   state.isShowDialog = true;
 }
 
 const submitForm = () => {
   vFormRef.value?.getFormData().then((data: any) => {
-    DeviceInfoEdit(data).then(res => {
+    DeviceGroupEdit(data).then(res => {
       if (res.code != 0) {
         ElMessage.error(res.msg)
       }
