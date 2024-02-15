@@ -12,8 +12,14 @@ import (
 
 type (
 	IDeviceGroup interface {
-		// GroupList 查询设备分组列表
-		GroupList(ctx context.Context) (res *device.GroupListRes, err error)
+		// List 查询设备分组列表
+		List(ctx context.Context) (res *device.GroupListRes, err error)
+		// Add 添加设备分组
+		Add(ctx context.Context, req *device.GroupAddReq) (err error)
+		// Edit 编辑
+		Edit(ctx context.Context, req *device.GroupEditReq) (err error)
+		// Del 删除设备分组
+		Del(ctx context.Context, ids []int) (err error)
 	}
 )
 

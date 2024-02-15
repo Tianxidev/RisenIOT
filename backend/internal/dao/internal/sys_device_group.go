@@ -20,16 +20,18 @@ type SysDeviceGroupDao struct {
 
 // SysDeviceGroupColumns defines and stores column names for table sys_device_group.
 type SysDeviceGroupColumns struct {
-	Id      string // 分组ID
-	Name    string // 分组名称
-	Remarks string // 备注
+	Id       string // 分组ID
+	Name     string // 分组名称
+	Remarks  string // 备注
+	CreateBy string // 创建人ID
 }
 
 // sysDeviceGroupColumns holds the columns for table sys_device_group.
 var sysDeviceGroupColumns = SysDeviceGroupColumns{
-	Id:      "id",
-	Name:    "name",
-	Remarks: "remarks",
+	Id:       "id",
+	Name:     "name",
+	Remarks:  "remarks",
+	CreateBy: "create_by",
 }
 
 // NewSysDeviceGroupDao creates and returns a new DAO object for table data access.

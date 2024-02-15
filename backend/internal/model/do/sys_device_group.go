@@ -10,8 +10,9 @@ import (
 
 // SysDeviceGroup is the golang structure of table sys_device_group for DAO operations like Where/Data.
 type SysDeviceGroup struct {
-	g.Meta  `orm:"table:sys_device_group, do:true"`
-	Id      interface{} // 分组ID
-	Name    interface{} // 分组名称
-	Remarks interface{} // 备注
+	g.Meta   `orm:"table:sys_device_group, do:true"`
+	Id       interface{} // 分组ID
+	Name     interface{} // 分组名称
+	Remarks  interface{} // 备注
+	CreateBy interface{} // 创建人ID
 }

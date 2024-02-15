@@ -4,22 +4,23 @@ import (
 	commonApi "backend/api/v1/common"
 	"backend/internal/model/entity"
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/os/gtime"
 )
 
 type InfoSearchReq struct {
-	g.Meta   `path:"/device/info/list" tags:"设备信息" method:"get" summary:"设备信息列表"`
-	Name     string `p:"name"`     //设备名称
-	Group    string `p:"group"`    //设备组
-	Sn       string `p:"sn"`       //SN
-	Pwd      string `p:"pwd"`      //密码
-	Kind     string `p:"kind"`     //设备类别
-	Logo     string `p:"logo"`     //logo
-	Monitor  string `p:"monitor"`  //是否监视
-	Status   int    `p:"status"`   // 状态
-	Location string `p:"location"` //地理位置
-	//CreatedAt  *gtime.Time `p:"createdAt"` //创建时间
-	BeginTime string `p:"beginTime"` //开始时间
-	EndTime   string `p:"endTime"`   //结束时间
+	g.Meta    `path:"/device/info/list" tags:"设备信息" method:"get" summary:"设备信息列表"`
+	Name      string      `p:"name"`      // 设备名称
+	Group     string      `p:"group"`     // 设备组
+	Sn        string      `p:"sn"`        // SN
+	Pwd       string      `p:"pwd"`       // 密码
+	Kind      string      `p:"kind"`      // 设备类别
+	Logo      string      `p:"logo"`      // logo
+	Monitor   string      `p:"monitor"`   // 是否监视
+	Status    int         `p:"status"`    // 状态
+	Location  string      `p:"location"`  // 地理位置
+	CreatedAt *gtime.Time `p:"createdAt"` // 创建时间
+	BeginTime string      `p:"beginTime"` // 开始时间
+	EndTime   string      `p:"endTime"`   // 结束时间
 	commonApi.PageReq
 }
 

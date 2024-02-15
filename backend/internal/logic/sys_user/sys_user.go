@@ -47,6 +47,20 @@ func (s *sSysUser) NotCheckAuthAdminIds(ctx context.Context) *gset.Set {
 	return gset.New()
 }
 
+// IsSuperAdmin 判断当前用户是否是超管
+func (s *sSysUser) IsSuperAdmin(ctx context.Context, userId int) bool {
+	isSuperAdmin := false
+	s.NotCheckAuthAdminIds(ctx).Iterator(func(v interface{}) bool {
+		if gconv.Int(v) == userId {
+			isSuperAdmin = true
+			return true
+		}
+		return false
+	})
+	return isSuperAdmin
+}
+
+// GetAdminUserByUsernamePassword 通过用户名密码获取用户信息
 func (s *sSysUser) GetAdminUserByUsernamePassword(ctx context.Context, req *system.UserLoginReq) (user *model.LoginUserRes, err error) {
 	err = g.Try(ctx, func(ctx context.Context) {
 		user, err = s.GetUserByUsername(ctx, req.Username)

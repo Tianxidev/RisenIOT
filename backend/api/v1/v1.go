@@ -37,6 +37,8 @@ type IV1Device interface {
 	GatewayDel(ctx context.Context, req *device.GatewayDelReq) (res *device.GatewayDelRes, err error)
 	GroupList(ctx context.Context, req *device.GroupListReq) (res *device.GroupListRes, err error)
 	GroupAdd(ctx context.Context, req *device.GroupAddReq) (res *device.GroupAddRes, err error)
+	GroupEdit(ctx context.Context, req *device.GroupEditReq) (res *device.GroupEditRes, err error)
+	GroupDel(ctx context.Context, req *device.GroupDelReq) (res *device.GroupDelRes, err error)
 	InfoSearch(ctx context.Context, req *device.InfoSearchReq) (res *device.InfoSearchRes, err error)
 	InfoGet(ctx context.Context, req *device.InfoGetReq) (res *device.InfoGetRes, err error)
 	InfoAdd(ctx context.Context, req *device.InfoAddReq) (res *device.InfoAddRes, err error)

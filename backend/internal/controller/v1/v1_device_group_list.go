@@ -9,7 +9,7 @@ import (
 )
 
 func (c *ControllerDevice) GroupList(ctx context.Context, req *device.GroupListReq) (res *device.GroupListRes, err error) {
-	res, err = service.DeviceGroup().GroupList(ctx)
+	res, err = service.DeviceGroup().List(ctx)
 	liberr.ErrIsNil(ctx, err, "获取设备分组列表失败")
 	service.UserCtx().GetCtx(ctx).Message = "获取设备分组列表成功"
 	return

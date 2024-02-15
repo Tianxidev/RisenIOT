@@ -19,6 +19,9 @@ type (
 	ISysUser interface {
 		GetCasBinUserPrefix() string
 		NotCheckAuthAdminIds(ctx context.Context) *gset.Set
+		// IsSuperAdmin 判断当前用户是否是超管
+		IsSuperAdmin(ctx context.Context, userId int) bool
+		// GetAdminUserByUsernamePassword 通过用户名密码获取用户信息
 		GetAdminUserByUsernamePassword(ctx context.Context, req *system.UserLoginReq) (user *model.LoginUserRes, err error)
 		// GetUserByUsername 通过用户名获取用户信息
 		GetUserByUsername(ctx context.Context, userName string) (user *model.LoginUserRes, err error)
