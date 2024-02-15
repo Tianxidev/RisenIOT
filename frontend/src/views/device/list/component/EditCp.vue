@@ -1,37 +1,31 @@
 <script setup lang="ts">
 import {getCurrentInstance, reactive, ref} from "vue";
-import formAdd from './formAdd.json'
+import {ItemLabel} from "./interface";
+import {DeviceGroupList, DeviceInfoEdit, DeviceKindList} from "/@/api/system/device";
 import {ElMessage} from "element-plus";
-import {type VFormRender} from 'vform3-builds';
-import {DeviceGroupList, DeviceInfoAdd, DeviceKindList} from "/@/api/system/device";
-import {ItemLabel} from "./interface"
+import {VFormRender} from "vform3-builds";
+import formEdit from "./formEdit.json"
 
-const { proxy } = <any>getCurrentInstance();
-
-const formJson = reactive(formAdd)
-const formData = reactive({})
+const {proxy} = <any>getCurrentInstance();
+const formJson = reactive(formEdit)
+const formData = reactive({
+  id: null,
+  name: null,
+  group: null,
+  sn: null,
+  pwd: null,
+  kind: null,
+})
+const vFormRef = ref<VFormRender | null>(null);
 const optionData = reactive({
   kind: [] as ItemLabel[],
   group: [] as ItemLabel[],
 })
-const vFormRef = ref<VFormRender | null>(null);
 
 const state = reactive({
-  loading: false,
   isShowDialog: false,
   row: null,
-});
-
-const closeDialog = () => {
-  state.isShowDialog = false;
-};
-
-const openDialog = (row?: any) => {
-  if (row) {
-    state.row = row;
-  }
-  state.isShowDialog = true;
-}
+})
 
 // 加载产品类型字典
 DeviceKindList().then(res => {
@@ -55,9 +49,26 @@ DeviceGroupList().then(res=>{
   })
 })
 
+const closeDialog = () => {
+  state.isShowDialog = false;
+};
+
+const openDialog = (row?: any) => {
+  if (row) {
+    state.row = row;
+    formData.id = row.id;
+    formData.name = row.name;
+    formData.group = row.group;
+    formData.sn = row.sn;
+    formData.pwd = row.pwd;
+    formData.kind = row.kind;
+  }
+  state.isShowDialog = true;
+}
+
 const submitForm = () => {
   vFormRef.value?.getFormData().then((data: any) => {
-    DeviceInfoAdd(data).then(res => {
+    DeviceInfoEdit(data).then(res => {
       if (res.code != 0) {
         ElMessage.error(res.msg)
       }
@@ -65,8 +76,7 @@ const submitForm = () => {
       vFormRef.value?.resetForm();
       ElMessage.success(res.msg);
       closeDialog();
-    })
-
+    });
   }).catch((e: any) => {
     ElMessage.error(e)
   })
@@ -74,24 +84,21 @@ const submitForm = () => {
 
 
 defineExpose({
-  name: "AddCp",
+  name: "EditCp",
   openDialog,
   closeDialog,
 })
-
 </script>
 
 <template>
-  <div class="device-add-dialog-container">
-    <el-dialog title="添加设备" v-model="state.isShowDialog">
+  <div class="device-edit-dialog-container">
+    <el-dialog title="编辑设备" v-model="state.isShowDialog">
       <v-form-render :form-json="formJson" :form-data="formData" :option-data="optionData" ref="vFormRef"/>
-      <el-button type="primary" class="submit" @click="submitForm">添加</el-button>
+      <el-button type="primary" class="submit" @click="submitForm">提交</el-button>
     </el-dialog>
   </div>
 </template>
 
 <style scoped lang="scss">
-.submit {
-  margin-top: 20px;
-}
+
 </style>

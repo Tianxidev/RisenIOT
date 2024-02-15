@@ -154,7 +154,7 @@ onMounted(() => {
       </template>
     </el-table>
     <!-- 分页 (START) -->
-    <div class="pager" style="text-align: right">
+    <div class="pager" style="text-align: right; margin-top: 15px;">
       <el-pagination
           v-model:currentPage="state.pageNum"
           :page-size="state.mPageSize"

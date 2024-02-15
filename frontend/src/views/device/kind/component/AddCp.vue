@@ -3,17 +3,13 @@ import {getCurrentInstance, reactive, ref} from "vue";
 import formAdd from './formAdd.json'
 import {ElMessage} from "element-plus";
 import {type VFormRender} from 'vform3-builds';
-import {DeviceGroupList, DeviceInfoAdd, DeviceKindList} from "/@/api/system/device";
-import {ItemLabel} from "./interface"
+import {DeviceKindAdd} from "/@/api/system/device";
 
 const { proxy } = <any>getCurrentInstance();
 
 const formJson = reactive(formAdd)
 const formData = reactive({})
-const optionData = reactive({
-  kind: [] as ItemLabel[],
-  group: [] as ItemLabel[],
-})
+const optionData = reactive({})
 const vFormRef = ref<VFormRender | null>(null);
 
 const state = reactive({
@@ -33,31 +29,10 @@ const openDialog = (row?: any) => {
   state.isShowDialog = true;
 }
 
-// 加载产品类型字典
-DeviceKindList().then(res => {
-  const data = res.data;
-  data?.list.forEach((item: any) => {
-    optionData.kind.push({
-      label: item.name,
-      value: item.id
-    })
-  })
-})
-
-// 加载设备分组字典
-DeviceGroupList().then(res=>{
-  const data = res.data;
-  data?.list.forEach((item: any) => {
-    optionData.group.push({
-      label: item.name,
-      value: item.id
-    })
-  })
-})
-
+// 提交
 const submitForm = () => {
   vFormRef.value?.getFormData().then((data: any) => {
-    DeviceInfoAdd(data).then(res => {
+    DeviceKindAdd(data).then(res => {
       if (res.code != 0) {
         ElMessage.error(res.msg)
       }
@@ -83,7 +58,7 @@ defineExpose({
 
 <template>
   <div class="device-add-dialog-container">
-    <el-dialog title="添加设备" v-model="state.isShowDialog">
+    <el-dialog title="添加产品" v-model="state.isShowDialog">
       <v-form-render :form-json="formJson" :form-data="formData" :option-data="optionData" ref="vFormRef"/>
       <el-button type="primary" class="submit" @click="submitForm">添加</el-button>
     </el-dialog>
