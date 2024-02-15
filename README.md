@@ -24,3 +24,9 @@
 - gfast-ui: github.com/tiger1103/gfast-ui
 - IOTFast: github.com/xiaodingding/iotfast
 - vue-next-admin: github.com/lyt-Top/vue-next-admin
+
+## 关于
+
+如在本项目上遇到的一些问题，请通过以下方式与我联系，同时欢迎各位师傅一起来参与本项目的开发工作！
+
+- 邮件地址: super@tianxidev.wiki
