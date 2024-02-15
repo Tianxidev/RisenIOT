@@ -26,6 +26,8 @@ type SysDeviceKindColumns struct {
 	TimeOut   string //
 	CreatedAt string //
 	UpdatedAt string //
+	CreateBy  string // 创建人
+	Public    string // 是否公开产品
 }
 
 // sysDeviceKindColumns holds the columns for table sys_device_kind.
@@ -36,6 +38,8 @@ var sysDeviceKindColumns = SysDeviceKindColumns{
 	TimeOut:   "time_out",
 	CreatedAt: "created_at",
 	UpdatedAt: "updated_at",
+	CreateBy:  "create_by",
+	Public:    "public",
 }
 
 // NewSysDeviceKindDao creates and returns a new DAO object for table data access.

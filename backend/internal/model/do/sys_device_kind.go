@@ -18,4 +18,6 @@ type SysDeviceKind struct {
 	TimeOut   interface{} //
 	CreatedAt *gtime.Time //
 	UpdatedAt *gtime.Time //
+	CreateBy  interface{} // 创建人
+	Public    interface{} // 是否公开产品
 }

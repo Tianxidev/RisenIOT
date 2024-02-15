@@ -74,7 +74,7 @@ type InfoEditRes struct {
 
 type InfoDeleteReq struct {
 	g.Meta `path:"/device/info/delete" tags:"设备信息" method:"delete" summary:"删除设备信息"`
-	Ids    []int `p:"ids"`
+	Ids    []int `p:"ids" v:"required#设备ID不能为空"`
 }
 
 type InfoDeleteRes struct {

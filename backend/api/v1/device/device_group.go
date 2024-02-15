@@ -8,7 +8,7 @@ type GroupListReq struct {
 
 type GroupListRes struct {
 	g.Meta `mime:"application/json"`
-	List   []g.Map
+	List   []g.Map `json:"list"`
 }
 
 type GroupAddReq struct {

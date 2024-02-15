@@ -9,6 +9,7 @@ import (
 	"backend/internal/service"
 	"backend/library/liberr"
 	"context"
+	"fmt"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gtime"
@@ -166,6 +167,11 @@ func (s *sDeviceInfo) Add(ctx context.Context, req *device.InfoAddReq) (err erro
 		req.Pwd = guid.S([]byte(gconv.String(gtime.TimestampNano())))
 	}
 
+	// 判断设备分组是否为空, 如果为空则默认分组
+	if req.Group == 0 {
+		req.Group = -1
+	}
+
 	// 根据当前用户ID和设备名称查询是否存在相同的设备名称
 	count, err := m.Where("create_by=? and name=?", int(service.UserCtx().GetUserId(ctx)), req.Name).Count()
 	liberr.ErrIsNil(ctx, err, "查询设备信息失败")
@@ -186,5 +192,46 @@ func (s *sDeviceInfo) Add(ctx context.Context, req *device.InfoAddReq) (err erro
 	// 写入数据库
 	_, err = dao.SysDeviceInfo.Ctx(ctx).Data(deviceInfo).Insert()
 	liberr.ErrIsNil(ctx, err, "添加设备信息失败")
+	return
+}
+
+// Edit 编辑设备信息
+func (s *sDeviceInfo) Edit(ctx context.Context, req *device.InfoEditReq) (err error) {
+	m := dao.SysDeviceInfo.Ctx(ctx)
+
+	// 根据设备ID和当前用户ID查询设备信息
+	deviceInfo := &entity.SysDeviceInfo{}
+	err = m.Where("id=? and create_by=?", req.Id, int(service.UserCtx().GetUserId(ctx))).Scan(&deviceInfo)
+	liberr.ErrIsNil(ctx, err, "查询设备信息失败")
+	liberr.ValueIsTrue(ctx, deviceInfo == nil, "设备信息不存在")
+
+	// 判断设备分组是否为空, 如果为空则默认分组
+	if req.Group == 0 {
+		req.Group = -1
+	}
+
+	// 更新设备信息
+	_, err = m.Data(g.Map{
+		"name":     req.Name,
+		"group":    req.Group,
+		"kind":     req.Kind,
+		"monitor":  req.Monitor,
+		"location": req.Location,
+	}).Where("id=? and create_by=?", req.Id, int(service.UserCtx().GetUserId(ctx))).Update()
+	liberr.ErrIsNil(ctx, err, "编辑设备信息失败")
+	return
+}
+
+// Delete 删除设备信息
+func (s *sDeviceInfo) Delete(ctx context.Context, ids []int) (err error) {
+	m := dao.SysDeviceInfo
+	userId := service.UserCtx().GetUserId(ctx)
+
+	// 根据设备ID和当前用户ID删除设备信息
+	for _, id := range ids {
+		query := fmt.Sprintf("%s=? and %s=?", m.Columns().Id, m.Columns().CreateBy)
+		_, err = m.Ctx(ctx).Where(query, id, userId).Delete()
+		liberr.ErrIsNil(ctx, err, "删除设备信息失败")
+	}
 	return
 }

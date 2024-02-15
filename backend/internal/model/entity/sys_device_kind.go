@@ -16,4 +16,6 @@ type SysDeviceKind struct {
 	TimeOut   int         `json:"timeOut"   ` //
 	CreatedAt *gtime.Time `json:"createdAt" ` //
 	UpdatedAt *gtime.Time `json:"updatedAt" ` //
+	CreateBy  int         `json:"createBy"  ` // 创建人
+	Public    int         `json:"public"    ` // 是否公开产品
 }

@@ -20,6 +20,10 @@ type (
 		Info(ctx context.Context, id int, sn string) (info *model.DeviceAllInfo, err error)
 		// Add 添加设备信息
 		Add(ctx context.Context, req *device.InfoAddReq) (err error)
+		// Edit 编辑设备信息
+		Edit(ctx context.Context, req *device.InfoEditReq) (err error)
+		// Delete 删除设备信息
+		Delete(ctx context.Context, ids []int) (err error)
 	}
 )
 

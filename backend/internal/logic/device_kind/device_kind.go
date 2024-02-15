@@ -77,11 +77,85 @@ func (s *sDeviceKind) List(ctx context.Context, req *device.KindSearchReq) (tota
 		if req.OrderBy != "" {
 			order = req.OrderBy
 		}
+
+		// 根据用户id查询创建产品类型以及公共产品类型
+		m = m.Where("create_by = ? or public = 1", int(service.UserCtx().GetUserId(ctx)))
 		err = m.Page(page, req.PageSize).Order(order).Scan(&list)
 		if err != nil {
 			g.Log().Error(ctx, err)
 			err = gerror.New("获取产品类型数据失败")
 		}
 	})
+	return
+}
+
+// Add 添加产品类型
+func (s *sDeviceKind) Add(ctx context.Context, req *device.KindAddReq) (err error) {
+	liberr.ValueIsTrue(ctx, req.TimeOut <= 0, "超时时间不能小于0")
+	t1 := dao.SysDeviceKind
+
+	// 判断产品类型是否存在
+	m := dao.SysDeviceKind.Ctx(ctx)
+	m = m.Where(t1.Columns().Name, req.Name)
+	m = m.Where(t1.Columns().CreateBy, int(service.UserCtx().GetUserId(ctx)))
+	kind, err := m.One()
+	liberr.ErrIsNil(ctx, err, "查询产品类型失败")
+	liberr.ValueIsTrue(ctx, kind != nil, "产品类型已存在")
+
+	// 添加产品类型
+	_, err = dao.SysDeviceKind.Ctx(ctx).Data(&entity.SysDeviceKind{
+		Name:     req.Name,
+		Mark:     req.Mark,
+		TimeOut:  req.TimeOut,
+		CreateBy: int(service.UserCtx().GetUserId(ctx)),
+	}).Insert()
+	liberr.ErrIsNil(ctx, err, "添加产品类型失败")
+	return
+}
+
+// Edit 编辑产品类型
+func (s *sDeviceKind) Edit(ctx context.Context, req *device.KindEditReq) (err error) {
+	liberr.ValueIsTrue(ctx, req.TimeOut <= 0, "超时时间不能小于0")
+	t1 := dao.SysDeviceKind
+	m := dao.SysDeviceKind.Ctx(ctx)
+	m = m.Where(t1.Columns().Id, req.Id)
+	m = m.Where(t1.Columns().CreateBy, int(service.UserCtx().GetUserId(ctx)))
+	kind, err := m.One()
+	liberr.ErrIsNil(ctx, err, "查询产品类型失败")
+	liberr.ValueIsTrue(ctx, kind == nil, "产品类型不存在")
+
+	// 编辑产品类型
+	_, err = dao.SysDeviceKind.Ctx(ctx).Data(&entity.SysDeviceKind{
+		Name:     req.Name,
+		Mark:     req.Mark,
+		TimeOut:  req.TimeOut,
+		CreateBy: int(service.UserCtx().GetUserId(ctx)),
+	}).Where(t1.Columns().Id, req.Id).Update()
+	liberr.ErrIsNil(ctx, err, "编辑产品类型失败")
+	return
+}
+
+// Del 删除产品类型
+func (s *sDeviceKind) Del(ctx context.Context, id []int) (err error) {
+	t1 := dao.SysDeviceKind
+	t2 := dao.SysDeviceInfo
+
+	// 遍历删除产品类型
+	for _, v := range id {
+
+		// 判断产品类型下是否有设备
+		count, err := t2.Ctx(ctx).Where("kind = ?", v).Count()
+		liberr.ErrIsNil(ctx, err, "查询设备信息失败")
+		liberr.ValueIsTrue(ctx, count > 0, "产品类型下存在设备, 请先删除设备信息")
+
+		// 删除产品类型
+		m1 := t1.Ctx(ctx)
+		m1 = m1.Where(t1.Columns().Id, v)
+		m1 = m1.Where(t1.Columns().CreateBy, int(service.UserCtx().GetUserId(ctx)))
+		_, err = m1.Delete()
+		liberr.ErrIsNil(ctx, err, "删除产品类型失败")
+
+	}
+
 	return
 }
