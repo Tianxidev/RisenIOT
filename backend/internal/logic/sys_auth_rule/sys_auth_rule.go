@@ -8,13 +8,13 @@ import (
 	"backend/internal/model/do"
 	"backend/internal/model/entity"
 	"backend/internal/service"
+	"backend/library/liberr"
 	"context"
 	"fmt"
 	"github.com/gogf/gf/v2/database/gdb"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/util/gconv"
-	"backend/library/liberr"
 )
 
 type sSysAuthRule struct {
@@ -24,7 +24,7 @@ func init() {
 	service.RegisterSysAuthRule(New())
 }
 
-func New() service.ISysAuthRule {
+func New() *sSysAuthRule {
 	return &sSysAuthRule{}
 }
 

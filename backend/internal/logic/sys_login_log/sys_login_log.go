@@ -6,11 +6,11 @@ import (
 	"backend/internal/dao"
 	"backend/internal/model"
 	"backend/internal/service"
+	"backend/library/liberr"
 	"context"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/grpool"
 	"github.com/gogf/gf/v2/util/gconv"
-	"backend/library/liberr"
 )
 
 type sSysLoginLog struct {
@@ -21,7 +21,7 @@ func init() {
 	service.RegisterSysLoginLog(New())
 }
 
-func New() service.ISysLoginLog {
+func New() *sSysLoginLog {
 	return &sSysLoginLog{
 		Pool: grpool.New(100),
 	}

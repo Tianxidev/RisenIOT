@@ -123,5 +123,9 @@ func (s *sDataCodec) Save(ctx context.Context, decodeMsg *model.DeviceDecodeMsg)
 	// 更新设备状态
 	err = service.DeviceStatus().ChangeStatus(ctx, decodeMsg.DeviceInfo.Info.Id, consts.DeviceStatusOnLine)
 	liberr.ErrIsNil(ctx, err, "更新设备状态失败")
+
+	// 更新设备数据最后上报时间
+	err = service.DeviceInfo().UpdateDataLastTime(ctx, decodeMsg.DeviceInfo.Info.Id)
+	liberr.ErrIsNil(ctx, err, "更新设备最后上报时间失败")
 	return
 }

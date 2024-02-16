@@ -8,6 +8,7 @@ import (
 	"backend/internal/model/do"
 	"backend/internal/model/entity"
 	"backend/internal/service"
+	"backend/library/liberr"
 	"context"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
@@ -15,7 +16,6 @@ import (
 	"github.com/gogf/gf/v2/os/grpool"
 	"github.com/gogf/gf/v2/os/gtime"
 	"github.com/gogf/gf/v2/text/gstr"
-	"backend/library/liberr"
 )
 
 type sOperateLog struct {
@@ -26,7 +26,7 @@ func init() {
 	service.RegisterOperateLog(New())
 }
 
-func New() service.IOperateLog {
+func New() *sOperateLog {
 	return &sOperateLog{
 		Pool: grpool.New(100),
 	}

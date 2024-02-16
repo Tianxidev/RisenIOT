@@ -19,7 +19,7 @@ func init() {
 	service.RegisterDeviceKind(New())
 }
 
-func New() service.IDeviceKind {
+func New() *sDeviceKind {
 	return &sDeviceKind{}
 }
 

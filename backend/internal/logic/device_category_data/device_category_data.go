@@ -15,7 +15,7 @@ type sDeviceCategoryData struct {
 func init() {
 	service.RegisterDeviceCategoryData(New())
 }
-func New() service.IDeviceCategoryData {
+func New() *sDeviceCategoryData {
 	return &sDeviceCategoryData{}
 }
 

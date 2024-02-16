@@ -6,13 +6,17 @@
 package service
 
 import (
+	"backend/api/v1/device"
 	"backend/internal/model/entity"
 	"context"
 )
 
 type (
 	IDeviceCategory interface {
-		KindGet(ctx context.Context, kindId int) (list []*entity.SysDeviceCategoty, err error)
+		// List 列表
+		List(ctx context.Context, req *device.CategorySearchReq) (total, page int, list []*entity.SysDeviceCategory, err error)
+		// KindGet 根据产品类型获取产品数据类型
+		KindGet(ctx context.Context, kindId int) (list []*entity.SysDeviceCategory, err error)
 	}
 )
 

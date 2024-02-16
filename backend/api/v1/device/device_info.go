@@ -39,7 +39,7 @@ type InfoGetRes struct {
 	g.Meta       `mime:"application/json"`
 	Info         *entity.SysDeviceInfo       `json:"info"`
 	Kind         *entity.SysDeviceKind       `json:"kind"`
-	CategoryList []*entity.SysDeviceCategoty `json:"categoryList"`
+	CategoryList []*entity.SysDeviceCategory `json:"categoryList"`
 }
 
 type InfoAddReq struct {

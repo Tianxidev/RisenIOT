@@ -17,7 +17,7 @@ func init() {
 	service.RegisterDeviceGroup(New())
 }
 
-func New() service.IDeviceGroup {
+func New() *sDeviceGroup {
 	return &sDeviceGroup{}
 }
 

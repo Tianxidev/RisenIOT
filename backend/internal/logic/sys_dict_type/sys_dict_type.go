@@ -24,7 +24,7 @@ func init() {
 	service.RegisterSysDictType(New())
 }
 
-func New() service.ISysDictType {
+func New() *sSysDictType {
 	return &sSysDictType{}
 }
 

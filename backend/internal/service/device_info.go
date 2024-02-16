@@ -24,6 +24,8 @@ type (
 		Edit(ctx context.Context, req *device.InfoEditReq) (err error)
 		// Delete 删除设备信息
 		Delete(ctx context.Context, ids []int) (err error)
+		// UpdateDataLastTime 更新设备数据最后上报时间
+		UpdateDataLastTime(ctx context.Context, id int) (err error)
 	}
 )
 

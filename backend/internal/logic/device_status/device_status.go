@@ -20,7 +20,7 @@ func init() {
 	service.RegisterDeviceStatus(New())
 }
 
-func New() service.IDeviceStatus {
+func New() *sDeviceStatus {
 	return &sDeviceStatus{}
 }
 

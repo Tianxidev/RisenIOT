@@ -22,7 +22,7 @@ func init() {
 	service.RegisterAdapterCasbin(New())
 }
 
-func New() service.IAdapterCasbin {
+func New() *sAdapterCasbin {
 	return &sAdapterCasbin{}
 }
 

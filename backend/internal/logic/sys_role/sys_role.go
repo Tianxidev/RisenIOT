@@ -7,11 +7,11 @@ import (
 	"backend/internal/model/do"
 	"backend/internal/model/entity"
 	"backend/internal/service"
+	"backend/library/liberr"
 	"context"
 	"github.com/gogf/gf/v2/database/gdb"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/util/gconv"
-	"backend/library/liberr"
 )
 
 type sSysRole struct {
@@ -21,7 +21,7 @@ func init() {
 	service.RegisterSysRole(New())
 }
 
-func New() service.ISysRole {
+func New() *sSysRole {
 	return &sSysRole{}
 }
 

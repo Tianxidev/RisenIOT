@@ -7,12 +7,12 @@ import (
 	"backend/internal/model/do"
 	"backend/internal/model/entity"
 	"backend/internal/service"
+	"backend/library/libUtils"
+	"backend/library/liberr"
 	"context"
 	"github.com/gogf/gf/v2/database/gdb"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/util/grand"
-	"backend/library/libUtils"
-	"backend/library/liberr"
 )
 
 type sPersonal struct {
@@ -22,7 +22,7 @@ func init() {
 	service.RegisterPersonal(New())
 }
 
-func New() service.IPersonal {
+func New() *sPersonal {
 	return &sPersonal{}
 }
 

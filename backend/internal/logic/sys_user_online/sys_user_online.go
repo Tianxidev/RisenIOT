@@ -9,25 +9,25 @@ import (
 	"backend/internal/model/do"
 	"backend/internal/model/entity"
 	"backend/internal/service"
+	"backend/library/liberr"
 	"context"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/grpool"
 	"github.com/gogf/gf/v2/os/gtime"
-	"backend/library/liberr"
 )
+
+type sSysUserOnline struct {
+	Pool *grpool.Pool
+}
 
 func init() {
 	service.RegisterSysUserOnline(New())
 }
 
-func New() service.ISysUserOnline {
+func New() *sSysUserOnline {
 	return &sSysUserOnline{
 		Pool: grpool.New(100),
 	}
-}
-
-type sSysUserOnline struct {
-	Pool *grpool.Pool
 }
 
 func (s *sSysUserOnline) Invoke(ctx context.Context, params *model.SysUserOnlineParams) {

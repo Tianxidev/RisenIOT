@@ -32,7 +32,7 @@ type (
 	}
 )
 
-func New() service.IGateway {
+func New() *sGateway {
 	return &sGateway{}
 }
 

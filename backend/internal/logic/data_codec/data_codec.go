@@ -9,6 +9,6 @@ func init() {
 	service.RegisterDataCodec(New())
 }
 
-func New() service.IDataCodec {
+func New() *sDataCodec {
 	return &sDataCodec{}
 }

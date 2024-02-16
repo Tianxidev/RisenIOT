@@ -7,21 +7,21 @@ import (
 	"backend/internal/model/do"
 	"backend/internal/model/entity"
 	"backend/internal/service"
+	"backend/library/liberr"
 	"context"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/util/gconv"
-	"backend/library/liberr"
 )
+
+type sSysPost struct {
+}
 
 func init() {
 	service.RegisterSysPost(New())
 }
 
-func New() service.ISysPost {
+func New() *sSysPost {
 	return &sSysPost{}
-}
-
-type sSysPost struct {
 }
 
 // List 岗位列表

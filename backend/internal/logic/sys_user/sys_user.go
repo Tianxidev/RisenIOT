@@ -31,7 +31,7 @@ func init() {
 	service.RegisterSysUser(New())
 }
 
-func New() service.ISysUser {
+func New() *sSysUser {
 	return &sSysUser{casBinUserPrefix: "u_"}
 }
 

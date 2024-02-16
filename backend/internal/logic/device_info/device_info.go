@@ -24,7 +24,7 @@ func init() {
 	service.RegisterDeviceInfo(New())
 }
 
-func New() service.IDeviceInfo {
+func New() *sDeviceInfo {
 	return &sDeviceInfo{}
 }
 
@@ -233,5 +233,14 @@ func (s *sDeviceInfo) Delete(ctx context.Context, ids []int) (err error) {
 		_, err = m.Ctx(ctx).Where(query, id, userId).Delete()
 		liberr.ErrIsNil(ctx, err, "删除设备信息失败")
 	}
+	return
+}
+
+// UpdateDataLastTime 更新设备数据最后上报时间
+func (s *sDeviceInfo) UpdateDataLastTime(ctx context.Context, id int) (err error) {
+	_, err = dao.SysDeviceInfo.Ctx(ctx).Data(g.Map{
+		"last_time": gtime.Now().String(),
+	}).Where("id=?", id).Update()
+	liberr.ErrIsNil(ctx, err, "更新设备数据最后上报时间失败")
 	return
 }
