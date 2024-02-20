@@ -1,15 +1,14 @@
-import { RouteRecordRaw } from 'vue-router';
+import {RouteRecordRaw} from 'vue-router';
 import pinia from '/@/stores/index';
-import { useUserInfo } from '/@/stores/userInfo';
-import { useRequestOldRoutes } from '/@/stores/requestOldRoutes';
-import { Session } from '/@/utils/storage';
-import { NextLoading } from '/@/utils/loading';
-import { demoRoutes,dynamicRoutes, notFoundAndNoPower } from '/@/router/route';
-import { formatTwoStageRoutes, formatFlatteningRoutes, router } from '/@/router/index';
-import { useRoutesList } from '/@/stores/routesList';
-import { useTagsViewRoutes } from '/@/stores/tagsViewRoutes';
-import { getUserMenus } from '/@/api/system/menu/index';
-
+import {useUserInfo} from '/@/stores/userInfo';
+import {useRequestOldRoutes} from '/@/stores/requestOldRoutes';
+import {Session} from '/@/utils/storage';
+import {NextLoading} from '/@/utils/loading';
+import {dynamicRoutes, notFoundAndNoPower} from '/@/router/route';
+import {formatFlatteningRoutes, formatTwoStageRoutes, router} from '/@/router/index';
+import {useRoutesList} from '/@/stores/routesList';
+import {useTagsViewRoutes} from '/@/stores/tagsViewRoutes';
+import {getUserMenus} from '/@/api/system/menu/index';
 
 
 const layouModules: any = import.meta.glob('../layout/routerView/*.{vue,tsx}');
@@ -45,13 +44,13 @@ export async function initBackEndControlRoutes() {
 	await getBackEndControlRoutes();
 	let menuRoute = Session.get('userMenu')
 	// 存储接口原始路由（未处理component），根据需求选择使用
-	useRequestOldRoutes().setRequestOldRoutes(JSON.parse(JSON.stringify(menuRoute)));
+	await useRequestOldRoutes().setRequestOldRoutes(JSON.parse(JSON.stringify(menuRoute)));
 	// 处理路由（component），替换 dynamicRoutes（/@/router/route）第一个顶级 children 的路由
-	dynamicRoutes[0].children?.push(...await backEndComponent(menuRoute),...demoRoutes);
+	dynamicRoutes[0].children?.push(...await backEndComponent(menuRoute));
 	// 添加动态路由
 	await setAddRoute();
 	// 设置路由到 vuex routesList 中（已处理成多级嵌套路由）及缓存多级嵌套数组处理后的一维数组
-	await setFilterMenuAndCacheTagsViewRoutes();
+	setFilterMenuAndCacheTagsViewRoutes();
 }
 
 /**
@@ -61,7 +60,7 @@ export async function initBackEndControlRoutes() {
  */
 export function setFilterMenuAndCacheTagsViewRoutes() {
 	const storesRoutesList = useRoutesList(pinia);
-	storesRoutesList.setRoutesList(dynamicRoutes[0].children as any);
+	storesRoutesList.setRoutesList(dynamicRoutes[0].children as any).then();
 	setCacheTagsViewRoutes();
 }
 
@@ -71,7 +70,7 @@ export function setFilterMenuAndCacheTagsViewRoutes() {
  */
 export function setCacheTagsViewRoutes() {
 	const storesTagsView = useTagsViewRoutes(pinia);
-	storesTagsView.setTagsViewRoutes(formatTwoStageRoutes(formatFlatteningRoutes(dynamicRoutes))[0].children);
+	storesTagsView.setTagsViewRoutes(formatTwoStageRoutes(formatFlatteningRoutes(dynamicRoutes))[0].children).then();
 }
 
 /**
@@ -131,7 +130,7 @@ export async function refreshBackEndControlRoutes() {
  * @description 路径：/src/views/system/menu/component/addMenu.vue
  */
 export function setBackEndControlRefreshRoutes() {
-	getBackEndControlRoutes();
+	getBackEndControlRoutes().then();
 }
 
 /**

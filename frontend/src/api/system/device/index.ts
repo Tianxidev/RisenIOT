@@ -143,3 +143,16 @@ export function DeviceGroupEdit(params?:any): Promise<any>{
         data: params,
     })
 }
+
+/**
+ * 设备数据类型列表
+ * @param params 数据类型列表查询参数
+ * @return Promise
+ */
+export function DeviceCategoryList(params?:any): Promise<any>{
+    return request({
+        url: appendQuery('/api/v1/device/category/list', params),
+        method: 'get',
+    })
+}
+

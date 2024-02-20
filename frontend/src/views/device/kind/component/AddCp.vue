@@ -47,6 +47,10 @@ const submitForm = () => {
   })
 }
 
+const handleClose = () => {
+  Object.assign(formData, {})
+  proxy.mittBus.emit('RefreshPage', true);
+}
 
 defineExpose({
   name: "AddCp",
@@ -58,7 +62,7 @@ defineExpose({
 
 <template>
   <div class="device-add-dialog-container">
-    <el-dialog title="添加产品" v-model="state.isShowDialog">
+    <el-dialog title="添加产品" v-model="state.isShowDialog" @close="handleClose">
       <v-form-render :form-json="formJson" :form-data="formData" :option-data="optionData" ref="vFormRef"/>
       <el-button type="primary" class="submit" @click="submitForm">添加</el-button>
     </el-dialog>

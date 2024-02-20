@@ -1,18 +1,19 @@
 <script setup>
-import { computed, getCurrentInstance, onMounted, reactive } from 'vue';
+import {computed, getCurrentInstance, onBeforeUnmount, onMounted, reactive} from 'vue';
 
-const { proxy } = getCurrentInstance();
+const {proxy} = getCurrentInstance();
 
 const props = defineProps({
   dataFn: {
     type: Function,
-    default: () => {},
+    default: () => {
+    },
   }, // 获取数据的方法
-  config: { type: Object },
-  action: { type: String }, // 请求地址
-  tableHeight: { type: Number },
-  size: { type: String },
-  pageSize: { type: Number, default: 10 },
+  config: {type: Object},
+  action: {type: String}, // 请求地址
+  tableHeight: {type: Number},
+  size: {type: String},
+  pageSize: {type: Number, default: 10},
   options: {
     // 表格配置项
     type: Object,
@@ -40,6 +41,7 @@ const state = reactive({
   mPageSize: props.pageSize, // 每页展现条数
   pageNum: 1, // 当前页
   isChange: false, // 是否选中
+  isFirst: true, // 是否第一次加载
 });
 
 // 获取数据
@@ -78,23 +80,33 @@ const handleCurrentChange = (val) => {
 
 // 勾选复选框事件
 const select = (row, column, event) => {
-  let data = { row, column, event };
+  let data = {row, column, event};
   proxy.mittBus.emit('select', data);
 };
 
 // 勾选全选事件
 const selectAll = (row, column, event) => {
-  let data = { row, column, event };
+  let data = {row, column, event};
   proxy.mittBus.emit('selectAll', data);
 };
 
 // 事件总线触发表格渲染
 proxy.mittBus.on('renderTable', (params) => {
+  if (state.isFirst === true) {
+    return
+  }
   getData(params);
 });
 
 onMounted(() => {
-  getData();
+  if (state.isFirst === true) {
+    state.isFirst = false;
+    getData();
+  }
+});
+
+onBeforeUnmount(() => {
+  proxy.mittBus.off('renderTable', () => {});
 });
 </script>
 
