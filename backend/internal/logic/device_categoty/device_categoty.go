@@ -32,30 +32,13 @@ func (s *sDeviceCategory) List(ctx context.Context, req *device.CategorySearchRe
 		req.PageSize = consts.PageSize
 	}
 	m := dao.SysDeviceCategory.Ctx(ctx)
-	if req.KindId != 0 {
-		m = m.Where(dao.SysDeviceCategory.Columns().KindId+" = ?", req.KindId)
-	}
-	if req.Name != "" {
-		m = m.Where(dao.SysDeviceCategory.Columns().Name+" like ?", "%"+req.Name+"%")
-	}
-	if req.Mark != "" {
-		m = m.Where(dao.SysDeviceCategory.Columns().Mark+" = ?", req.Mark)
-	}
-	if req.DataType != "" {
-		m = m.Where(dao.SysDeviceCategory.Columns().DataType+" = ?", req.DataType)
-	}
-	if req.Unit != "" {
-		m = m.Where(dao.SysDeviceCategory.Columns().Unit+" = ?", req.Unit)
-	}
-	if req.Ratio != "" {
-		m = m.Where(dao.SysDeviceCategory.Columns().Ratio+" = ?", req.Ratio)
-	}
-	if req.Format != "" {
-		m = m.Where(dao.SysDeviceCategory.Columns().Format+" = ?", req.Format)
-	}
-	if req.HomeShow != "" {
-		m = m.Where(dao.SysDeviceCategory.Columns().HomeShow+" = ?", req.HomeShow)
-	}
+
+	// 判断产品类型是否不为空
+	liberr.ValueIsTrue(ctx, req.KindId == 0, "产品类型不能为空")
+
+	// 根据产品类型获取产品数据类型
+	m = m.Where(dao.SysDeviceCategory.Columns().KindId+" = ?", req.KindId)
+
 	err = g.Try(ctx, func(ctx context.Context) {
 		total, err = m.Count()
 		liberr.ErrIsNil(ctx, err, "获取设备数据列表失败")

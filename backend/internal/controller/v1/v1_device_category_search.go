@@ -18,8 +18,14 @@ func (c *ControllerDevice) CategorySearch(ctx context.Context, req *device.Categ
 		req.PageSize = consts.PageSize
 	}
 	res.CurrentPage = req.PageNum
-	res.Total, _, res.List, err = service.DeviceCategory().List(ctx, req)
+
+	// 查询产品信息
 	res.Kind, err = service.DeviceKind().Get(ctx, req.KindId)
-	liberr.ErrIsNil(ctx, err, "获取数据类型失败")
+	liberr.ErrIsNil(ctx, err, "不存在的产品类型")
+
+	// 查询数据类型列表
+	res.Total, _, res.List, err = service.DeviceCategory().List(ctx, req)
+	liberr.ErrIsNil(ctx, err, "获取数据类型列表失败")
+
 	return
 }

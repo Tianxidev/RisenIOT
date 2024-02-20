@@ -7,17 +7,17 @@ import (
 )
 
 type CategorySearchReq struct {
-	g.Meta    `path:"/device/category/list" tags:"设备类别" method:"get" summary:"设备类别列表"`
-	KindId    int    `p:"kindId"`    // 数据模板的主键
-	Name      string `p:"name"`      // 数据名称
-	Mark      string `p:"mark"`      // 数据标识
-	DataType  string `p:"dataType"`  // 数据类型
-	Unit      string `p:"unit"`      // 数据单位
-	Ratio     string `p:"ratio"`     // 变比系数
-	Format    string `p:"format"`    // 格式化显示
-	HomeShow  string `p:"homeShow"`  // 首页是否展示
-	BeginTime string `p:"beginTime"` // 开始时间
-	EndTime   string `p:"endTime"`   // 结束时间
+	g.Meta `path:"/device/category/list" tags:"设备类别" method:"get" summary:"设备数据结构列表"`
+	KindId int `p:"kindId"` // 数据模板的主键
+	//Name      string `p:"name"`      // 数据名称
+	//Mark      string `p:"mark"`      // 数据标识
+	//DataType  string `p:"dataType"`  // 数据类型
+	//Unit      string `p:"unit"`      // 数据单位
+	//Ratio     string `p:"ratio"`     // 变比系数
+	//Format    string `p:"format"`    // 格式化显示
+	//HomeShow  string `p:"homeShow"`  // 首页是否展示
+	//BeginTime string `p:"beginTime"` // 开始时间
+	//EndTime   string `p:"endTime"`   // 结束时间
 	commonApi.PageReq
 }
 
