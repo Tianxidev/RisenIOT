@@ -26,6 +26,12 @@ type (
 		Delete(ctx context.Context, ids []int) (err error)
 		// UpdateDataLastTime 更新设备数据最后上报时间
 		UpdateDataLastTime(ctx context.Context, id int) (err error)
+		// Count 统计设备数量
+		Count(ctx context.Context) (total int, err error)
+		// OnlineCount 在线设备数量
+		OnlineCount(ctx context.Context) (total int, err error)
+		// OfflineCount 离线设备数量
+		OfflineCount(ctx context.Context) (total int, err error)
 	}
 )
 

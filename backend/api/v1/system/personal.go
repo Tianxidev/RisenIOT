@@ -8,7 +8,7 @@ import (
 )
 
 type PersonalInfoReq struct {
-	g.Meta `path:"/system/personal/getPersonalInfo" tags:"用户管理" method:"get" summary:"登录用户信息"`
+	g.Meta `path:"/system/personal/getPersonalInfo" tags:"用户管理" method:"get" summary:"当前用户信息"`
 	commonApi.Author
 }
 

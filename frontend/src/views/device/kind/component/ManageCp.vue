@@ -75,7 +75,12 @@ const onEdit = (row?: any) => {
 }
 
 const onDel = (row?: any) => {
+  console.log("删除数据:", row)
+}
 
+const onAdd = () => {
+  // ManageEditCpRef.value?.openDialog();
+  console.log("添加数据")
 }
 
 const handleClose = () => {
@@ -100,6 +105,10 @@ defineExpose({
         :direction="state.direction"
         @close="handleClose"
     >
+      <div class="tool-area">
+        <div class="left"><el-button type="primary" @click="onAdd">添加数据类型</el-button></div>
+        <div class="right"></div>
+      </div>
       <TableView style="height: 100%" :dataFn="tableDataFn" :config="config">
         <template #public="row">
           <el-tag type="success" v-if="row.scope['public'] === 0">私有</el-tag>
@@ -116,5 +125,10 @@ defineExpose({
 </template>
 
 <style scoped lang="scss">
-
+.tool-area {
+  .left {
+    padding: 20px;
+  }
+  border-bottom: #EBEEF5 1px solid;
+}
 </style>

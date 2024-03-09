@@ -40,6 +40,7 @@ func (r *Router) BindController(ctx context.Context, router *ghttp.RouterGroup) 
 			v1.NewCommon(),
 			v1.NewSystem(),
 			v1.NewDevice(),
+			v1.NewHome(),
 		)
 
 		//自动绑定定义的模块

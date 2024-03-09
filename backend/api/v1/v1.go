@@ -9,6 +9,7 @@ import (
 
 	"backend/api/v1/common"
 	"backend/api/v1/device"
+	"backend/api/v1/home"
 	"backend/api/v1/system"
 )
 
@@ -54,6 +55,10 @@ type IV1Device interface {
 	StatusEdit(ctx context.Context, req *device.StatusEditReq) (res *device.StatusEditRes, err error)
 	StatusStatus(ctx context.Context, req *device.StatusStatusReq) (res *device.StatusStatusRes, err error)
 	StatusDelete(ctx context.Context, req *device.StatusDeleteReq) (res *device.StatusDeleteRes, err error)
+}
+
+type IV1Home interface {
+	Overview(ctx context.Context, req *home.OverviewReq) (res *home.OverviewRes, err error)
 }
 
 type IV1System interface {

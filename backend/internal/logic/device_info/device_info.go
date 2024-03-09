@@ -244,3 +244,29 @@ func (s *sDeviceInfo) UpdateDataLastTime(ctx context.Context, id int) (err error
 	liberr.ErrIsNil(ctx, err, "更新设备数据最后上报时间失败")
 	return
 }
+
+// Count 统计设备数量
+func (s *sDeviceInfo) Count(ctx context.Context) (total int, err error) {
+
+	// 统计我的设备数量
+	total, err = dao.SysDeviceInfo.Ctx(ctx).Where("create_by=?", int(service.UserCtx().GetUserId(ctx))).Count()
+
+	liberr.ErrIsNil(ctx, err, "统计设备数量失败")
+	return
+}
+
+// OnlineCount 在线设备数量
+func (s *sDeviceInfo) OnlineCount(ctx context.Context) (total int, err error) {
+	// 统计我的在线设备数量
+	total, err = dao.SysDeviceInfo.Ctx(ctx).Where("create_by=? and status=?", int(service.UserCtx().GetUserId(ctx)), 1).Count()
+	liberr.ErrIsNil(ctx, err, "统计在线设备数量失败")
+	return
+}
+
+// OfflineCount 离线设备数量
+func (s *sDeviceInfo) OfflineCount(ctx context.Context) (total int, err error) {
+	// 统计我的离线设备数量
+	total, err = dao.SysDeviceInfo.Ctx(ctx).Where("create_by=? and status=?", int(service.UserCtx().GetUserId(ctx)), 0).Count()
+	liberr.ErrIsNil(ctx, err, "统计离线设备数量失败")
+	return
+}

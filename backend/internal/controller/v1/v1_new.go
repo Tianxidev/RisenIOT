@@ -25,3 +25,9 @@ type ControllerDevice struct{}
 func NewDevice() v1.IV1Device {
 	return &ControllerDevice{}
 }
+
+type ControllerHome struct{}
+
+func NewHome() v1.IV1Home {
+	return &ControllerHome{}
+}

@@ -54,6 +54,7 @@ func (s *sToken) Get() *gftoken.GfToken {
 	return s.GfToken
 }
 
+// IsLogin 判断是否登录
 func (s *sToken) IsLogin(r *ghttp.Request) (b bool) {
 	b = true
 	urlPath := r.URL.Path

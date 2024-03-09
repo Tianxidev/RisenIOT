@@ -1,8 +1,8 @@
 {
-  "name": "vue-next-admin",
-  "version": "2.4.33",
-  "description": "vue3 vite next admin template",
-  "author": "lyt_20201208",
+  "name": "riseniot-frontend",
+  "version": "0.0.1",
+  "description": "RisenIOT 物联网云平台前端",
+  "author": "tianxidev",
   "license": "MIT",
   "scripts": {
     "dev": "vite --force",
@@ -46,6 +46,7 @@
     "vue-simple-uploader": "^1.0.0-beta.5"
   },
   "devDependencies": {
+    "@iconify/vue": "^4.1.1",
     "@types/node": "^18.15.11",
     "@types/nprogress": "^0.2.0",
     "@types/sortablejs": "^1.15.1",
@@ -56,6 +57,7 @@
     "dotenv": "^16.0.1",
     "eslint": "^8.38.0",
     "eslint-plugin-vue": "^9.10.0",
+    "naive-ui": "^2.38.1",
     "prettier": "^2.8.7",
     "sass": "^1.61.0",
     "sass-loader": "^13.0.2",
@@ -72,7 +74,7 @@
     "not dead"
   ],
   "bugs": {
-    "url": "https://gitee.com/lyt-top/vue-next-admin/issues"
+    "url": "https://github.com/Tianxidev/RisenIOT/issues"
   },
   "engines": {
     "node": ">=16.0.0",
@@ -89,6 +91,6 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://gitee.com/lyt-top/vue-next-admin.git"
+    "url": "https://github.com/Tianxidev/RisenIOT.git"
   }
 }
