@@ -20,4 +20,5 @@ config.yaml
 vendor/
 logs/
 *.log
+*.bak
 package-lock.json
