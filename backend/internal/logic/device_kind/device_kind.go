@@ -146,7 +146,7 @@ func (s *sDeviceKind) Del(ctx context.Context, id []int) (err error) {
 		// 判断产品类型下是否有设备
 		count, err := t2.Ctx(ctx).Where(t2.Columns().Kind, v).Count()
 		liberr.ErrIsNil(ctx, err, "查询设备信息失败")
-		liberr.ValueIsTrue(ctx, count > 0, "产品类型下存在设备, 请先删除设备信息")
+		liberr.ValueIsTrue(ctx, count > 0, "产品类型下存在设备, 请先删除设备")
 
 		// 删除产品类型
 		m1 := t1.Ctx(ctx)

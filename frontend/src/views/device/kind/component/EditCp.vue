@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {getCurrentInstance, reactive, ref} from "vue";
-import {DeviceInfoEdit} from "/@/api/system/device";
+import { DeviceInfoEdit, DeviceKindEdit } from "/@/api/system/device";
 import {ElMessage} from "element-plus";
 import {VFormRender} from "vform3-builds";
 import formEdit from "./formEdit.json"
@@ -36,11 +36,11 @@ const openDialog = (row?: any) => {
 
 const submitForm = () => {
   vFormRef.value?.getFormData().then((data: any) => {
-    DeviceInfoEdit(data).then(res => {
+    DeviceKindEdit(data).then(res => {
       if (res.code != 0) {
         ElMessage.error(res.msg)
       }
-      proxy.mittBus.emit('renderTable', {});
+      proxy.mittBus.emit('initView', {});
       vFormRef.value?.resetForm();
       ElMessage.success(res.msg);
       closeDialog();
@@ -52,7 +52,7 @@ const submitForm = () => {
 
 const handleClose = () => {
   Object.assign(formData, {})
-  proxy.mittBus.emit('RefreshPage', true);
+  proxy.mittBus.emit('initView', {});
 }
 
 defineExpose({
