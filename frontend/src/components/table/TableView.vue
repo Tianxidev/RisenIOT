@@ -90,23 +90,39 @@ const selectAll = (row, column, event) => {
   proxy.mittBus.emit('selectAll', data);
 };
 
-// 事件总线触发表格渲染
-proxy.mittBus.on('renderTable', (params) => {
-  if (state.isFirst === true) {
-    return
-  }
-  getData(params);
-});
+// 表格清空
+const clearTable = () => {
+  state.tableDataValue = [];
+  state.total = 0;
+};
+
 
 onMounted(() => {
   if (state.isFirst === true) {
     state.isFirst = false;
     getData();
   }
+
+  // 事件总线触发表格渲染
+  proxy.mittBus.on('renderTable', (params) => {
+    if (state.isFirst === true) {
+      return
+    }
+    getData(params);
+  });
+
+  // 监听表格清空
+  proxy.mittBus.on('clearTable', clearTable);
+
 });
 
 onBeforeUnmount(() => {
-  proxy.mittBus.off('renderTable', () => {});
+  proxy.mittBus.off('renderTable', null);
+  proxy.mittBus.off('clearTable', null);
+
+  // 清空表格
+  clearTable();
+
 });
 </script>
 

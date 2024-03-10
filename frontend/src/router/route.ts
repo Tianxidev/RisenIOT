@@ -863,21 +863,6 @@ export const demoRoutes:Array<RouteRecordRaw> = [
 				},
 			},
 			{
-				path: '/demo/personal',
-				name: 'personal',
-				component: () => import('/@/views/personal/index.vue'),
-				meta: {
-					title: 'message.router.personal',
-					isLink: '',
-					isHide: false,
-					isKeepAlive: true,
-					isAffix: false,
-					isIframe: false,
-					roles: ['admin', 'common'],
-					icon: 'iconfont icon-gerenzhongxin',
-				},
-			},
-			{
 				path: '/demo/tools',
 				name: 'tools',
 				component: () => import('/@/views/tools/index.vue'),

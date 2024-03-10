@@ -7,7 +7,7 @@ import (
 )
 
 type CategorySearchReq struct {
-	g.Meta `path:"/device/category/list" tags:"设备类别" method:"get" summary:"设备数据结构列表"`
+	g.Meta `path:"/device/category/list" tags:"设备数据类型" method:"get" summary:"获取设备数据结构列表"`
 	KindId int `p:"kindId"` // 数据模板的主键
 	//Name      string `p:"name"`      // 数据名称
 	//Mark      string `p:"mark"`      // 数据标识
@@ -29,7 +29,7 @@ type CategorySearchRes struct {
 }
 
 type CategoryGetReq struct {
-	g.Meta `path:"/device/category/get" tags:"设备类别" method:"get" summary:"获取设备类别数据"`
+	g.Meta `path:"/device/category/get" tags:"设备数据类型" method:"get" summary:"获取设备类别数据"`
 	Id     int `p:"id"`
 }
 
@@ -39,7 +39,7 @@ type CategoryGetRes struct {
 }
 
 type CategoryAddReq struct {
-	g.Meta   `path:"/device/category/add" tags:"设备类别" method:"post" summary:"添加设备类别"`
+	g.Meta   `path:"/device/category/add" tags:"设备数据类型" method:"post" summary:"添加设备数据类别"`
 	KindId   int    `p:"kindId" `
 	Name     string `p:"name" v:"required#数据名称不能为空"`
 	Mark     string `p:"mark" `
@@ -54,7 +54,7 @@ type CategoryAddRes struct {
 }
 
 type CategoryEditReq struct {
-	g.Meta   `path:"/device/category/edit" tags:"设备类别" method:"put" summary:"修改设备类别"`
+	g.Meta   `path:"/device/category/edit" tags:"设备数据类型" method:"put" summary:"修改设备数据类别"`
 	Id       int    `p:"id" v:"required#主键ID不能为空"`
 	KindId   int    `p:"kindId" `
 	Name     string `p:"name" v:"required#数据名称不能为空"`
@@ -71,7 +71,7 @@ type CategoryEditRes struct {
 }
 
 type CategoryDeleteReq struct {
-	g.Meta `path:"/device/category/delete" tags:"设备类别" method:"delete" summary:"删除设备类别"`
+	g.Meta `path:"/device/category/delete" tags:"设备数据类型" method:"delete" summary:"删除设备数据类别"`
 	Ids    []int `p:"ids"`
 }
 

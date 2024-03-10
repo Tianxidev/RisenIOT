@@ -33,6 +33,7 @@ type SysDeviceCategoryColumns struct {
 	Remark    string //
 	CreatedAt string //
 	UpdatedAt string //
+	CreateBy  string // 创建人
 }
 
 // sysDeviceCategoryColumns holds the columns for table sys_device_category.
@@ -50,6 +51,7 @@ var sysDeviceCategoryColumns = SysDeviceCategoryColumns{
 	Remark:    "remark",
 	CreatedAt: "created_at",
 	UpdatedAt: "updated_at",
+	CreateBy:  "create_by",
 }
 
 // NewSysDeviceCategoryDao creates and returns a new DAO object for table data access.

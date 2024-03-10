@@ -17,6 +17,10 @@ type (
 		List(ctx context.Context, req *device.CategorySearchReq) (total, page int, list []*entity.SysDeviceCategory, err error)
 		// KindGet 根据产品类型获取产品数据类型
 		KindGet(ctx context.Context, kindId int) (list []*entity.SysDeviceCategory, err error)
+		// Add 添加设备数据类型
+		Add(ctx context.Context, req *device.CategoryAddReq) (err error)
+		// Del 删除设备数据类型
+		Del(ctx context.Context, req *device.CategoryDeleteReq) (err error)
 	}
 )
 

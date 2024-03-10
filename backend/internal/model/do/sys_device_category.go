@@ -25,4 +25,5 @@ type SysDeviceCategory struct {
 	Remark    interface{} //
 	CreatedAt *gtime.Time //
 	UpdatedAt *gtime.Time //
+	CreateBy  interface{} // 创建人
 }

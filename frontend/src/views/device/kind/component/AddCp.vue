@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import {getCurrentInstance, reactive, ref} from "vue";
+import { getCurrentInstance, reactive, ref } from "vue";
 import formAdd from './formAdd.json'
-import {ElMessage} from "element-plus";
-import {type VFormRender} from 'vform3-builds';
-import {DeviceKindAdd} from "/@/api/system/device";
+import { ElMessage } from "element-plus";
+import { type VFormRender } from 'vform3-builds';
+import { DeviceKindAdd } from "/@/api/system/device";
 
-const { proxy } = <any>getCurrentInstance();
+const {proxy} = <any> getCurrentInstance();
 
 const formJson = reactive(formAdd)
 const formData = reactive({})
@@ -36,7 +36,7 @@ const submitForm = () => {
       if (res.code != 0) {
         ElMessage.error(res.msg)
       }
-      proxy.mittBus.emit('renderTable', {});
+      proxy.mittBus.emit('initView', true);
       vFormRef.value?.resetForm();
       ElMessage.success(res.msg);
       closeDialog();
@@ -49,7 +49,7 @@ const submitForm = () => {
 
 const handleClose = () => {
   Object.assign(formData, {})
-  proxy.mittBus.emit('RefreshPage', true);
+  proxy.mittBus.emit('initView', true);
 }
 
 defineExpose({

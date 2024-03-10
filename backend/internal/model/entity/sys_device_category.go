@@ -23,4 +23,5 @@ type SysDeviceCategory struct {
 	Remark    string      `json:"remark"    ` //
 	CreatedAt *gtime.Time `json:"createdAt" ` //
 	UpdatedAt *gtime.Time `json:"updatedAt" ` //
+	CreateBy  int         `json:"createBy"  ` // 创建人
 }

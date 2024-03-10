@@ -77,3 +77,49 @@ func (s *sDeviceCategory) KindGet(ctx context.Context, kindId int) (list []*enti
 	})
 	return
 }
+
+// Add 添加设备数据类型
+func (s *sDeviceCategory) Add(ctx context.Context, req *device.CategoryAddReq) (err error) {
+	m := dao.SysDeviceCategory.Ctx(ctx)
+
+	// 判断产品类型是否不为空
+	liberr.ValueIsTrue(ctx, req.KindId == 0, "产品类型不能为空")
+
+	// 判断数据类型名称是否不为空
+	liberr.ValueIsTrue(ctx, req.Name == "", "数据类型名称不能为空")
+
+	// 判断单位是否不为空
+	liberr.ValueIsTrue(ctx, req.Unit == "", "单位不能为空")
+
+	// 插入数据
+	_, err = m.Insert(entity.SysDeviceCategory{
+		KindId:   req.KindId,                            // 产品类型
+		Name:     req.Name,                              // 数据类型名称
+		Unit:     req.Unit,                              // 单位
+		Mark:     req.Mark,                              // 数据类型标记
+		DataType: req.DataType,                          // 数据类型
+		CreateBy: int(service.UserCtx().GetUserId(ctx)), // 创建者
+	})
+	return
+}
+
+// Del 删除设备数据类型
+func (s *sDeviceCategory) Del(ctx context.Context, req *device.CategoryDeleteReq) (err error) {
+	userId := service.UserCtx().GetUserId(ctx)
+	m := dao.SysDeviceCategory.Ctx(ctx)
+	c := dao.SysDeviceCategory.Columns()
+
+	// 遍历 Ids 进行删除
+	for _, id := range req.Ids {
+		// 根据用户id和数据类型id删除数据
+		m = m.Where(c.CreateBy+" = ?", userId)
+		m = m.Where(c.Id+" = ?", id)
+		_, err = m.Delete()
+		if err != nil {
+			return
+		}
+
+	}
+
+	return
+}

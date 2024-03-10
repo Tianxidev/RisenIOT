@@ -1,13 +1,13 @@
 <script setup lang="ts">
 
-import {ElMessage, ElMessageBox} from "element-plus";
-import {DeviceKindDel, DeviceKindList} from "/@/api/system/device";
-import {getCurrentInstance, onMounted, reactive, ref} from "vue";
+import { ElMessage, ElMessageBox } from "element-plus";
+import { DeviceKindDel, DeviceKindList } from "/@/api/system/device";
+import { getCurrentInstance, onBeforeUnmount, onMounted, reactive, ref } from "vue";
 import AddCp from "./component/AddCp.vue";
 import EditCp from "./component/EditCp.vue";
 import ManageCp from "./component/ManageCp.vue";
 
-const {proxy} = <any>getCurrentInstance();
+const {proxy} = <any> getCurrentInstance();
 const AddCpRef = ref<InstanceType<typeof AddCp>>()
 const EditCpRef = ref<InstanceType<typeof EditCp>>()
 const ManageCpRef = ref<InstanceType<typeof ManageCp>>()
@@ -49,17 +49,19 @@ const onDel = (row?: any) => {
         ElMessage.error(res.msg)
       }
       ElMessage.success(res.msg);
-      proxy.mittBus.emit('RefreshPage', true);
+      initView()
     });
   });
 }
 
 const onManage = (row?: any) => {
-  console.log("管理数据:", row)
+  if (!row) {
+    return;
+  }
   ManageCpRef.value?.openDialog(row);
 }
 
-const initData = () => {
+const initView = () => {
   DeviceKindList().then(res => {
     if (res.code !== 0) {
       ElMessage.error(res.msg);
@@ -69,9 +71,15 @@ const initData = () => {
   });
 }
 
+
 onMounted(() => {
-  initData();
+  initView();
+  proxy.mittBus.on('initView', initView);
 })
+
+onBeforeUnmount(() => {
+  proxy.mittBus.off('initView', initView);
+});
 
 </script>
 
@@ -82,7 +90,7 @@ onMounted(() => {
     </div>
     <div>
       <el-row :gutter="20">
-        <el-col :span="6" v-for="(item, index) in state.list" :key="index">
+        <el-col :span="6" class="card-col" v-for="(item, index) in state.list" :key="index">
           <el-card class="box-card">
             <template #header>
               <div class="card-header">
@@ -112,5 +120,7 @@ onMounted(() => {
 </template>
 
 <style scoped lang="scss">
-
+.card-col {
+  margin-bottom: 20px;
+}
 </style>
