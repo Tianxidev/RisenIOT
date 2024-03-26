@@ -1,15 +1,15 @@
 <script setup lang="ts">
 
 import TableView from "/@/components/table/TableView.vue";
-import {ElMessage, ElMessageBox} from "element-plus";
-import {DeviceGroupList, DeviceInfoDel, DeviceKindList, DeviceInfoList} from "/@/api/system/device";
-import {getCurrentInstance, reactive, ref} from "vue";
+import { ElMessage, ElMessageBox } from "element-plus";
+import { DeviceGroupList, DeviceInfoDel, DeviceKindList, DeviceInfoList } from "/@/api/system/device";
+import { getCurrentInstance, reactive, ref } from "vue";
 import AddCp from "./component/AddCp.vue";
-import {ItemLabel} from "./component/interface"
-import {selectDictLabel} from "/@/utils/dict";
+import { ItemLabel } from "./component/interface"
+import { selectDictLabel } from "/@/utils/dict";
 import EditCp from "/@/views/device/list/component/EditCp.vue";
 
-const {proxy} = <any>getCurrentInstance();
+const {proxy} = <any> getCurrentInstance();
 const AddCpRef = ref<InstanceType<typeof AddCp>>()
 const EditCpRef = ref<InstanceType<typeof EditCp>>()
 
@@ -132,7 +132,8 @@ const onDel = (row?: any) => {
             <el-tag type="info" v-else>离线</el-tag>
           </template>
           <template #operate="row">
-            <el-button link type="primary" @click="onEdit(row.scope)">查看</el-button>
+            <el-button link type="primary" @click="onEdit(row.scope)">查询</el-button>
+            <el-button link type="primary" @click="onEdit(row.scope)">查询</el-button>
             <el-button link type="primary" @click="onEdit(row.scope)">编辑</el-button>
             <el-button link type="primary" @click="onDel(row.scope)">删除</el-button>
           </template>
