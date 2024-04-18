@@ -36,6 +36,7 @@ type SysUserColumns struct {
 	IsAdmin       string // 是否后台管理员 1 是  0   否
 	Address       string // 联系地址
 	Describe      string // 描述信息
+	Pushdeer      string // PushDeer推送Key
 	LastLoginIp   string // 最后登录ip
 	LastLoginTime string // 最后登录时间
 	CreatedAt     string // 创建时间
@@ -61,6 +62,7 @@ var sysUserColumns = SysUserColumns{
 	IsAdmin:       "is_admin",
 	Address:       "address",
 	Describe:      "describe",
+	Pushdeer:      "pushdeer",
 	LastLoginIp:   "last_login_ip",
 	LastLoginTime: "last_login_time",
 	CreatedAt:     "created_at",

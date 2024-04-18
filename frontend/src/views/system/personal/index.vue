@@ -2,7 +2,7 @@
   <div class="personal">
     <el-row>
       <!-- 个人信息 -->
-      <el-col :xs="24" :sm="16">
+      <el-col :xs="24">
         <el-card shadow="hover" header="个人信息">
           <div class="personal-user">
             <div class="personal-user-right">
@@ -52,23 +52,6 @@
         </el-card>
       </el-col>
 
-      <!-- 消息通知 -->
-      <el-col :xs="24" :sm="8" class="pl15 personal-info">
-        <el-card shadow="hover">
-          <template #header>
-            <span>消息通知</span>
-            <span class="personal-info-more">更多</span>
-          </template>
-          <div class="personal-info-box">
-            <ul class="personal-info-ul">
-              <li v-for="(v, k) in newsInfoList" :key="k" class="personal-info-li">
-                <a :href="v.link" target="_block" class="personal-info-li-title">{{ v.title }}</a>
-              </li>
-            </ul>
-          </div>
-        </el-card>
-      </el-col>
-
       <!-- 更新信息 -->
       <el-col :span="24">
         <el-card shadow="hover" class="mt15 personal-edit" header="更新信息">
@@ -95,7 +78,7 @@
                   <el-select v-model="personalForm.remark" placeholder="请选择职业" clearable class="w100">
                     <el-option label="计算机 / 互联网 / 通信" value="1"></el-option>
                     <el-option label="生产 / 工艺 / 制造" value="2"></el-option>
-                    <el-option label="医疗 / 护理 / 制药" value="3"></el-option>
+                    <el-option label="医疗 / 教育 / 制药" value="3"></el-option>
                   </el-select>
                 </el-form-item>
               </el-col>
@@ -146,7 +129,6 @@ import type { UploadProps } from 'element-plus'
 import { ElMessage } from "element-plus";
 import { ElMessageBox } from 'element-plus'
 import { getToken } from "/@/utils/gfast"
-import { newsInfoList } from './mock';
 import { Session } from "/@/utils/storage";
 import { Icon } from "@iconify/vue";
 
@@ -184,7 +166,6 @@ export default defineComponent({
       token: getToken(),
     })
     const state = reactive<PersonalState>({
-      newsInfoList,
       imageUrl: '',
       deptName: '',
       roles: [],
@@ -198,7 +179,7 @@ export default defineComponent({
         avatar: '',
         lastLoginIp: '',
         lastLoginTime: ''
-      },
+      }, newsInfoList: undefined
     });
 
 

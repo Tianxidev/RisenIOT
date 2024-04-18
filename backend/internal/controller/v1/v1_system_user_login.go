@@ -4,6 +4,7 @@ import (
 	"backend/api/v1/system"
 	"backend/internal/model"
 	"backend/internal/service"
+	"backend/library/libUtils"
 	"context"
 	"github.com/gogf/gf/v2/crypto/gmd5"
 	"github.com/gogf/gf/v2/errors/gerror"
@@ -20,14 +21,14 @@ func (c *ControllerSystem) UserLogin(ctx context.Context, req *system.UserLoginR
 		menuList    []*model.UserMenus
 	)
 
-	//判断密码是否正确
+	// 判断密码是否正确
 	user, err = service.SysUser().GetAdminUserByUsernamePassword(ctx, req)
 	if err != nil {
 		return
 	}
 
 	// 更新登录信息
-	err = service.SysUser().UpdateLoginInfo(ctx, user.Id, "")
+	err = service.SysUser().UpdateLoginInfo(ctx, user.Id, libUtils.GetClientIp(ctx))
 
 	// 创建登录 token
 	key := gconv.String(user.Id) + "-" + gmd5.MustEncryptString(user.UserName) + gmd5.MustEncryptString(user.UserPassword)
@@ -44,7 +45,7 @@ func (c *ControllerSystem) UserLogin(ctx context.Context, req *system.UserLoginR
 		return
 	}
 
-	//获取用户菜单数据
+	// 获取用户菜单数据
 	menuList, permissions, err = service.SysUser().GetAdminRules(ctx, user.Id)
 	if err != nil {
 		return
@@ -55,7 +56,7 @@ func (c *ControllerSystem) UserLogin(ctx context.Context, req *system.UserLoginR
 		MenuList:    menuList,
 		Permissions: permissions,
 	}
-	//用户在线状态保存
+	// 用户在线状态保存
 	service.SysUserOnline().Invoke(gctx.New(), &model.SysUserOnlineParams{
 		UserAgent: "",
 		Uuid:      gmd5.MustEncrypt(token),

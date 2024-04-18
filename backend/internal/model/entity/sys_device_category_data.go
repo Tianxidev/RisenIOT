@@ -10,11 +10,11 @@ import (
 
 // SysDeviceCategoryData is the golang structure for table sys_device_category_data.
 type SysDeviceCategoryData struct {
-	Id         int         `json:"id"         ` //
-	CategoryId int         `json:"categoryId" ` //
-	DeviceId   int         `json:"deviceId"   ` //
-	DataInt    int         `json:"dataInt"    ` //
-	DataStr    string      `json:"dataStr"    ` //
-	DataDouble float64     `json:"dataDouble" ` //
-	CreatedAt  *gtime.Time `json:"createdAt"  ` //
+	Id         int         `json:"id"         orm:"id"          ` //
+	CategoryId int         `json:"categoryId" orm:"category_id" ` //
+	DeviceId   int         `json:"deviceId"   orm:"device_id"   ` //
+	DataInt    int         `json:"dataInt"    orm:"data_int"    ` //
+	DataStr    string      `json:"dataStr"    orm:"data_str"    ` //
+	DataDouble float64     `json:"dataDouble" orm:"data_double" ` //
+	CreatedAt  *gtime.Time `json:"createdAt"  orm:"created_at"  ` //
 }

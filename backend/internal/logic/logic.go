@@ -27,6 +27,7 @@ import (
 	_ "backend/internal/logic/sys_login_log"
 	_ "backend/internal/logic/sys_oper_log"
 	_ "backend/internal/logic/sys_post"
+	_ "backend/internal/logic/sys_push"
 	_ "backend/internal/logic/sys_role"
 	_ "backend/internal/logic/sys_user"
 	_ "backend/internal/logic/sys_user_online"

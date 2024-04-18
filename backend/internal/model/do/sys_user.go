@@ -28,6 +28,7 @@ type SysUser struct {
 	IsAdmin       interface{} // 是否后台管理员 1 是  0   否
 	Address       interface{} // 联系地址
 	Describe      interface{} // 描述信息
+	Pushdeer      interface{} // PushDeer推送Key
 	LastLoginIp   interface{} // 最后登录ip
 	LastLoginTime *gtime.Time // 最后登录时间
 	CreatedAt     *gtime.Time // 创建时间
