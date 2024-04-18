@@ -3,7 +3,7 @@
 		<component :is="getIconName" />
 	</i>
 	<div v-else-if="isShowIconImg" :style="setIconImgOutStyle">
-		<img :src="getIconName" :style="setIconSvgInsStyle" />
+		<img :src="getIconName" :style="setIconSvgInsStyle"  alt=""/>
 	</div>
 	<i v-else :class="getIconName" :style="setIconSvgStyle" />
 </template>

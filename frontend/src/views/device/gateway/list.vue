@@ -16,13 +16,13 @@ const homeThree = [
     remark: '点击配置',
     iconColor: '#F72B3F',
   },
-  {
-    icon: 'iconfont iconfont-haikangshipinjiankongxitong',
-    label: 'HIK Gateway',
-    value: '海康威视 SDAP 被动设备发现网关',
-    remark: '点击配置',
-    iconColor: '#F72B3F',
-  },
+  // {
+  //   icon: 'iconfont iconfont-haikangshipinjiankongxitong',
+  //   label: 'HIK Gateway',
+  //   value: '海康威视 SDAP 被动设备发现网关',
+  //   remark: '点击配置',
+  //   iconColor: '#F72B3F',
+  // },
 ]
 
 </script>

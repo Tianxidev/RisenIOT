@@ -56,6 +56,8 @@ func (s *sPersonal) EditPersonal(ctx context.Context, req *system.PersonalEditRe
 	}
 	err = g.DB().Transaction(ctx, func(ctx context.Context, tx gdb.TX) error {
 		err = g.Try(ctx, func(ctx context.Context) {
+
+			// 更新用户信息
 			_, err = dao.SysUser.Ctx(ctx).TX(tx).WherePri(userId).Update(do.SysUser{
 				Mobile:       req.Mobile,
 				UserNickname: req.Nickname,

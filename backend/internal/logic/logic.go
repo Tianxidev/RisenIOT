@@ -17,6 +17,7 @@ import (
 	_ "backend/internal/logic/gateway"
 	_ "backend/internal/logic/middleware"
 	_ "backend/internal/logic/personal"
+	_ "backend/internal/logic/streaming_media"
 	_ "backend/internal/logic/sys_auth_rule"
 	_ "backend/internal/logic/sys_casbin"
 	_ "backend/internal/logic/sys_config"

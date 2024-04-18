@@ -116,9 +116,15 @@
                 <el-form-item>
                   <el-button type="primary" @click="handleUpload">
                     <el-icon>
-                      <ele-Position/>
+                      <Icon icon="grommet-icons:document-update"/>
                     </el-icon>
                     更新个人信息
+                  </el-button>
+                  <el-button type="primary" @click="handleEditPass">
+                    <el-icon>
+                      <Icon icon="mdi:forgot-password"/>
+                    </el-icon>
+                    重置密码
                   </el-button>
                 </el-form-item>
               </el-col>
@@ -142,18 +148,19 @@ import { ElMessageBox } from 'element-plus'
 import { getToken } from "/@/utils/gfast"
 import { newsInfoList } from './mock';
 import { Session } from "/@/utils/storage";
-import SvgIcon from "/@/components/svgIcon/index.vue";
+import { Icon } from "@iconify/vue";
 
 interface personalForm {
-  nickname?: string,
-  userEmail?: string,
-  describe?: string,
-  mobile?: string,
-  sex?: string,
-  remark?: string,
-  avatar?: string,
-  lastLoginIp?: string,
-  lastLoginTime?: string,
+  nickname?: string, // 昵称
+  userEmail?: string, // 邮箱
+  describe?: string, // 签名
+  mobile?: string, // 手机号
+  sex?: string, // 性别
+  remark?: string, // 职业
+  avatar?: string, // 头像
+  lastLoginIp?: string, // 最后登录IP
+  lastLoginTime?: string, // 最后登录时间
+  password?: string, // 密码
 }
 
 // 定义接口来定义对象的类型
@@ -167,7 +174,7 @@ interface PersonalState {
 
 export default defineComponent({
   name: 'personals',
-  components: {SvgIcon},
+  components: {Icon},
   setup() {
     const baseURL: string | undefined | boolean = import.meta.env.VITE_API_URL
     const {proxy} = <any> getCurrentInstance();
@@ -194,7 +201,8 @@ export default defineComponent({
       },
     });
 
-    // const  handleUpload =
+
+    // 信息更新
     const handleUpload = () => {
       // console.log(state.personalForm)
       editPersonal(state.personalForm).then((res: any) => {
@@ -208,13 +216,14 @@ export default defineComponent({
         ElMessage.success('已更新');
       });
     };
+
     // 当前时间提示语
     const currentTime = computed(() => {
 
       return formatAxis(new Date());
     });
     const handleAvatarSuccess: UploadProps['onSuccess'] = (
-        response,
+      response,
     ) => {
       if (response.code == 0) {
         state.imageUrl = response.data.path;
@@ -226,7 +235,7 @@ export default defineComponent({
 
     /** 重置密码按钮操作 */
     const handleEditPass = () => {
-      ElMessageBox.prompt('请输入"' + state.personalForm.nickname + '"的新密码', "提示", {
+      ElMessageBox.prompt('请输入"' + state.personalForm.nickname + '"的新密码', "密码重置", {
         confirmButtonText: "确定",
         cancelButtonText: "取消"
       }).then(({value}) => {

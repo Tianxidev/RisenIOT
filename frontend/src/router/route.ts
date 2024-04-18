@@ -443,21 +443,6 @@ export const demoRoutes:Array<RouteRecordRaw> = [
 						},
 					},
 					{
-						path: '/demo/pages/formAdapt',
-						name: 'pagesFormAdapt',
-						component: () => import('/@/views/pages/formAdapt/index.vue'),
-						meta: {
-							title: 'message.router.pagesFormAdapt',
-							isLink: '',
-							isHide: false,
-							isKeepAlive: true,
-							isAffix: false,
-							isIframe: false,
-							roles: ['admin', 'common'],
-							icon: 'iconfont icon-biaodan',
-						},
-					},
-					{
 						path: '/demo/pages/tableRules',
 						name: 'pagesTableRules',
 						component: () => import('/@/views/pages/tableRules/index.vue'),

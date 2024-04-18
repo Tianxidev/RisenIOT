@@ -10,6 +10,7 @@ import (
 	"backend/api/v1/common"
 	"backend/api/v1/device"
 	"backend/api/v1/home"
+	"backend/api/v1/streaming_media"
 	"backend/api/v1/system"
 )
 
@@ -59,6 +60,10 @@ type IV1Device interface {
 
 type IV1Home interface {
 	Overview(ctx context.Context, req *home.OverviewReq) (res *home.OverviewRes, err error)
+}
+
+type IV1Streaming_media interface {
+	PullFlowForwarding(ctx context.Context, req *streaming_media.PullFlowForwardingReq) (res *streaming_media.PullFlowForwardingRes, err error)
 }
 
 type IV1System interface {

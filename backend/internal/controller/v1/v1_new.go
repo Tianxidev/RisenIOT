@@ -31,3 +31,9 @@ type ControllerHome struct{}
 func NewHome() v1.IV1Home {
 	return &ControllerHome{}
 }
+
+type ControllerStreaming_media struct{}
+
+func NewStreaming_media() v1.IV1Streaming_media {
+	return &ControllerStreaming_media{}
+}

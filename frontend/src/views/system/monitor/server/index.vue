@@ -35,14 +35,14 @@
                   <div class="cell">{{ sysInfo.sysComputerName }}</div>
                 </td>
               </tr>
-              <tr>
+              <!-- <tr>
                 <td>
                   <div class="cell">服务器IP:</div>
                 </td>
                 <td>
                   <div class="cell">{{ sysInfo.sysComputerIp }}</div>
                 </td>
-              </tr>
+              </tr> -->
               <tr>
                 <td>
                   <div class="cell">Go语言版本</div>

@@ -4,6 +4,7 @@ import (
 	commonApi "backend/api/v1/common"
 	"backend/internal/model"
 	"backend/internal/model/entity"
+
 	"github.com/gogf/gf/v2/frame/g"
 )
 
@@ -26,12 +27,11 @@ type SetPersonalReq struct {
 	Remark    string `p:"remark"`
 	Sex       int    `p:"sex"`
 	UserEmail string `p:"userEmail" v:"required|email#邮箱不能为空|邮箱格式错误"`
-	Describe  string `p:"describe"` //签名
-	Avatar    string `p:"avatar"`   //签名
-
+	Describe  string `p:"describe"` // 签名
+	Avatar    string `p:"avatar"`   // 头像
 }
 
-// PersonalEditReq 修改个人
+// PersonalEditReq 修改个人资料
 type PersonalEditReq struct {
 	g.Meta `path:"/system/personal/edit" tags:"用户管理" method:"put" summary:"修改个人资料"`
 	*SetPersonalReq

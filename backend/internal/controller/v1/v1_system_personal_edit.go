@@ -2,15 +2,17 @@ package v1
 
 import (
 	"backend/internal/service"
+	"backend/library/libUtils"
 	"context"
+
 	"github.com/gogf/gf/v2/crypto/gmd5"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/util/gconv"
-	"backend/library/libUtils"
 
 	"backend/api/v1/system"
 )
 
+// PersonalEdit 修改个人资料
 func (c *ControllerSystem) PersonalEdit(ctx context.Context, req *system.PersonalEditReq) (res *system.PersonalEditRes, err error) {
 	ip := libUtils.GetClientIp(ctx)
 	userAgent := libUtils.GetUserAgent(ctx)
