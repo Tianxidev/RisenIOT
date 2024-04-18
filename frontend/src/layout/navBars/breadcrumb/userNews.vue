@@ -1,7 +1,7 @@
 <template>
 	<div class="layout-navbars-breadcrumb-user-news">
 		<div class="head-box">
-			<div class="head-box-title">{{ $t('message.user.newTitle') }}</div>
+			<div class="head-box-title">通知中心</div>
 			<div class="head-box-btn" v-if="newsList.length > 0" @click="onAllReadClick">{{ $t('message.user.newBtn') }}</div>
 		</div>
 		<div class="content-box">
@@ -22,6 +22,7 @@
 
 <script lang="ts">
 import { reactive, toRefs, defineComponent } from 'vue';
+import { ElMessage } from "element-plus";
 
 export default defineComponent({
 	name: 'layoutBreadcrumbUserNews',
@@ -29,14 +30,9 @@ export default defineComponent({
 		const state = reactive({
 			newsList: [
 				{
-					label: '关于版本发布的通知',
-					value: 'vue-next-admin，基于 vue3 + CompositionAPI + typescript + vite + element plus，正式发布时间：2021年02月28日！',
-					time: '2020-12-08',
-				},
-				{
-					label: '关于学习交流的通知',
-					value: 'QQ群号码 665452019，欢迎小伙伴入群学习交流探讨！',
-					time: '2020-12-08',
+					label: '欢迎',
+					value: '欢迎使用 RisenIOT 物联网云平台',
+					time: '2023-12-08',
 				},
 			],
 		});
@@ -46,7 +42,7 @@ export default defineComponent({
 		};
 		// 前往通知中心点击
 		const onGoToGiteeClick = () => {
-			window.open('https://gitee.com/tiger1103/gfast');
+      ElMessage.warning('功能暂未开放');
 		};
 		return {
 			onAllReadClick,
