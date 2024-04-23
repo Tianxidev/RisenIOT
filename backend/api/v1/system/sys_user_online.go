@@ -29,12 +29,24 @@ type SysUserOnlineSearchRes struct {
 	List []*entity.SysUserOnline `json:"list"`
 }
 
+// SysUserOnlineForceLogoutReq 强制用户退出登录请求
 type SysUserOnlineForceLogoutReq struct {
 	g.Meta `path:"/system/online/forceLogout" tags:"在线用户管理" method:"delete" summary:"强制用户退出登录"`
 	commonApi.Author
 	Ids []int `p:"ids" v:"required#ids不能为空"`
 }
 
+// SysUserOnlineForceLogoutRes 强制用户退出登录响应
 type SysUserOnlineForceLogoutRes struct {
+	commonApi.EmptyRes
+}
+
+// SysUserOnlineForceLogoutAllReq 强制退出所有用户请求
+type SysUserOnlineForceLogoutAllReq struct {
+	g.Meta `path:"/system/online/forceLogoutAll" tags:"在线用户管理" method:"delete" summary:"强制退出所有用户"`
+}
+
+// SysUserOnlineForceLogoutAllRes 强制退出所有用户响应
+type SysUserOnlineForceLogoutAllRes struct {
 	commonApi.EmptyRes
 }

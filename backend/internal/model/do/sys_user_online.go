@@ -17,6 +17,7 @@ type SysUserOnline struct {
 	Token      interface{} // 用户token
 	CreateTime *gtime.Time // 登录时间
 	UserName   interface{} // 用户名
+	UserId     interface{} // 用户ID
 	Ip         interface{} // 登录ip
 	Explorer   interface{} // 浏览器
 	Os         interface{} // 操作系统

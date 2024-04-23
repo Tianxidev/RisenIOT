@@ -23,7 +23,10 @@ type (
 		GetOnlineListPage(ctx context.Context, req *system.SysUserOnlineSearchReq, hasToken ...bool) (res *system.SysUserOnlineSearchRes, err error)
 		UserIsOnline(ctx context.Context, token string) bool
 		DeleteOnlineByToken(ctx context.Context, token string) (err error)
+		// ForceLogout 强制用户下线
 		ForceLogout(ctx context.Context, ids []int) (err error)
+		// ForceLogoutAll 强制所有用户下线
+		ForceLogoutAll(ctx context.Context) (err error)
 		GetInfosByIds(ctx context.Context, ids []int) (onlineList []*entity.SysUserOnline, err error)
 	}
 )

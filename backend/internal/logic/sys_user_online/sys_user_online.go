@@ -14,6 +14,7 @@ import (
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/grpool"
 	"github.com/gogf/gf/v2/os/gtime"
+	"github.com/mssola/user_agent"
 )
 
 type sSysUserOnline struct {
@@ -30,6 +31,7 @@ func New() *sSysUserOnline {
 	}
 }
 
+// Invoke 用户在线状态
 func (s *sSysUserOnline) Invoke(ctx context.Context, params *model.SysUserOnlineParams) {
 	s.Pool.Add(ctx, func(ctx context.Context) {
 		//写入数据
@@ -40,11 +42,15 @@ func (s *sSysUserOnline) Invoke(ctx context.Context, params *model.SysUserOnline
 // SaveOnline 保存用户在线状态
 func (s *sSysUserOnline) SaveOnline(ctx context.Context, params *model.SysUserOnlineParams) {
 	err := g.Try(ctx, func(ctx context.Context) {
-		//ua := user_agent.New(params.UserAgent)
+
+		// 获取当前用户id
+		uid := service.UserCtx().GetUserId(ctx)
+
+		ua := user_agent.New(params.UserAgent)
 		//ua := ""
+		browser, _ := ua.Browser()
 		//browser, _ := ua.Browser()
-		//browser, _ := ua.Browser()
-		//os := ua.OS()
+		os := ua.OS()
 		var (
 			info *entity.SysUserOnline
 			data = &do.SysUserOnline{
@@ -52,9 +58,10 @@ func (s *sSysUserOnline) SaveOnline(ctx context.Context, params *model.SysUserOn
 				Token:      params.Token,
 				CreateTime: gtime.Now(),
 				UserName:   params.Username,
+				UserId:     int(uid),
 				Ip:         params.Ip,
-				Explorer:   "", // 浏览器
-				Os:         "", // 操作系统
+				Explorer:   browser, // 浏览器
+				Os:         os,      // 操作系统
 			}
 		)
 
@@ -155,6 +162,7 @@ func (s *sSysUserOnline) DeleteOnlineByToken(ctx context.Context, token string) 
 	return
 }
 
+// ForceLogout 强制用户下线
 func (s *sSysUserOnline) ForceLogout(ctx context.Context, ids []int) (err error) {
 	err = g.Try(ctx, func(ctx context.Context) {
 		var onlineList []*entity.SysUserOnline
@@ -170,6 +178,24 @@ func (s *sSysUserOnline) ForceLogout(ctx context.Context, ids []int) (err error)
 	return
 }
 
+// ForceLogoutAll 强制所有用户下线
+func (s *sSysUserOnline) ForceLogoutAll(ctx context.Context) (err error) {
+	err = g.Try(ctx, func(ctx context.Context) {
+		// 查询所有在线用户
+		var onlineList []*entity.SysUserOnline
+		err = dao.SysUserOnline.Ctx(ctx).Scan(&onlineList)
+		liberr.ErrIsNil(ctx, err)
+		for _, v := range onlineList {
+			_ = service.Token().Get().RemoveToken(ctx, v.Token)
+		}
+
+		_, err = dao.SysUserOnline.Ctx(ctx).Wheref(`? != ?`, dao.SysUserOnline.Columns().UserId, service.UserCtx().GetUserId(ctx)).Delete()
+		liberr.ErrIsNil(ctx, err, "强制所有用户下线失败")
+	})
+	return
+}
+
+// GetInfosByIds 根据ids获取用户在线信息
 func (s *sSysUserOnline) GetInfosByIds(ctx context.Context, ids []int) (onlineList []*entity.SysUserOnline, err error) {
 	err = dao.SysUserOnline.Ctx(ctx).Where(dao.SysUserOnline.Columns().Id+" in(?)", ids).Scan(&onlineList)
 	return

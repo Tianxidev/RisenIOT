@@ -4,41 +4,49 @@
       <div class="system-user-search mb15">
         <el-form :model="tableData.param" ref="queryRef" :inline="true">
           <el-form-item label="登录IP" prop="ipaddr">
-            <el-input size="default" v-model="tableData.param.ipaddr" placeholder="请输入登录IP" class="w-50 m-2" clearable/>
+            <el-input size="default" v-model="tableData.param.ipaddr" placeholder="请输入登录IP" class="w-50 m-2"
+                      clearable/>
           </el-form-item>
           <el-form-item label="用户名称" prop="userName">
-            <el-input size="default" v-model="tableData.param.userName" placeholder="请输入登录名称" class="w-50 m-2" clearable/>
+            <el-input size="default" v-model="tableData.param.userName" placeholder="请输入登录名称" class="w-50 m-2"
+                      clearable/>
           </el-form-item>
           <el-form-item>
             <el-button size="default" type="primary" class="ml10" @click="getList">
               <el-icon>
-                <ele-Search />
+                <Icon icon="mdi:search"/>
               </el-icon>
               查询
             </el-button>
             <el-button size="default" @click="resetQuery(queryRef)">
               <el-icon>
-                <ele-Refresh />
+                <Icon icon="mdi:refresh"/>
               </el-icon>
-              重置
+              刷新
             </el-button>
-            <el-button size="default" type="danger" class="ml10" @click="onRowDel(null)">
+            <el-button size="default" type="danger" class="ml10" @click="onRowDel()">
               <el-icon>
-                <ele-Delete />
+                <Icon icon="mdi:delete"/>
               </el-icon>
               强制退出
+            </el-button>
+            <el-button size="default" type="danger" class="ml10" @click="onForceLogoutAll()">
+              <el-icon>
+                <Icon icon="mdi:delete"/>
+              </el-icon>
+              强退所有用户
             </el-button>
           </el-form-item>
         </el-form>
       </div>
       <el-table :data="tableData.data" style="width: 100%" @selection-change="handleSelectionChange">
-        <el-table-column type="selection" width="55" align="center" />
-        <el-table-column type="index" label="序号" width="60" />
+        <el-table-column type="selection" width="55" align="center"/>
+        <el-table-column type="index" label="序号" width="60"/>
         <el-table-column prop="uuid" label="会话编号" show-overflow-tooltip></el-table-column>
         <el-table-column prop="userName" label="登录名称"></el-table-column>
-        <el-table-column prop="ip" label="主机" ></el-table-column>
+        <el-table-column prop="ip" label="主机"></el-table-column>
         <el-table-column prop="explorer" label="浏览器" show-overflow-tooltip></el-table-column>
-        <el-table-column label="操作系统" align="center" prop="os" />
+        <el-table-column label="操作系统" align="center" prop="os"/>
         <el-table-column prop="createTime" label="创建时间"></el-table-column>
         <el-table-column label="操作" width="100">
           <template #default="scope">
@@ -47,20 +55,22 @@
         </el-table-column>
       </el-table>
       <pagination
-          v-show="tableData.total>0"
-          :total="tableData.total"
-          v-model:page="tableData.param.pageNum"
-          v-model:limit="tableData.param.pageSize"
-          @pagination="getList"
+        v-show="tableData.total>0"
+        :total="tableData.total"
+        v-model:page="tableData.param.pageNum"
+        v-model:limit="tableData.param.pageSize"
+        @pagination="getList"
       />
     </el-card>
   </div>
 </template>
 
 <script lang="ts">
-import {toRefs, reactive, onMounted, defineComponent, ref} from 'vue';
-import {ElMessageBox, ElMessage, FormInstance} from 'element-plus';
-import { forceLogout, listSysUserOnline} from "/@/api/system/monitor/userOnline";
+import { toRefs, reactive, onMounted, defineComponent, ref } from 'vue';
+import { ElMessageBox, ElMessage, FormInstance } from 'element-plus';
+import { forceLogout, forceLogoutAll, listSysUserOnline } from "/@/api/system/monitor/userOnline";
+import { Icon } from "@iconify/vue";
+
 // 定义接口来定义对象的类型
 interface TableData {
   id: number;
@@ -72,15 +82,16 @@ interface TableData {
   explorer: string;
   os: string;
 }
+
 interface TableDataState {
-  ids:number[];
+  ids: number[];
   tableData: {
     data: Array<TableData>;
     total: number;
     loading: boolean;
     param: {
-      ipaddr:string;
-      userName:string;
+      ipaddr: string;
+      userName: string;
       pageNum: number;
       pageSize: number;
     };
@@ -89,17 +100,18 @@ interface TableDataState {
 
 export default defineComponent({
   name: 'apiV1SystemOnlineList',
+  components: {Icon},
   setup() {
     const queryRef = ref();
     const state = reactive<TableDataState>({
-      ids:[],
+      ids: [],
       tableData: {
         data: [],
         total: 0,
         loading: false,
         param: {
-          ipaddr:'',
-          userName:'',
+          ipaddr: '',
+          userName: '',
           pageNum: 1,
           pageSize: 10,
         },
@@ -109,9 +121,9 @@ export default defineComponent({
     const initTableData = () => {
       getList()
     };
-    const getList = ()=>{
-      listSysUserOnline(state.tableData.param).then(res=>{
-        state.tableData.data = res.data.list??[];
+    const getList = () => {
+      listSysUserOnline(state.tableData.param).then(res => {
+        state.tableData.data = res.data.list ?? [];
         state.tableData.total = res.data.total;
       })
     };
@@ -121,17 +133,34 @@ export default defineComponent({
       formEl.resetFields()
       getList()
     };
-    // 删除岗位
-    const onRowDel = (row: TableData) => {
+    // 强退所有用户
+    const onForceLogoutAll = () => {
+      ElMessageBox.confirm('你确定要强制退出所有用户登录？', '提示', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning',
+      })
+        .then(() => {
+          forceLogoutAll().then(() => {
+            ElMessage.success('退出成功');
+            getList();
+          })
+        })
+        .catch(() => {
+        });
+    };
+
+    // 强退用户
+    const onRowDel = (row?: TableData) => {
       let msg = '你确定要强制退出用户登录？';
-      let ids:number[] = [] ;
-      if(row){
+      let ids: number[] = [];
+      if (row) {
         msg = `将强制用户下线，是否继续?`
         ids = [row.id]
-      }else{
+      } else {
         ids = state.ids
       }
-      if(ids.length===0){
+      if (ids.length === 0) {
         ElMessage.error('请选择要强制退出登录的用户。');
         return
       }
@@ -140,13 +169,14 @@ export default defineComponent({
         cancelButtonText: '取消',
         type: 'warning',
       })
-          .then(() => {
-            forceLogout(ids).then(()=>{
-              ElMessage.success('退出成功');
-              getList();
-            })
+        .then(() => {
+          forceLogout(ids).then(() => {
+            ElMessage.success('退出成功');
+            getList();
           })
-          .catch(() => {});
+        })
+        .catch(() => {
+        });
     };
     // 分页改变
     const onHandleSizeChange = (val: number) => {
@@ -161,12 +191,13 @@ export default defineComponent({
       initTableData();
     });
     // 多选框选中数据
-    const handleSelectionChange = (selection:Array<TableData>)=> {
+    const handleSelectionChange = (selection: Array<TableData>) => {
       state.ids = selection.map(item => item.id)
     };
     return {
       queryRef,
       onRowDel,
+      onForceLogoutAll,
       onHandleSizeChange,
       onHandleCurrentChange,
       getList,

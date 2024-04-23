@@ -25,6 +25,7 @@ type SysUserOnlineColumns struct {
 	Token      string // 用户token
 	CreateTime string // 登录时间
 	UserName   string // 用户名
+	UserId     string // 用户ID
 	Ip         string // 登录ip
 	Explorer   string // 浏览器
 	Os         string // 操作系统
@@ -37,6 +38,7 @@ var sysUserOnlineColumns = SysUserOnlineColumns{
 	Token:      "token",
 	CreateTime: "create_time",
 	UserName:   "user_name",
+	UserId:     "user_id",
 	Ip:         "ip",
 	Explorer:   "explorer",
 	Os:         "os",

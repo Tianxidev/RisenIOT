@@ -137,4 +137,5 @@ type IV1System interface {
 	UserMenus(ctx context.Context, req *system.UserMenusReq) (res *system.UserMenusRes, err error)
 	SysUserOnlineSearch(ctx context.Context, req *system.SysUserOnlineSearchReq) (res *system.SysUserOnlineSearchRes, err error)
 	SysUserOnlineForceLogout(ctx context.Context, req *system.SysUserOnlineForceLogoutReq) (res *system.SysUserOnlineForceLogoutRes, err error)
+	SysUserOnlineForceLogoutAll(ctx context.Context, req *system.SysUserOnlineForceLogoutAllReq) (res *system.SysUserOnlineForceLogoutAllRes, err error)
 }

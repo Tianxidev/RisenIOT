@@ -15,6 +15,7 @@ type SysUserOnline struct {
 	Token      string      `json:"token"      orm:"token"       ` // 用户token
 	CreateTime *gtime.Time `json:"createTime" orm:"create_time" ` // 登录时间
 	UserName   string      `json:"userName"   orm:"user_name"   ` // 用户名
+	UserId     int         `json:"userId"     orm:"user_id"     ` // 用户ID
 	Ip         string      `json:"ip"         orm:"ip"          ` // 登录ip
 	Explorer   string      `json:"explorer"   orm:"explorer"    ` // 浏览器
 	Os         string      `json:"os"         orm:"os"          ` // 操作系统
