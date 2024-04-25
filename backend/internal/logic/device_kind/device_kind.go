@@ -23,6 +23,7 @@ func New() *sDeviceKind {
 	return &sDeviceKind{}
 }
 
+// Get 查询产品详情
 func (s *sDeviceKind) Get(ctx context.Context, id int) (info *entity.SysDeviceKind, err error) {
 	if id == 0 {
 		err = gerror.New("参数错误")
@@ -38,6 +39,7 @@ func (s *sDeviceKind) Get(ctx context.Context, id int) (info *entity.SysDeviceKi
 	return
 }
 
+// List 查询产品类型列表
 func (s *sDeviceKind) List(ctx context.Context, req *device.KindSearchReq) (total, page int, list []*entity.SysDeviceKind, err error) {
 	if req.PageNum == 0 {
 		req.PageNum = 1

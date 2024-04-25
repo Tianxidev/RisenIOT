@@ -13,7 +13,9 @@ import (
 
 type (
 	IDeviceKind interface {
+		// Get 查询产品详情
 		Get(ctx context.Context, id int) (info *entity.SysDeviceKind, err error)
+		// List 查询产品类型列表
 		List(ctx context.Context, req *device.KindSearchReq) (total, page int, list []*entity.SysDeviceKind, err error)
 		// Add 添加产品类型
 		Add(ctx context.Context, req *device.KindAddReq) (err error)

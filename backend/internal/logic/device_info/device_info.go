@@ -90,6 +90,7 @@ func (s *sDeviceInfo) List(ctx context.Context, req *device.InfoSearchReq) (tota
 	return
 }
 
+// Auth 设备授权
 func (s *sDeviceInfo) Auth(ctx context.Context, sn, pwd string) (status bool, err error) {
 	var deviceInfo *entity.SysDeviceInfo
 	err = dao.SysDeviceInfo.Ctx(ctx).Where("sn=? and pwd=?", sn, pwd).Scan(&deviceInfo)
@@ -102,6 +103,7 @@ func (s *sDeviceInfo) Auth(ctx context.Context, sn, pwd string) (status bool, er
 	return true, nil
 }
 
+// Info 获取设备信息
 func (s *sDeviceInfo) Info(ctx context.Context, id int, sn string) (info *model.DeviceAllInfo, err error) {
 	info = &model.DeviceAllInfo{}
 	if id == 0 && len(sn) < 1 {

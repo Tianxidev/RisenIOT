@@ -17,6 +17,7 @@ import (
 	"os"
 	"path"
 	"strings"
+	"time"
 )
 
 // EncryptPassword 密码加密
@@ -144,7 +145,7 @@ func MkDir(src string) error {
 	return nil
 }
 
-// 获取文件后缀
+// GetExt 获取文件后缀
 func GetExt(fileName string) string {
 	return path.Ext(fileName)
 }
@@ -186,4 +187,9 @@ func GetFilesPath(ctx context.Context, fileUrl string) (path string, err error) 
 		path = gstr.SubStr(pathInfo["path"], pos)
 	}
 	return
+}
+
+// TrackFuncTime 函数执行耗时统计
+func TrackFuncTime(pre time.Time) time.Duration {
+	return time.Since(pre)
 }

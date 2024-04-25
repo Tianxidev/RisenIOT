@@ -14,6 +14,7 @@ import (
 	_ "backend/internal/logic/device_info"
 	_ "backend/internal/logic/device_kind"
 	_ "backend/internal/logic/device_status"
+	_ "backend/internal/logic/device_strategy"
 	_ "backend/internal/logic/gateway"
 	_ "backend/internal/logic/middleware"
 	_ "backend/internal/logic/personal"
