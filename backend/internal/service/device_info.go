@@ -21,7 +21,7 @@ type (
 		// Auth 设备授权
 		Auth(ctx context.Context, sn, pwd string) (status bool, err error)
 		// Info 获取设备信息
-		Info(ctx context.Context, id int, sn string) (info *model.DeviceAllInfo, err error)
+		Info(ctx context.Context, id int, sn string) (deviceInfo *model.DeviceAllInfo, err error)
 		// Add 添加设备信息
 		Add(ctx context.Context, req *device.InfoAddReq) (err error)
 		// Edit 编辑设备信息

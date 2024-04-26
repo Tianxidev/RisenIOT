@@ -70,35 +70,51 @@ func (s *sDeviceStatus) List(ctx context.Context, req *device.StatusSearchReq) (
 // ChangeStatus 修改状态
 func (s *sDeviceStatus) ChangeStatus(ctx context.Context, deviceId int, status int) error {
 
-	// 离线
-	if status == consts.DeviceStatusOffLine {
-		_, err := dao.SysDeviceStatus.Ctx(ctx).Where(dao.SysDeviceStatus.Columns().DeviceId+" = ?", deviceId).Save(g.Map{
-			dao.SysDeviceStatus.Columns().DeviceId: deviceId,
-			dao.SysDeviceStatus.Columns().Status:   status,
-			dao.SysDeviceStatus.Columns().DownTime: gtime.Now().Timestamp(),
-		})
-		return err
-	}
+	time := gtime.Now().Timestamp()
 
-	// 在线
-	if status == consts.DeviceStatusOnLine {
-		_, err := dao.SysDeviceStatus.Ctx(ctx).Where(dao.SysDeviceStatus.Columns().DeviceId+" = ?", deviceId).Save(g.Map{
-			dao.SysDeviceStatus.Columns().DeviceId: deviceId,
-			dao.SysDeviceStatus.Columns().Status:   status,
-			dao.SysDeviceStatus.Columns().UpTime:   gtime.Now().Timestamp(),
-		})
-		return err
-	}
+	// 时间戳转换为时间字符串
+	timeStr := gtime.NewFromTimeStamp(time).String()
 
-	// 上报数据
-	if status == consts.DeviceStatusDataUp {
-		_, err := dao.SysDeviceStatus.Ctx(ctx).Where(dao.SysDeviceStatus.Columns().DeviceId+" = ?", deviceId).Save(g.Map{
-			dao.SysDeviceStatus.Columns().DeviceId:           deviceId,
-			dao.SysDeviceStatus.Columns().Status:             status,
-			dao.SysDeviceStatus.Columns().LastDataUpdateTime: gtime.Now().Timestamp(),
-		})
-		return err
-	}
+	// 更新设备信息表
+	_, _ = g.Model(dao.SysDeviceInfo.Table()).Where(dao.SysDeviceInfo.Columns().Id, deviceId).Update(g.Map{
+		dao.SysDeviceInfo.Columns().Status:             status,
+		dao.SysDeviceInfo.Columns().LastDataUpdateTime: timeStr,
+		dao.SysDeviceInfo.Columns().UpTime:             timeStr,
+		dao.SysDeviceInfo.Columns().DownTime:           timeStr,
+	})
+
+	//// 离线
+	//if status == consts.DeviceStatusOffLine {
+	//	_, err := dao.SysDeviceStatus.Ctx(ctx).Where(dao.SysDeviceStatus.Columns().DeviceId+" = ?", deviceId).Save(g.Map{
+	//		dao.SysDeviceStatus.Columns().DeviceId:           deviceId,
+	//		dao.SysDeviceStatus.Columns().Status:             status,
+	//		dao.SysDeviceStatus.Columns().DownTime:           timeStr,
+	//		dao.SysDeviceStatus.Columns().LastDataUpdateTime: timeStr,
+	//	})
+	//	return err
+	//}
+	//
+	//// 在线
+	//if status == consts.DeviceStatusOnLine {
+	//	_, err := dao.SysDeviceStatus.Ctx(ctx).Where(dao.SysDeviceStatus.Columns().DeviceId+" = ?", deviceId).Save(g.Map{
+	//		dao.SysDeviceStatus.Columns().DeviceId:           deviceId,
+	//		dao.SysDeviceStatus.Columns().Status:             status,
+	//		dao.SysDeviceStatus.Columns().UpTime:             timeStr,
+	//		dao.SysDeviceStatus.Columns().LastDataUpdateTime: timeStr,
+	//	})
+	//	return err
+	//}
+	//
+	//// 上报数据
+	//if status == consts.DeviceStatusDataUp {
+	//	_, err := dao.SysDeviceStatus.Ctx(ctx).Where(dao.SysDeviceStatus.Columns().DeviceId+" = ?", deviceId).Save(g.Map{
+	//		dao.SysDeviceStatus.Columns().DeviceId:           deviceId,
+	//		dao.SysDeviceStatus.Columns().Status:             status,
+	//		dao.SysDeviceStatus.Columns().LastDataUpdateTime: time,
+	//	})
+	//
+	//	return err
+	//}
 
 	return nil
 }

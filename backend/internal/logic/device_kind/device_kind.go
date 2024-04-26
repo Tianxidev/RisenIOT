@@ -29,13 +29,10 @@ func (s *sDeviceKind) Get(ctx context.Context, id int) (info *entity.SysDeviceKi
 		err = gerror.New("参数错误")
 		return
 	}
-	err = dao.SysDeviceKind.Ctx(ctx).Where(dao.SysDeviceKind.Columns().Id, id).Scan(&info)
-	if err != nil {
-		g.Log().Error(ctx, "get device kind err", err, info)
-	}
-	if info == nil || err != nil {
-		err = gerror.New("获取信息失败")
-	}
+	one, err := g.Model(dao.SysDeviceKind.Table()).Where("id = ?", id).One()
+	liberr.ErrIsNil(ctx, err, "查询产品详情失败")
+	err = one.Struct(&info)
+	liberr.ErrIsNil(ctx, err, "产品详情映射失败")
 	return
 }
 
@@ -117,17 +114,23 @@ func (s *sDeviceKind) Add(ctx context.Context, req *device.KindAddReq) (err erro
 
 // Edit 编辑产品类型
 func (s *sDeviceKind) Edit(ctx context.Context, req *device.KindEditReq) (err error) {
+	kind := new(entity.SysDeviceKind)
 	liberr.ValueIsTrue(ctx, req.TimeOut <= 0, "超时时间不能小于0")
 	t1 := dao.SysDeviceKind
 	m := dao.SysDeviceKind.Ctx(ctx)
 	m = m.Where(t1.Columns().Id, req.Id)
 	m = m.Where(t1.Columns().CreateBy, int(service.UserCtx().GetUserId(ctx)))
-	kind, err := m.One()
+	one, err := m.One()
 	liberr.ErrIsNil(ctx, err, "查询产品类型失败")
-	liberr.ValueIsTrue(ctx, kind == nil, "产品类型不存在")
+	liberr.ValueIsTrue(ctx, one == nil, "产品类型不存在")
+
+	// 映射产品类型
+	err = one.Struct(kind)
+	liberr.ErrIsNil(ctx, err, "产品类型映射失败")
 
 	// 编辑产品类型
 	_, err = dao.SysDeviceKind.Ctx(ctx).Data(&entity.SysDeviceKind{
+		Id:       kind.Id,
 		Name:     req.Name,
 		Mark:     req.Mark,
 		TimeOut:  req.TimeOut,

@@ -8,14 +8,17 @@ import formEdit from "./formEdit.json"
 
 const {proxy} = <any>getCurrentInstance();
 const formJson = reactive(formEdit)
-const formData = reactive({
-  id: null,
-  name: null,
-  group: null,
-  sn: null,
-  pwd: null,
-  kind: null,
-})
+
+class formDataClass {
+  id = null;
+  name = null;
+  group = null;
+  sn = null;
+  pwd = null;
+  kind = null;
+}
+
+const formData = reactive(new formDataClass());
 const vFormRef = ref<VFormRender | null>(null);
 const optionData = reactive({
   kind: [] as ItemLabel[],
@@ -50,12 +53,17 @@ DeviceGroupList().then(res=>{
 })
 
 const closeDialog = () => {
+  state.row = null;
+  Object.assign(formData, new formDataClass());
   state.isShowDialog = false;
+  proxy.mittBus.emit('renderTable', {});
 };
 
 const openDialog = (row?: any) => {
+  console.log(row);
   if (row) {
     state.row = row;
+    Object.assign(formData, new formDataClass());
     formData.id = row.id;
     formData.name = row.name;
     formData.group = row.group;

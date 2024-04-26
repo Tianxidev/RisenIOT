@@ -128,12 +128,10 @@ const onDel = (row?: any) => {
             <el-tag type="info">{{ selectDictLabel(state.group, row.scope.group) }}</el-tag>
           </template>
           <template #monitor="row">
-            <el-tag type="success" v-if="row.scope['monitor'] === 1">在线</el-tag>
+            <el-tag type="success" v-if="row.scope['status'] === 1">在线</el-tag>
             <el-tag type="info" v-else>离线</el-tag>
           </template>
           <template #operate="row">
-            <el-button link type="primary" @click="onEdit(row.scope)">查询</el-button>
-            <el-button link type="primary" @click="onEdit(row.scope)">查询</el-button>
             <el-button link type="primary" @click="onEdit(row.scope)">编辑</el-button>
             <el-button link type="primary" @click="onDel(row.scope)">删除</el-button>
           </template>

@@ -104,8 +104,10 @@ func (s *sDeviceInfo) Auth(ctx context.Context, sn, pwd string) (status bool, er
 }
 
 // Info 获取设备信息
-func (s *sDeviceInfo) Info(ctx context.Context, id int, sn string) (info *model.DeviceAllInfo, err error) {
-	info = &model.DeviceAllInfo{}
+func (s *sDeviceInfo) Info(ctx context.Context, id int, sn string) (deviceInfo *model.DeviceAllInfo, err error) {
+	deviceInfo = &model.DeviceAllInfo{}
+	deviceInfoTable := dao.SysDeviceInfo.Table()
+	deviceInfoColumns := dao.SysDeviceInfo.Columns()
 	if id == 0 && len(sn) < 1 {
 		err = gerror.New("参数错误")
 		return
@@ -113,45 +115,22 @@ func (s *sDeviceInfo) Info(ctx context.Context, id int, sn string) (info *model.
 
 	g.Log().Printf(ctx, "设备ID:%v, 设备SN:%v", id, sn)
 
-	at := dao.SysDeviceInfo.Table()
-	ac := dao.SysDeviceInfo.Columns()
-	bt := dao.SysDeviceStatus.Table()
-	bc := dao.SysDeviceStatus.Columns()
+	// 查询设备信息
+	data, err := g.Model(deviceInfoTable).Where(deviceInfoColumns.Id, id).One()
+	liberr.ErrIsNil(ctx, err, "查询设备信息失败")
 
-	if id != 0 {
-		//err = dao.SysDeviceInfo.Ctx(ctx).LeftJoin(dao.SysDeviceStatus.Table(), dao.SysDeviceStatus.Table()+"."+dao.SysDeviceStatus.Columns().DeviceId+"="+dao.SysDeviceInfo.Table()+"."+dao.SysDeviceInfo.Columns().Id).Where(dao.SysDeviceInfo.Columns().Id, id).Scan(&info.Info)
+	// 映射设备信息
+	err = data.Struct(&deviceInfo.Info)
+	liberr.ErrIsNil(ctx, err, "映射设备信息失败")
 
-		m := dao.SysDeviceInfo.Ctx(ctx).LeftJoin(bt, bt+"."+bc.DeviceId+"="+at+"."+ac.Id).Where(at+"."+ac.Id, id)
-		err = m.Fields(at + ".*").Scan(&info.Info)
-		liberr.ErrIsNil(ctx, err, "不存在该设备信息")
+	// 查询设备产品信息
+	deviceInfo.Kind, err = service.DeviceKind().Get(ctx, deviceInfo.Info.Kind)
+	liberr.ErrIsNil(ctx, err, "查询设备产品信息失败, kindId:"+gconv.String(deviceInfo.Info.Kind))
 
-	} else if len(sn) > 0 {
-		//err = dao.SysDeviceInfo.Ctx(ctx).LeftJoin(dao.SysDeviceStatus.Table(), dao.SysDeviceStatus.Table()+"."+dao.SysDeviceStatus.Columns().DeviceId+"="+dao.SysDeviceInfo.Table()+"."+dao.SysDeviceInfo.Columns().Id).Where(dao.SysDeviceInfo.Columns().Sn, sn).Scan(&info.Info)
-	} else {
-		err = gerror.New("参数错误")
-		return
-	}
+	// 查询产品数据类型信息
+	deviceInfo.CategoryList, err = service.DeviceCategory().KindGet(ctx, deviceInfo.Info.Kind)
+	liberr.ErrIsNil(ctx, err, "查询产品数据类型信息失败, kindId:"+gconv.String(deviceInfo.Info.Kind))
 
-	if err != nil {
-		liberr.ErrIsNil(ctx, err, "获取设备信息失败")
-		return
-	}
-
-	if info == nil || err != nil {
-		liberr.ErrIsNil(ctx, err, "获取设备信息失败")
-		return
-	}
-
-	info.Kind, err = service.DeviceKind().Get(ctx, info.Info.Kind)
-	if err != nil || info.Kind == nil {
-		liberr.ErrIsNil(ctx, err, "获取设备类别失败, kindId:"+gconv.String(info.Info.Kind))
-		return
-	}
-	info.CategoryList, err = service.DeviceCategory().KindGet(ctx, info.Info.Kind)
-	if err != nil || info.CategoryList == nil {
-		liberr.ErrIsNil(ctx, err, "获取设备类别列表失败, kindId:"+gconv.String(info.Info.Kind))
-		return
-	}
 	return
 }
 
@@ -285,19 +264,33 @@ func (s *sDeviceInfo) KeepAlive(ctx context.Context, time *gtime.Time) {
 
 	// 2. 遍历设备信息, 判断设备是否在线
 	for _, deviceInfo := range deviceList {
+
+		// deviceInfo.LastDataUpdateTime 转换为时间戳
+		nowTime := time.Timestamp()
+		lastTime := deviceInfo.LastDataUpdateTime.Timestamp()
+
 		if deviceInfo.Status == 0 {
 			continue
 		}
 
+		// 查询产品超时时间
+		kindInfo, err := service.DeviceKind().Get(ctx, deviceInfo.Kind)
+
 		// 3. 判断设备最后上报时间是否超过设备心跳超时时间
 		// 当前系统时间戳 - 设备最后上报时间戳 > 设备心跳超时时间
-		if time.Timestamp()-gconv.Int64(deviceInfo.LastDataUpdateTime) > int64(deviceInfo.TimeOut) {
-			// 4. 设备离线
-			_, err = dao.SysDeviceInfo.Ctx(ctx).Where("id=?", deviceInfo.Id).Update(g.Map{
-				"status": 0,
-			})
-			liberr.ErrIsNil(ctx, err, "设备离线失败")
-		}
+		_ = g.Try(ctx, func(ctx context.Context) {
+			if nowTime-lastTime > int64(kindInfo.TimeOut) {
+				// 4. 设备离线
+				g.Log().Info(ctx, "离线设备=>", deviceInfo.Name, "设备ID:", deviceInfo.Id)
+				_, err = dao.SysDeviceInfo.Ctx(ctx).Where("id=?", deviceInfo.Id).Update(g.Map{
+					"status": 0,
+				})
+				liberr.ErrIsNil(ctx, err, "设备离线失败")
+			} else {
+				g.Log().Info(ctx, "在线设备=>", deviceInfo.Name, "设备ID:", deviceInfo.Id, "当前超时:", nowTime-lastTime, "设定超时:", kindInfo.TimeOut)
+			}
+		})
+
 	}
 
 }

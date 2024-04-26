@@ -29,7 +29,7 @@ func (s *sSysCron) StartBaseTask(ctx context.Context) {
 		g.Log().Info(ctx, "设备保活任务开始")
 		service.DeviceInfo().KeepAlive(ctx, gtime.Now())
 		g.Log().Info(ctx, "设备保活任务结束")
-		time.Sleep(60 * time.Second)
+		time.Sleep(5 * time.Second)
 	})
 	liberr.ErrIsNil(ctx, err, "添加任务失败")
 }

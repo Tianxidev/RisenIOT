@@ -13,6 +13,8 @@ const state = reactive({
 const initView = () => {
   OverviewApi().then(res=>{
     state.deviceTotal = res?.data['totalDevice']
+    state.onlineDeviceTotal = res?.data['online']
+    state.offlineDeviceTotal = res?.data['offline']
   })
 }
 
