@@ -58,6 +58,8 @@ type IV1Device interface {
 	StatusDelete(ctx context.Context, req *device.StatusDeleteReq) (res *device.StatusDeleteRes, err error)
 	StrategySearch(ctx context.Context, req *device.StrategySearchReq) (res *device.StrategySearchRes, err error)
 	StrategyAdd(ctx context.Context, req *device.StrategyAddReq) (res *device.StrategyAddRes, err error)
+	StrategyDel(ctx context.Context, req *device.StrategyDelReq) (res *device.StrategyDelRes, err error)
+	StrategyEdit(ctx context.Context, req *device.StrategyEditReq) (res *device.StrategyEditRes, err error)
 }
 
 type IV1Home interface {

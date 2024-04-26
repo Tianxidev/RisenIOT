@@ -116,6 +116,7 @@ onMounted(() => {
 
 });
 
+
 onBeforeUnmount(() => {
   proxy.mittBus.off('renderTable', null);
   proxy.mittBus.off('clearTable', null);
@@ -124,48 +125,55 @@ onBeforeUnmount(() => {
   clearTable();
 
 });
+
+defineExpose({
+  name: 'TableView',
+  getData,
+  clearTable,
+});
+
 </script>
 
 <template>
   <div class="table">
     <el-table
-        v-loading="false"
-        :size="props.options.size"
-        :data="state.tableDataValue"
-        :stripe="props.options.stripe"
-        :max-height="props.options.maxHeight"
-        :border="props.options.border"
-        :fit="props.options.fit"
-        :lazy="props.options.lazy"
-        :highlight-current-row="props.options.highlightCurrentRow"
-        @select="select"
-        @select-all="selectAll"
+      v-loading="false"
+      :size="props.options.size"
+      :data="state.tableDataValue"
+      :stripe="props.options.stripe"
+      :max-height="props.options.maxHeight"
+      :border="props.options.border"
+      :fit="props.options.fit"
+      :lazy="props.options.lazy"
+      :highlight-current-row="props.options.highlightCurrentRow"
+      @select="select"
+      @select-all="selectAll"
     >
       <template v-for="(item, index) in filterColumns" :key="index">
         <!-- 复选框 (START)-->
         <el-table-column
-            v-if="item.type === 'selection'"
-            type="selection"
-            :width="item.minWidth ? item.minWidth : 60"
+          v-if="item.type === 'selection'"
+          type="selection"
+          :width="item.minWidth ? item.minWidth : 60"
         ></el-table-column>
         <!-- 复选框 (END) -->
         <!-- 序号 (START) -->
         <el-table-column
-            v-else-if="item.type === 'index'"
-            type="index"
-            :label="item.label ? item.label : '序号'"
-            :width="item.minWidth ? item.minWidth : 80"
-            :align="item.align ? item.align : 'center'"
+          v-else-if="item.type === 'index'"
+          type="index"
+          :label="item.label ? item.label : '序号'"
+          :width="item.minWidth ? item.minWidth : 80"
+          :align="item.align ? item.align : 'center'"
         ></el-table-column>
         <!-- 序号 (END) -->
         <!-- 默认渲染列 (START) -->
         <el-table-column
-            v-else
-            :prop="item.prop"
-            :label="item.label"
-            :align="item.align"
-            :min-width="item.minWidth"
-            :show-overflow-tooltip="true"
+          v-else
+          :prop="item.prop"
+          :label="item.label"
+          :align="item.align"
+          :min-width="item.minWidth"
+          :show-overflow-tooltip="true"
         >
           <template #default="scope">
             <template v-if="item.render">
@@ -184,13 +192,13 @@ onBeforeUnmount(() => {
     <!-- 分页 (START) -->
     <div class="pager" style="text-align: right; margin-top: 15px;">
       <el-pagination
-          v-model:currentPage="state.pageNum"
-          :page-size="state.mPageSize"
-          :page-sizes="pageSizeOpts"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="state.total"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
+        v-model:currentPage="state.pageNum"
+        :page-size="state.mPageSize"
+        :page-sizes="pageSizeOpts"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="state.total"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
       >
       </el-pagination>
     </div>

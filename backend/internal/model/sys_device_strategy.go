@@ -8,4 +8,5 @@ type SysDeviceStrategy struct {
 	TypeId   int    `json:"typeId"`   // 策略类型ID
 	Cron     string `json:"cron"`     // cron表达式
 	DeviceId int    `json:"deviceId"` // 设备ID
+	Action   string `json:"action"`   // 动作
 }

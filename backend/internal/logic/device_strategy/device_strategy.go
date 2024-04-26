@@ -9,6 +9,7 @@ import (
 	"backend/internal/service"
 	"backend/library/liberr"
 	"context"
+	"github.com/gogf/gf/v2/frame/g"
 )
 
 /// 设备策略
@@ -39,6 +40,7 @@ func (s *sDeviceStrategy) Add(ctx context.Context, req *device.StrategyAddReq) (
 		Type:     req.Type,
 		Cron:     req.Cron,
 		DeviceId: req.DeviceId,
+		Action:   req.Action,
 		AuthorId: int(userId),
 	}
 
@@ -83,11 +85,59 @@ func (s *sDeviceStrategy) List(ctx context.Context, req *device.StrategySearchRe
 			TypeId:   v.Type,
 			Cron:     v.Cron,
 			DeviceId: v.DeviceId,
+			Action:   v.Action,
 		})
 	}
 
 	// 设置数量
 	res.Total = len(list)
+
+	return res, err
+}
+
+// Edit 编辑策略
+func (s *sDeviceStrategy) Edit(ctx context.Context, req *device.StrategyEditReq) (*device.StrategyEditRes, error) {
+	var err error
+	res := new(device.StrategyEditRes)
+	// 获取用户ID
+	userId := service.UserCtx().GetUserId(ctx)
+
+	// 查询当前策略
+	currentStrategy := new(entity.SysDeviceStrategy)
+
+	one, err := g.Model(dao.SysDeviceStrategy.Table()).Where("id = ?", req.Id).One()
+	if err != nil {
+		return nil, err
+	}
+	err = one.Struct(currentStrategy)
+
+	// 创建策略实体
+	entity := entity.SysDeviceStrategy{
+		Id:       req.Id,
+		Name:     req.Name,
+		Type:     req.Type,
+		Cron:     req.Cron,
+		DeviceId: currentStrategy.DeviceId,
+		AuthorId: int(userId),
+		Action:   req.Action,
+	}
+
+	// 更新数据库
+	_, err = g.Model(dao.SysDeviceStrategy.Table()).Save(&entity)
+	liberr.ErrIsNil(ctx, err, "编辑策略失败")
+
+	return res, err
+
+}
+
+// Del 删除策略
+func (s *sDeviceStrategy) Del(ctx context.Context, req *device.StrategyDelReq) (*device.StrategyDelRes, error) {
+	var err error
+	res := new(device.StrategyDelRes)
+
+	// 删除数据库
+	_, err = dao.SysDeviceStrategy.Ctx(ctx).Where("id in (?)", req.Ids).Delete()
+	liberr.ErrIsNil(ctx, err, "删除策略失败")
 
 	return res, err
 }

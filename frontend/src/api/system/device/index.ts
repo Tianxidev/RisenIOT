@@ -6,7 +6,7 @@ import { appendQuery } from "/@/utils/url";
  * @method params 设备列表参数
  * @return Promise
  */
-export function DeviceInfoList(params: any): Promise<any> {
+export function DeviceInfoList(params?: any): Promise<any> {
   return request({
     url: appendQuery('/api/v1/device/info/list', params),
     method: 'get',
@@ -195,11 +195,38 @@ export function DeviceCategoryDel(ids: number[]): Promise<any> {
   })
 }
 
+// 添加策略
+export function DeviceStrategyAddReq(params?: any): Promise<any> {
+  return request({
+    url: '/api/v1/device/strategy',
+    method: 'post',
+    data: params,
+  })
+}
+
 
 // 查询策略列表
-export function DeviceStrategySearchReq(params?:any): Promise<any> {
+export function DeviceStrategySearchReq(params?: any): Promise<any> {
   return request({
     url: appendQuery('/api/v1/device/strategy', params),
     method: 'get',
+  })
+}
+
+// 删除策略
+export function DeviceStrategyDelReq(params?: any): Promise<any> {
+  return request({
+    url: appendQuery('/api/v1/device/strategy', {}),
+    method: 'delete',
+    data:{ids:[...params]}
+  })
+}
+
+// 编辑策略
+export function DeviceStrategyEditReq(params?: any): Promise<any> {
+  return request({
+    url: '/api/v1/device/strategy',
+    method: 'put',
+    data: params,
   })
 }
