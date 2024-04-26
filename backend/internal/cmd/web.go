@@ -53,6 +53,9 @@ var (
 				router.R.BindController(ctx, group)
 			})
 
+			// 开启定时任务
+			service.SysCron().StartBaseTask(ctx)
+
 			// 关闭路由信息打印
 			s.SetDumpRouterMap(false)
 			s.SetPort(defaultPort)

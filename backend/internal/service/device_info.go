@@ -10,6 +10,8 @@ import (
 	"backend/internal/model"
 	"backend/internal/model/entity"
 	"context"
+
+	"github.com/gogf/gf/v2/os/gtime"
 )
 
 type (
@@ -34,6 +36,8 @@ type (
 		OnlineCount(ctx context.Context) (total int, err error)
 		// OfflineCount 离线设备数量
 		OfflineCount(ctx context.Context) (total int, err error)
+		// KeepAlive 设备保活状态检查
+		KeepAlive(ctx context.Context, time *gtime.Time)
 	}
 )
 

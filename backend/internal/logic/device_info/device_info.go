@@ -260,7 +260,8 @@ func (s *sDeviceInfo) Count(ctx context.Context) (total int, err error) {
 // OnlineCount 在线设备数量
 func (s *sDeviceInfo) OnlineCount(ctx context.Context) (total int, err error) {
 	// 统计我的在线设备数量
-	total, err = dao.SysDeviceInfo.Ctx(ctx).Where("create_by=? and status=?", int(service.UserCtx().GetUserId(ctx)), 1).Count()
+	userId := int(service.UserCtx().GetUserId(ctx))
+	total, err = dao.SysDeviceInfo.Ctx(ctx).Where("create_by=? and status=1", userId).Count()
 	liberr.ErrIsNil(ctx, err, "统计在线设备数量失败")
 	return
 }
@@ -268,7 +269,35 @@ func (s *sDeviceInfo) OnlineCount(ctx context.Context) (total int, err error) {
 // OfflineCount 离线设备数量
 func (s *sDeviceInfo) OfflineCount(ctx context.Context) (total int, err error) {
 	// 统计我的离线设备数量
-	total, err = dao.SysDeviceInfo.Ctx(ctx).Where("create_by=? and status=?", int(service.UserCtx().GetUserId(ctx)), 0).Count()
+	userId := int(service.UserCtx().GetUserId(ctx))
+	total, err = g.Model(dao.SysDeviceInfo.Table()).Where("create_by=? and status = 0", userId).Count()
 	liberr.ErrIsNil(ctx, err, "统计离线设备数量失败")
 	return
+}
+
+// KeepAlive 设备保活状态检查
+func (s *sDeviceInfo) KeepAlive(ctx context.Context, time *gtime.Time) {
+	deviceList := make([]*entity.SysDeviceInfo, 0)
+
+	// 1. 查询所有设备信息
+	err := g.Model(dao.SysDeviceInfo.Table()).Scan(&deviceList)
+	liberr.ErrIsNil(ctx, err, "查询设备信息失败")
+
+	// 2. 遍历设备信息, 判断设备是否在线
+	for _, deviceInfo := range deviceList {
+		if deviceInfo.Status == 0 {
+			continue
+		}
+
+		// 3. 判断设备最后上报时间是否超过设备心跳超时时间
+		// 当前系统时间戳 - 设备最后上报时间戳 > 设备心跳超时时间
+		if time.Timestamp()-gconv.Int64(deviceInfo.LastDataUpdateTime) > int64(deviceInfo.TimeOut) {
+			// 4. 设备离线
+			_, err = dao.SysDeviceInfo.Ctx(ctx).Where("id=?", deviceInfo.Id).Update(g.Map{
+				"status": 0,
+			})
+			liberr.ErrIsNil(ctx, err, "设备离线失败")
+		}
+	}
+
 }

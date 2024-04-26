@@ -22,6 +22,7 @@ import (
 	_ "backend/internal/logic/sys_auth_rule"
 	_ "backend/internal/logic/sys_casbin"
 	_ "backend/internal/logic/sys_config"
+	_ "backend/internal/logic/sys_cron"
 	_ "backend/internal/logic/sys_dept"
 	_ "backend/internal/logic/sys_dict_data"
 	_ "backend/internal/logic/sys_dict_type"

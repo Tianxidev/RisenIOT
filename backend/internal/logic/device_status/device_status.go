@@ -69,6 +69,8 @@ func (s *sDeviceStatus) List(ctx context.Context, req *device.StatusSearchReq) (
 
 // ChangeStatus 修改状态
 func (s *sDeviceStatus) ChangeStatus(ctx context.Context, deviceId int, status int) error {
+
+	// 离线
 	if status == consts.DeviceStatusOffLine {
 		_, err := dao.SysDeviceStatus.Ctx(ctx).Where(dao.SysDeviceStatus.Columns().DeviceId+" = ?", deviceId).Save(g.Map{
 			dao.SysDeviceStatus.Columns().DeviceId: deviceId,
@@ -76,22 +78,27 @@ func (s *sDeviceStatus) ChangeStatus(ctx context.Context, deviceId int, status i
 			dao.SysDeviceStatus.Columns().DownTime: gtime.Now().Timestamp(),
 		})
 		return err
-	} else if status == consts.DeviceStatusOnLine {
+	}
+
+	// 在线
+	if status == consts.DeviceStatusOnLine {
 		_, err := dao.SysDeviceStatus.Ctx(ctx).Where(dao.SysDeviceStatus.Columns().DeviceId+" = ?", deviceId).Save(g.Map{
 			dao.SysDeviceStatus.Columns().DeviceId: deviceId,
 			dao.SysDeviceStatus.Columns().Status:   status,
 			dao.SysDeviceStatus.Columns().UpTime:   gtime.Now().Timestamp(),
 		})
 		return err
-	} else if status == consts.DeviceStatusDataUp {
+	}
+
+	// 上报数据
+	if status == consts.DeviceStatusDataUp {
 		_, err := dao.SysDeviceStatus.Ctx(ctx).Where(dao.SysDeviceStatus.Columns().DeviceId+" = ?", deviceId).Save(g.Map{
 			dao.SysDeviceStatus.Columns().DeviceId:           deviceId,
 			dao.SysDeviceStatus.Columns().Status:             status,
 			dao.SysDeviceStatus.Columns().LastDataUpdateTime: gtime.Now().Timestamp(),
 		})
 		return err
-	} else {
-		return gerror.Newf("not support status:%v", status)
 	}
 
+	return nil
 }
