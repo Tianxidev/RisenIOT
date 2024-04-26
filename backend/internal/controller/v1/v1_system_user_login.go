@@ -32,8 +32,16 @@ func (c *ControllerSystem) UserLogin(ctx context.Context, req *system.UserLoginR
 
 	// 创建登录 token
 	key := gconv.String(user.Id) + "-" + gmd5.MustEncryptString(user.UserName) + gmd5.MustEncryptString(user.UserPassword)
+
+	// 获取客户端信息
+	ip := libUtils.GetClientIp(ctx)
+
+	// 获取客户端信息
+	userAgent := libUtils.GetUserAgent(ctx)
+
+	// 多端登录
 	if g.Cfg().MustGet(ctx, "gfToken.multiLogin").Bool() {
-		//key = gconv.String(user.Id) + "-" + gmd5.MustEncryptString(user.UserName) + gmd5.MustEncryptString(user.UserPassword+ip+userAgent)
+		key = gconv.String(user.Id) + "-" + gmd5.MustEncryptString(user.UserName) + gmd5.MustEncryptString(user.UserPassword+ip+userAgent)
 	}
 	user.UserPassword = ""
 

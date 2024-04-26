@@ -12,6 +12,8 @@ import (
 
 type (
 	IDeviceStrategy interface {
+		// Add 添加策略
+		Add(ctx context.Context, req *device.StrategyAddReq) (*device.StrategyAddRes, error)
 		// List 查询策略列表
 		List(ctx context.Context, req *device.StrategySearchReq) (*device.StrategySearchRes, error)
 	}

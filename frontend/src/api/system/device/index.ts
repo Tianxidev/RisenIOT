@@ -194,3 +194,12 @@ export function DeviceCategoryDel(ids: number[]): Promise<any> {
     method: 'delete',
   })
 }
+
+
+// 查询策略列表
+export function DeviceStrategySearchReq(params?:any): Promise<any> {
+  return request({
+    url: appendQuery('/api/v1/device/strategy', params),
+    method: 'get',
+  })
+}

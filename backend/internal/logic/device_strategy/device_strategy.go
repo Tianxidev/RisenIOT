@@ -24,6 +24,31 @@ func init() {
 	service.RegisterDeviceStrategy(New())
 }
 
+// Add 添加策略
+func (s *sDeviceStrategy) Add(ctx context.Context, req *device.StrategyAddReq) (*device.StrategyAddRes, error) {
+	var err error
+	res := new(device.StrategyAddRes)
+
+	// 获取用户ID
+	userId := service.UserCtx().GetUserId(ctx)
+
+	// 创建策略实体
+	entity := entity.SysDeviceStrategy{
+		Id:       0,
+		Name:     req.Name,
+		Type:     req.Type,
+		Cron:     req.Cron,
+		DeviceId: req.DeviceId,
+		AuthorId: int(userId),
+	}
+
+	// 插入数据库
+	_, err = dao.SysDeviceStrategy.Ctx(ctx).Insert(entity)
+	liberr.ErrIsNil(ctx, err, "添加策略失败")
+
+	return res, err
+}
+
 // List 查询策略列表
 func (s *sDeviceStrategy) List(ctx context.Context, req *device.StrategySearchReq) (*device.StrategySearchRes, error) {
 	res := new(device.StrategySearchRes)
