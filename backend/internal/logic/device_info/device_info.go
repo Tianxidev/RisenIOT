@@ -10,6 +10,7 @@ import (
 	"backend/library/liberr"
 	"context"
 	"fmt"
+	"github.com/gogf/gf/v2/encoding/gurl"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gtime"
@@ -258,11 +259,11 @@ func (s *sDeviceInfo) OfflineCount(ctx context.Context) (total int, err error) {
 func (s *sDeviceInfo) KeepAlive(ctx context.Context, time *gtime.Time) {
 	deviceList := make([]*entity.SysDeviceInfo, 0)
 
-	// 1. 查询所有设备信息
+	// 查询所有设备信息
 	err := g.Model(dao.SysDeviceInfo.Table()).Scan(&deviceList)
 	liberr.ErrIsNil(ctx, err, "查询设备信息失败")
 
-	// 2. 遍历设备信息, 判断设备是否在线
+	// 遍历设备信息, 判断设备是否在线
 	for _, deviceInfo := range deviceList {
 
 		// deviceInfo.LastDataUpdateTime 转换为时间戳
@@ -275,21 +276,37 @@ func (s *sDeviceInfo) KeepAlive(ctx context.Context, time *gtime.Time) {
 
 		// 查询产品超时时间
 		kindInfo, err := service.DeviceKind().Get(ctx, deviceInfo.Kind)
+		liberr.ErrIsNil(ctx, err, "查询产品超时时间失败")
 
-		// 3. 判断设备最后上报时间是否超过设备心跳超时时间
+		// 判断设备最后上报时间是否超过设备心跳超时时间
 		// 当前系统时间戳 - 设备最后上报时间戳 > 设备心跳超时时间
-		_ = g.Try(ctx, func(ctx context.Context) {
-			if nowTime-lastTime > int64(kindInfo.TimeOut) {
-				// 4. 设备离线
-				g.Log().Info(ctx, "离线设备=>", deviceInfo.Name, "设备ID:", deviceInfo.Id)
-				_, err = dao.SysDeviceInfo.Ctx(ctx).Where("id=?", deviceInfo.Id).Update(g.Map{
-					"status": 0,
-				})
-				liberr.ErrIsNil(ctx, err, "设备离线失败")
-			} else {
-				g.Log().Info(ctx, "在线设备=>", deviceInfo.Name, "设备ID:", deviceInfo.Id, "当前超时:", nowTime-lastTime, "设定超时:", kindInfo.TimeOut)
-			}
-		})
+		if nowTime-lastTime > int64(kindInfo.TimeOut) {
+			userInfo := new(entity.SysUser)
+
+			// 设备离线
+			g.Log().Info(ctx, "离线设备=>", deviceInfo.Name, "设备ID:", deviceInfo.Id)
+			_, err = dao.SysDeviceInfo.Ctx(ctx).Where("id=?", deviceInfo.Id).Update(g.Map{
+				"status": 0,
+			})
+
+			// 查询用户消息推送配置
+			one, err := g.Model(dao.SysUser.Table()).Where("id=?", deviceInfo.CreateBy).One()
+			err = one.Struct(userInfo)
+			liberr.ErrIsNil(ctx, err, "查询用户消息推送配置失败")
+
+			// 发送设备离线消息
+			msg := fmt.Sprintf("[设备离线] 设备名称:%s, 设备ID:%d", deviceInfo.Name, deviceInfo.Id)
+
+			// 消息url编码
+			msg = gconv.String(gurl.Encode(msg))
+
+			g.Log().Info(ctx, "发送离线消息给用户=>", userInfo.UserName, "-", userInfo.Pushdeer, "用户ID:", userInfo.Id, "推送设备=>", userInfo.Pushdeer, "消息内容:", msg)
+			service.SysPush().TextMsgSendPushDeer(ctx, userInfo.Pushdeer, msg)
+
+			liberr.ErrIsNil(ctx, err, "设备离线失败")
+		} else {
+			g.Log().Info(ctx, "在线设备=>", deviceInfo.Name, "设备ID:", deviceInfo.Id, "当前超时:", nowTime-lastTime, "设定超时:", kindInfo.TimeOut)
+		}
 
 	}
 

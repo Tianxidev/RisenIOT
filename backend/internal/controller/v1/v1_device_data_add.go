@@ -13,7 +13,7 @@ import (
 func (c *ControllerDevice) DataAdd(ctx context.Context, req *device.DataAddReq) (res *device.DataAddRes, err error) {
 	decode, err := service.DataCodec().HttpDecode(ctx, req)
 	liberr.ErrIsNil(ctx, err, "解码传感器数据失败")
-	g.Log().Print(ctx, "解码传感器结果:", decode)
+	g.Log().Print(ctx, "解码传感器结果:", decode.DeviceInfo, decode.EventList, decode.DataList)
 	err = service.DataCodec().Save(ctx, decode)
 	liberr.ErrIsNil(ctx, err, "保存传感器数据失败")
 
